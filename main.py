@@ -56,6 +56,20 @@ def run_evaluate(args):
     ]
     run_command(cmd, "Model Evaluation")
 
+def run_inference(args):
+    if not os.path.exists(args.model_output):
+        print(f"Error: Model not found at {args.model_output}.")
+        sys.exit(1)
+
+    cmd = [
+        sys.executable, "src/inference.py",
+        "--model_path", args.model_output,
+        "--data_path", args.inference_data,
+        "--output_path", args.inference_output,
+        "--system_prompt", args.system_prompt
+    ]
+    run_command(cmd, "Model Inference")
+
 def main():
     parser = argparse.ArgumentParser(description="Text-to-SQL Pipeline Orchestrator")
     
@@ -79,6 +93,11 @@ def main():
     # Stage: Evaluate
     parser_eval = subparsers.add_parser("evaluate", help="Evaluate the model on Dev set")
     
+    # Stage: Inference
+    parser_inf = subparsers.add_parser("inference", help="Run batch inference")
+    parser_inf.add_argument("--inference_data", required=True, help="Path to input JSON/JSONL file")
+    parser_inf.add_argument("--inference_output", default="results.json", help="Path to save JSON results")
+
     # Stage: All
     parser_all = subparsers.add_parser("all", help="Run complete pipeline")
     parser_all.add_argument("--epochs", type=int, default=2)
@@ -92,6 +111,8 @@ def main():
         run_train(args)
     elif args.stage == "evaluate":
         run_evaluate(args)
+    elif args.stage == "inference":
+        run_inference(args)
     elif args.stage == "all":
         run_prepare(args)
         run_train(args)

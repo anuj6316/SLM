@@ -12,7 +12,7 @@ from schema_utils import (
 def build_jsonl(spider_dir, output_path):
     tables_path = os.path.join(spider_dir, "tables.json")
     train_path = os.path.join(spider_dir, "train_spider.json")
-    
+
     print(f"Loading schemas from: {tables_path}")
     schemas = load_schema_dict(tables_path)
 
@@ -21,41 +21,39 @@ def build_jsonl(spider_dir, output_path):
         data = json.load(f)
 
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    out = open(output_path, "w", encoding="utf-8")
+    with open(output_path, "w", encoding="utf-8") as out:
+        print(f"Processing {len(data)} examples...")
+        for ex in data:
+            db_id = ex["db_id"]
+            question = ex["question"]
+            sql = ex["query"]
 
-    print(f"Processing {len(data)} examples...")
-    for ex in data:
-        db_id = ex["db_id"]
-        question = ex["question"]
-        sql = ex["query"]
+            schema = schemas[db_id]
 
-        schema = schemas[db_id]
+            # Step 1: table matching
+            matched = find_relevant_tables(question, schema)
 
-        # Step 1: table matching
-        matched = find_relevant_tables(question, schema)
+            # Step 2: FK expansion (join safety)
+            selected_tables = expand_with_foreign_keys(matched, schema)
 
-        # Step 2: FK expansion (join safety)
-        selected_tables = expand_with_foreign_keys(matched, schema)
+            # Step 3: format schema
+            schema_text = format_schema(db_id, schema, selected_tables)
 
-        # Step 3: format schema
-        schema_text = format_schema(db_id, schema, selected_tables)
-
-        # Step 4: build instruction
-        prompt = f"""You are a Text-to-SQL expert.
+            # Step 4: build instruction
+            prompt = f"""You are a Text-to-SQL expert.
 
 {schema_text}
 
 Question: {question}
 SQL:"""
 
-        row = {
-            "instruction": prompt,
-            "output": sql,
-        }
+            row = {
+                "instruction": prompt,
+                "output": sql,
+            }
 
-        out.write(json.dumps(row) + "\n")
+            out.write(json.dumps(row) + "\n")
 
-    out.close()
     print("Saved:", output_path)
 
 
