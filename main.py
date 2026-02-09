@@ -29,7 +29,7 @@ def run_prepare(args):
 
 def run_train(args):
     cmd = [
-        sys.executable, "SLM/src/train.py",
+        sys.executable, "src/train.py",
         "--data_path", args.data_output,
         "--output_dir", args.model_output,
         "--epochs", str(args.epochs),

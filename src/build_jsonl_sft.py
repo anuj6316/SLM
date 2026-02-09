@@ -2,8 +2,8 @@ import json
 import argparse
 import os
 from tqdm import tqdm
-from src.schema_utils import load_schema_dict, build_sft_prompt
-from src.utils import get_logger
+from schema_utils import load_schema_dict, build_sft_prompt
+from utils import get_logger
 
 logger = get_logger(__name__)
 
