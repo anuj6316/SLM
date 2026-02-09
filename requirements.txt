@@ -1,0 +1,14 @@
+# Core Dependencies (from uv.lock and imports)
+torch>=2.10.0
+datasets>=4.5.0
+transformers
+trl
+tqdm>=4.67.3
+rich>=14.3.2
+huggingface-hub>=1.4.1
+
+# Unsloth (Often requires specific installation, see: https://github.com/unslothai/unsloth)
+unsloth
+
+# Other utilities
+reasoning-gym>=0.1.24

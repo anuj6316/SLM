@@ -1,7 +1,9 @@
 import json
 from collections import defaultdict
 import re
+from src.utils import get_logger
 
+logger = get_logger(__name__)
 
 def load_schema_dict(tables_path):
     """
@@ -14,6 +16,7 @@ def load_schema_dict(tables_path):
         }
     }
     """
+    logger.info(f"Loading schemas from {tables_path}")
     with open(tables_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
@@ -61,7 +64,7 @@ def tokenize(text):
     return set(re.findall(r"\w+", text.lower()))
 
 
-def find_relevant_tables(question, schema):
+def find_relevant_tables(question, schema, db_id=""):
     """
     Match tables if:
     - table name in question
@@ -80,24 +83,32 @@ def find_relevant_tables(question, schema):
                 matched.add(table)
                 break
 
-    # Fallback: if nothing matched → return all tables
     if not matched:
+        logger.debug(f"[{db_id}] No tables matched for: '{question}'. Falling back to all tables.")
         return set(schema["tables"].keys())
 
+    logger.debug(f"[{db_id}] Initial match: {matched}")
     return matched
 
-def expand_with_foreign_keys(selected_tables, schema, max_hops=1):
+def expand_with_foreign_keys(selected_tables, schema, max_hops=1, db_id=""):
     """
     Adds neighbor tables via FK graph to preserve join paths.
     """
     graph = schema["graph"]
     expanded = set(selected_tables)
 
-    for _ in range(max_hops):
+    for i in range(max_hops):
         new_tables = set()
         for table in expanded:
-            new_tables.update(graph.get(table, []))
-        expanded.update(new_tables)
+            neighbors = graph.get(table, [])
+            new_tables.update(neighbors)
+        
+        diff = new_tables - expanded
+        if diff:
+            logger.debug(f"[{db_id}] Hop {i+1} expanded: {diff}")
+            expanded.update(new_tables)
+        else:
+            break
 
     return expanded
 
@@ -122,3 +133,19 @@ def format_schema(db_id, schema, selected_tables):
         lines.extend(fk_lines)
 
     return "\n".join(lines)
+
+def build_sft_prompt(db_id, schema, question):
+    """
+    Centralized prompt builder to ensure consistency between
+    Data Prep, Training, and Evaluation.
+    """
+    # 1. Match tables
+    matched = find_relevant_tables(question, schema, db_id)
+    
+    # 2. Expand for joins
+    selected_tables = expand_with_foreign_keys(matched, schema, db_id=db_id)
+    
+    # 3. Format text
+    schema_text = format_schema(db_id, schema, selected_tables)
+    
+    return f"{schema_text}\n\nQuestion: {question}\nSQL:"

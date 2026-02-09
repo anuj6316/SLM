@@ -5,7 +5,10 @@ import argparse
 import subprocess
 from tqdm import tqdm
 from unsloth import FastLanguageModel
-from schema_utils import load_schema_dict, find_relevant_tables, expand_with_foreign_keys, format_schema
+from src.schema_utils import load_schema_dict, build_sft_prompt
+from src.utils import get_logger
+
+logger = get_logger(__name__)
 
 def evaluate_model(
     model_path,
@@ -18,7 +21,7 @@ def evaluate_model(
     os.makedirs(output_dir, exist_ok=True)
     
     # 1. Load Model
-    print(f"Loading model from: {model_path}")
+    logger.info(f"Loading model for evaluation: {model_path}")
     model, tokenizer = FastLanguageModel.from_pretrained(
         model_name=model_path,
         max_seq_length=2048,
@@ -28,7 +31,7 @@ def evaluate_model(
     FastLanguageModel.for_inference(model)
 
     # 2. Load Data & Schemas
-    print("Loading data and schemas...")
+    logger.info("Loading schemas and validation data...")
     schemas = load_schema_dict(tables_path)
     with open(data_path, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -37,12 +40,12 @@ def evaluate_model(
     gold_path = os.path.join(output_dir, "gold.txt")
     pred_path = os.path.join(output_dir, "pred.txt")
     
-    print(f"Generating SQL for {len(data)} examples...")
+    logger.info(f"Generating SQL for {len(data)} examples...")
     
     with open(gold_path, "w", encoding="utf-8") as f_gold, \
          open(pred_path, "w", encoding="utf-8") as f_pred:
         
-        for ex in tqdm(data):
+        for ex in tqdm(data, desc="Evaluating"):
             db_id = ex["db_id"]
             question = ex["question"]
             gold_sql = ex["query"]
@@ -50,75 +53,76 @@ def evaluate_model(
             # Save Gold (SQL \t db_id)
             f_gold.write(f"{gold_sql}\t{db_id}\n")
             
-            # --- Inference Logic (Same as Training) ---
+            # --- Inference Logic (Consistent with Training) ---
             schema = schemas[db_id]
-            matched = find_relevant_tables(question, schema)
-            selected_tables = expand_with_foreign_keys(matched, schema)
-            schema_text = format_schema(db_id, schema, selected_tables)
+            # Use centralized prompt builder
+            instruction = build_sft_prompt(db_id, schema, question)
             
-            prompt = f"""<|im_start|>system
-You are a Text-to-SQL expert.<|im_end|>
-<|im_start|>user
-{schema_text}
-
-Question: {question}
-SQL:<|im_end|>
-<|im_start|>assistant
-"""
+            prompt = (
+                f"<|im_start|>system\nYou are a Text-to-SQL expert.<|im_end|>\n"
+                f"<|im_start|>user\n{instruction}<|im_end|>\n"
+                f"<|im_start|>assistant\n"
+            )
             
             inputs = tokenizer([prompt], return_tensors="pt").to("cuda")
             
-            outputs = model.generate(
-                **inputs,
-                max_new_tokens=128,
-                use_cache=True,
-                do_sample=False, # Greedy decoding for reproducibility
-                pad_token_id=tokenizer.eos_token_id
-            )
+            with torch.no_grad():
+                outputs = model.generate(
+                    **inputs,
+                    max_new_tokens=128,
+                    use_cache=True,
+                    do_sample=False,
+                    pad_token_id=tokenizer.eos_token_id
+                )
             
-            # Decode and clean
             generated_text = tokenizer.batch_decode(outputs, skip_special_tokens=True)[0]
             
-            # Extract SQL (after "assistant\n")
-            # Note: unsloth decoding might include the prompt or not depending on config.
-            # Usually safe to split by assistant tag if present, or just take the end.
-            # With format_example in training, we expect the output to follow the prompt.
-            
-            # Reliable extraction based on prompt structure
-            if "SQL:" in generated_text:
-                # Fallback if the template rendering behaves differently
-                pred_sql = generated_text.split("SQL:")[-1].strip()
+            # Extract SQL after assistant tag
+            if "assistant\n" in generated_text:
+                pred_sql = generated_text.split("assistant\n")[-1].strip()
             else:
-                 pred_sql = generated_text.strip()
-            
-            # Specifically handle the chat template output if it repeats input
-            if "assistant\n" in pred_sql:
-                pred_sql = pred_sql.split("assistant\n")[-1].strip()
+                # If chat template wasn't applied or returned whole prompt
+                pred_sql = generated_text.split("SQL:")[-1].strip() if "SQL:" in generated_text else generated_text.strip()
                 
-            # Remove any trailing markdown like ```sql ... ```
+            # Clean up
             pred_sql = pred_sql.replace("```sql", "").replace("```", "").strip()
-            
-            # One line
             pred_sql = " ".join(pred_sql.split())
             
             f_pred.write(f"{pred_sql}\n")
 
     # 4. Run Evaluation
-    print("\nRunning Official Spider Evaluation...")
+    logger.info("Running Official Spider Evaluation script...")
     cmd = [
         "python3", spider_eval_path,
         "--gold", gold_path,
         "--pred", pred_path,
         "--db", db_dir,
         "--table", tables_path,
-        "--etype", "all"  # exec + match
+        "--etype", "all"
     ]
     
     try:
         subprocess.run(cmd, check=True)
     except subprocess.CalledProcessError as e:
-        print("Evaluation failed!")
-        print(e)
+        logger.error(f"Evaluation script failed: {e}")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model_path", type=str, required=True)
+    parser.add_argument("--data_path", type=str, default="data/spider/dev.json")
+    parser.add_argument("--tables_path", type=str, default="data/spider/tables.json")
+    parser.add_argument("--db_dir", type=str, default="data/spider/database")
+    parser.add_argument("--output_dir", type=str, default="evaluation_results")
+    
+    args = parser.parse_args()
+    
+    evaluate_model(
+        model_path=args.model_path,
+        data_path=args.data_path,
+        tables_path=args.tables_path,
+        db_dir=args.db_dir,
+        output_dir=args.output_dir
+    )
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

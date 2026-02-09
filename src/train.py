@@ -5,6 +5,9 @@ from datasets import load_dataset
 from trl import SFTTrainer
 from transformers import TrainingArguments
 from unsloth import FastLanguageModel
+from src.utils import get_logger
+
+logger = get_logger(__name__)
 
 def train_model(
     data_path,
@@ -17,7 +20,7 @@ def train_model(
     grad_accum=8,
     learning_rate=2e-4,
 ):
-    print(f"Loading model: {model_name}")
+    logger.info(f"Initializing model loading: {model_name}")
     model, tokenizer = FastLanguageModel.from_pretrained(
         model_name=model_name,
         max_seq_length=max_seq_length,
@@ -26,6 +29,7 @@ def train_model(
         dtype=None,
     )
 
+    logger.info("Applying LoRA adapters...")
     model = FastLanguageModel.get_peft_model(
         model,
         r=32,
@@ -40,7 +44,7 @@ def train_model(
         random_state=42,
     )
 
-    print(f"Loading dataset from: {data_path}")
+    logger.info(f"Loading dataset from: {data_path}")
     dataset = load_dataset("json", data_files=data_path, split="train")
 
     def format_example(example):
@@ -52,6 +56,7 @@ def train_model(
             )
         }
 
+    logger.info("Formatting dataset...")
     dataset = dataset.map(format_example)
 
     training_args = TrainingArguments(
@@ -83,12 +88,13 @@ def train_model(
         packing=True,
     )
 
-    print("Starting training...")
+    logger.info(f"Starting training for {epochs} epochs...")
     trainer.train()
 
-    print(f"Saving model to: {output_dir}")
+    logger.info(f"Saving fine-tuned model to: {output_dir}")
     model.save_pretrained(output_dir)
     tokenizer.save_pretrained(output_dir)
+    logger.info("Training complete.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
