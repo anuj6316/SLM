@@ -101,6 +101,7 @@ def run_inference(args):
         sys.executable, "src/inference.py",
         "--model_path", args.model_output,
         "--data_path", args.inference_data,
+        "--tables_path", os.path.join(args.spider_dir, "tables.json"),
         "--output_path", args.inference_output,
         "--system_prompt", args.system_prompt
     ]
