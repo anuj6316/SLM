@@ -1,43 +1,54 @@
+import os
 import json
-from collections import defaultdict
 import re
-from src.utils import get_logger
+import logging
+from collections import defaultdict
+from typing import Dict, List, Set, Tuple, Any, Optional
 
-logger = get_logger(__name__)
+# Use standard logging for consistency with inference.py
+logger = logging.getLogger(__name__)
 
-def load_schema_dict(tables_path):
+def load_schema_dict(tables_path: str) -> Dict[str, Dict[str, Any]]:
     """
-    Returns:
+    Loads database schemas from tables.json.
+    
+    Returns a dictionary mapping db_id to its schema information:
     {
         db_id: {
             "tables": {table_name: [columns]},
             "foreign_keys": [(table1, col1, table2, col2)],
-            "graph": adjacency list for table joins
+            "graph": {table_name: {connected_tables}}
         }
     }
     """
-    logger.info(f"Loading schemas from {tables_path}")
-    with open(tables_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
+    logger.info(f"Loading schemas from: {tables_path}")
+    if not os.path.exists(tables_path):
+        logger.error(f"Schema file not found: {tables_path}")
+        raise FileNotFoundError(tables_path)
+
+    try:
+        with open(tables_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception as e:
+        logger.error(f"Failed to parse schema JSON: {str(e)}")
+        raise
 
     db_schemas = {}
 
     for db in data:
         db_id = db["db_id"]
-
         table_names = db["table_names_original"]
         column_names = db["column_names_original"]
         foreign_keys = db["foreign_keys"]
 
         tables = defaultdict(list)
-
-        # Build table → columns
+        # Build table -> columns mapping
         for table_idx, col_name in column_names:
-            if table_idx == -1:
+            if table_idx == -1: # Skip special index
                 continue
             tables[table_names[table_idx]].append(col_name)
 
-        # Build FK relations
+        # Build Foreign Key relations and connection graph
         fk_list = []
         graph = defaultdict(set)
 
@@ -55,74 +66,71 @@ def load_schema_dict(tables_path):
         db_schemas[db_id] = {
             "tables": dict(tables),
             "foreign_keys": fk_list,
-            "graph": dict(graph),
+            "graph": {k: list(v) for k, v in graph.items()},
         }
 
     return db_schemas
 
-def tokenize(text):
+def tokenize(text: str) -> Set[str]:
+    """Simple alphanumeric tokenizer."""
     return set(re.findall(r"\w+", text.lower()))
 
-
-def find_relevant_tables(question, schema, db_id=""):
+def find_relevant_tables(question: str, schema: Dict[str, Any], db_id: str = "") -> Set[str]:
     """
-    Match tables if:
-    - table name in question
-    - any column name in question
+    Identifies tables that are likely relevant to the question based on keyword matching
+    with table names and column names.
     """
     tokens = tokenize(question)
     matched = set()
 
     for table, cols in schema["tables"].items():
+        # Match table name
         if table.lower() in tokens:
             matched.add(table)
             continue
 
+        # Match column names
         for col in cols:
             if col.lower() in tokens:
                 matched.add(table)
                 break
 
     if not matched:
-        logger.debug(f"[{db_id}] No tables matched for: '{question}'. Falling back to all tables.")
+        logger.debug(f"[{db_id}] No tables matched. Defaulting to all tables.")
         return set(schema["tables"].keys())
 
-    logger.debug(f"[{db_id}] Initial match: {matched}")
     return matched
 
-def expand_with_foreign_keys(selected_tables, schema, max_hops=1, db_id=""):
+def expand_with_foreign_keys(selected_tables: Set[str], schema: Dict[str, Any], max_hops: int = 1, db_id: str = "") -> Set[str]:
     """
-    Adds neighbor tables via FK graph to preserve join paths.
+    Expands the set of selected tables by including their neighbors in the 
+    Foreign Key graph to ensure join paths are available.
     """
     graph = schema["graph"]
     expanded = set(selected_tables)
 
-    for i in range(max_hops):
+    for _ in range(max_hops):
         new_tables = set()
         for table in expanded:
             neighbors = graph.get(table, [])
             new_tables.update(neighbors)
         
-        diff = new_tables - expanded
-        if diff:
-            logger.debug(f"[{db_id}] Hop {i+1} expanded: {diff}")
-            expanded.update(new_tables)
-        else:
+        if new_tables.issubset(expanded):
             break
+        expanded.update(new_tables)
 
     return expanded
 
-def format_schema(db_id, schema, selected_tables):
-    lines = []
-    lines.append(f"Database: {db_id}")
-    lines.append("Tables:")
+def format_schema(db_id: str, schema: Dict[str, Any], selected_tables: Set[str]) -> str:
+    """Formats the schema into a human-readable string for the prompt."""
+    lines = [f"Database: {db_id}", "Tables:"]
 
     for table in sorted(selected_tables):
         cols = schema["tables"][table]
         cols_str = ", ".join(cols)
         lines.append(f"{table}({cols_str})")
 
-    # Foreign keys
+    # Filter foreign keys to only include those between selected tables
     fk_lines = []
     for t1, c1, t2, c2 in schema["foreign_keys"]:
         if t1 in selected_tables and t2 in selected_tables:
@@ -134,18 +142,13 @@ def format_schema(db_id, schema, selected_tables):
 
     return "\n".join(lines)
 
-def build_sft_prompt(db_id, schema, question):
+def build_sft_prompt(db_id: str, schema: Dict[str, Any], question: str) -> str:
     """
-    Centralized prompt builder to ensure consistency between
-    Data Prep, Training, and Evaluation.
+    Centralized prompt builder. 
+    Matches tables, expands via FKs, and formats the final prompt text.
     """
-    # 1. Match tables
     matched = find_relevant_tables(question, schema, db_id)
-    
-    # 2. Expand for joins
     selected_tables = expand_with_foreign_keys(matched, schema, db_id=db_id)
-    
-    # 3. Format text
     schema_text = format_schema(db_id, schema, selected_tables)
     
     return f"{schema_text}\n\nQuestion: {question}\nSQL:"

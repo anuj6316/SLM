@@ -2,22 +2,59 @@ import argparse
 import subprocess
 import sys
 import os
+import logging
+from typing import List, Optional
 
-# Default Paths
-SPIDER_DIR = "data/spider"
-DATA_OUTPUT = "data/spider_sft/train_sft.jsonl"
-MODEL_OUTPUT = "outputs/qwen-text2sql"
-EVAL_OUTPUT = "evaluation_results"
+# Setup Logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+logger = logging.getLogger("Orchestrator")
 
-def run_command(command, description):
-    print(f"\n[PIPELINE] Starting: {description}...")
-    print(f"Command: {' '.join(command)}")
+# Default Constants
+DEFAULTS = {
+    "SPIDER_DIR": "data/spider",
+    "DATA_OUTPUT": "data/spider_sft/train_sft.jsonl",
+    "MODEL_OUTPUT": "outputs/qwen-text2sql",
+    "EVAL_OUTPUT": "evaluation_results",
+    "BASE_MODEL": "Qwen/Qwen2.5-1.5B-Instruct",
+    "SYSTEM_PROMPT": "You are a Text-to-SQL expert."
+}
+
+def run_command(command: List[str], description: str):
+    """
+    Executes a shell command and streams its output to the logger.
+    """
+    logger.info(f"--- Starting: {description} ---")
+    logger.debug(f"Command: {' '.join(command)}")
+    
     try:
-        subprocess.run(command, check=True)
-        print(f"[PIPELINE] Success: {description}\n")
-    except subprocess.CalledProcessError as e:
-        print(f"[PIPELINE] Failed: {description}")
-        sys.exit(e.returncode)
+        # Use Popen to stream output in real-time
+        process = subprocess.Popen(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT, # Merge stderr into stdout
+            text=True,
+            bufsize=1
+        )
+        
+        # Stream output line by line
+        for line in process.stdout:
+            print(line, end="") # Print to console directly to preserve formatting from sub-scripts
+        
+        process.wait()
+        
+        if process.returncode != 0:
+            logger.error(f"Stage '{description}' failed with exit code {process.returncode}.")
+            sys.exit(process.returncode)
+            
+        logger.info(f"--- Completed: {description} ---\n")
+        
+    except Exception as e:
+        logger.critical(f"Failed to execute {description}: {str(e)}")
+        sys.exit(1)
 
 def run_prepare(args):
     cmd = [
@@ -41,9 +78,8 @@ def run_train(args):
     run_command(cmd, "Model Training")
 
 def run_evaluate(args):
-    # Ensure model exists before evaluating
     if not os.path.exists(args.model_output):
-        print(f"Error: Model not found at {args.model_output}. Train first?")
+        logger.error(f"Model not found at {args.model_output}. Please train the model first.")
         sys.exit(1)
 
     cmd = [
@@ -58,7 +94,7 @@ def run_evaluate(args):
 
 def run_inference(args):
     if not os.path.exists(args.model_output):
-        print(f"Error: Model not found at {args.model_output}.")
+        logger.error(f"Model not found at {args.model_output}.")
         sys.exit(1)
 
     cmd = [
@@ -74,24 +110,24 @@ def main():
     parser = argparse.ArgumentParser(description="Text-to-SQL Pipeline Orchestrator")
     
     # Global arguments
-    parser.add_argument("--spider_dir", default=SPIDER_DIR, help="Path to Spider dataset root")
-    parser.add_argument("--data_output", default=DATA_OUTPUT, help="Path for SFT jsonl file")
-    parser.add_argument("--model_output", default=MODEL_OUTPUT, help="Path to save/load trained model")
-    parser.add_argument("--eval_output", default=EVAL_OUTPUT, help="Path to save evaluation results")
-    parser.add_argument("--system_prompt", default="You are a Text-to-SQL expert.", help="System prompt for the chat template")
+    parser.add_argument("--spider_dir", default=DEFAULTS["SPIDER_DIR"], help="Path to Spider dataset root")
+    parser.add_argument("--data_output", default=DEFAULTS["DATA_OUTPUT"], help="Path for SFT jsonl file")
+    parser.add_argument("--model_output", default=DEFAULTS["MODEL_OUTPUT"], help="Path to save/load trained model")
+    parser.add_argument("--eval_output", default=DEFAULTS["EVAL_OUTPUT"], help="Path to save evaluation results")
+    parser.add_argument("--system_prompt", default=DEFAULTS["SYSTEM_PROMPT"], help="System prompt for the chat template")
     
     subparsers = parser.add_subparsers(dest="stage", help="Pipeline Stage")
     
     # Stage: Prepare
-    parser_prepare = subparsers.add_parser("prepare", help="Prepare SFT dataset")
+    subparsers.add_parser("prepare", help="Prepare SFT dataset")
     
     # Stage: Train
     parser_train = subparsers.add_parser("train", help="Fine-tune the model")
     parser_train.add_argument("--epochs", type=int, default=2)
-    parser_train.add_argument("--base_model", type=str, default="Qwen/Qwen2.5-1.5B-Instruct")
+    parser_train.add_argument("--base_model", type=str, default=DEFAULTS["BASE_MODEL"])
     
     # Stage: Evaluate
-    parser_eval = subparsers.add_parser("evaluate", help="Evaluate the model on Dev set")
+    subparsers.add_parser("evaluate", help="Evaluate the model on Dev set")
     
     # Stage: Inference
     parser_inf = subparsers.add_parser("inference", help="Run batch inference")
@@ -101,7 +137,7 @@ def main():
     # Stage: All
     parser_all = subparsers.add_parser("all", help="Run complete pipeline")
     parser_all.add_argument("--epochs", type=int, default=2)
-    parser_all.add_argument("--base_model", type=str, default="Qwen/Qwen2.5-1.5B-Instruct")
+    parser_all.add_argument("--base_model", type=str, default=DEFAULTS["BASE_MODEL"])
 
     args = parser.parse_args()
 
