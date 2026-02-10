@@ -108,37 +108,29 @@ def run_inference(args):
 
 def main():
     parser = argparse.ArgumentParser(description="Text-to-SQL Pipeline Orchestrator")
-    
+
     # Global arguments
     parser.add_argument("--spider_dir", default=DEFAULTS["SPIDER_DIR"], help="Path to Spider dataset root")
     parser.add_argument("--data_output", default=DEFAULTS["DATA_OUTPUT"], help="Path for SFT jsonl file")
     parser.add_argument("--model_output", default=DEFAULTS["MODEL_OUTPUT"], help="Path to save/load trained model")
     parser.add_argument("--eval_output", default=DEFAULTS["EVAL_OUTPUT"], help="Path to save evaluation results")
     parser.add_argument("--system_prompt", default=DEFAULTS["SYSTEM_PROMPT"], help="System prompt for the chat template")
-    
+
     subparsers = parser.add_subparsers(dest="stage", help="Pipeline Stage")
-    
+
     # Stage: Prepare
     subparsers.add_parser("prepare", help="Prepare SFT dataset")
-    
-    # Stage: Train
-    parser_train = subparsers.add_parser("train", help="Fine-tune the model")
-    parser_train.add_argument("--epochs", type=int, default=2)
-    parser_train.add_argument("--base_model", type=str, default=DEFAULTS["BASE_MODEL"])
-    
+
+    _extracted_from_main_17(subparsers, "train", "Fine-tune the model")
     # Stage: Evaluate
     subparsers.add_parser("evaluate", help="Evaluate the model on Dev set")
-    
+
     # Stage: Inference
     parser_inf = subparsers.add_parser("inference", help="Run batch inference")
     parser_inf.add_argument("--inference_data", required=True, help="Path to input JSON/JSONL file")
     parser_inf.add_argument("--inference_output", default="results.json", help="Path to save JSON results")
 
-    # Stage: All
-    parser_all = subparsers.add_parser("all", help="Run complete pipeline")
-    parser_all.add_argument("--epochs", type=int, default=2)
-    parser_all.add_argument("--base_model", type=str, default=DEFAULTS["BASE_MODEL"])
-
+    _extracted_from_main_17(subparsers, "all", "Run complete pipeline")
     args = parser.parse_args()
 
     if args.stage == "prepare":
@@ -155,6 +147,14 @@ def main():
         run_evaluate(args)
     else:
         parser.print_help()
+
+
+# TODO Rename this here and in `main`
+def _extracted_from_main_17(subparsers, arg1, help):
+    # Stage: Train
+    parser_train = subparsers.add_parser(arg1, help=help)
+    parser_train.add_argument("--epochs", type=int, default=2)
+    parser_train.add_argument("--base_model", type=str, default=DEFAULTS["BASE_MODEL"])
 
 if __name__ == "__main__":
     main()

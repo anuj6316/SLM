@@ -132,10 +132,11 @@ def format_schema(db_id: str, schema: Dict[str, Any], selected_tables: Set[str])
 
     # Filter foreign keys to only include those between selected tables
     fk_lines = []
-    for t1, c1, t2, c2 in schema["foreign_keys"]:
-        if t1 in selected_tables and t2 in selected_tables:
-            fk_lines.append(f"{t1}.{c1} -> {t2}.{c2}")
-
+    fk_lines.extend(
+        f"{t1}.{c1} -> {t2}.{c2}"
+        for t1, c1, t2, c2 in schema["foreign_keys"]
+        if t1 in selected_tables and t2 in selected_tables
+    )
     if fk_lines:
         lines.append("Foreign Keys:")
         lines.extend(fk_lines)

@@ -47,11 +47,10 @@ def load_dataset(data_path: str) -> List[Dict[str, Any]]:
         raise FileNotFoundError(data_path)
 
     try:
-        if data_path.endswith(".jsonl"):
-            with open(data_path, "r", encoding="utf-8") as f:
+        with open(data_path, "r", encoding="utf-8") as f:
+            if data_path.endswith(".jsonl"):
                 return [json.loads(line) for line in f]
-        else:
-            with open(data_path, "r", encoding="utf-8") as f:
+            else:
                 return json.load(f)
     except Exception as e:
         logger.error(f"Error reading data: {str(e)}")
@@ -82,7 +81,7 @@ def extract_sql(full_output: str) -> str:
     # This is more robust than simple .replace()
     sql_match = re.search(r"```(?:sql)?\s*(.*?)\s*```", prediction, re.DOTALL | re.IGNORECASE)
     if sql_match:
-        prediction = sql_match.group(1).strip()
+        prediction = sql_match[1].strip()
     else:
         # Fallback: remove any leftover backticks if regex didn't find a block
         prediction = prediction.replace("```sql", "").replace("```", "").strip()
