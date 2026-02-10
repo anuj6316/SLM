@@ -62,9 +62,20 @@ def run_inference(
         instruction = build_sft_prompt(db_id, schema, question)
         
         prompt = (
+<<<<<<< HEAD
             f"<|im_start|>system\n{system_prompt}<|im_end|>\n"
             f"<|im_start|>user\n{instruction}<|im_end|>\n"
             f"<|im_start|>assistant\n"
+=======
+            f"""<|im_start|>system
+{system_prompt}<|im_end|>
+"""
+            f"""<|im_start|>user
+{instruction}<|im_end|>
+"""
+            f"""<|im_start|>assistant
+"""
+>>>>>>> d4798f6 (fixed all the syntax errors in inference)
         )
 
         inputs = tokenizer([prompt], return_tensors="pt").to("cuda")
@@ -80,6 +91,10 @@ def run_inference(
 
         full_output = tokenizer.batch_decode(outputs, skip_special_tokens=True)[0]
         
+<<<<<<< HEAD
+=======
+        # Clean up: extract only the assistant's response
+>>>>>>> d4798f6 (fixed all the syntax errors in inference)
         if "assistant\n" in full_output:
             prediction = full_output.split("assistant\n")[-1].strip()
         else:
