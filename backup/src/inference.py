@@ -8,7 +8,6 @@ from typing import List, Dict, Any, Tuple, Optional
 from tqdm import tqdm
 from unsloth import FastLanguageModel
 from schema_utils import load_schema_dict, build_sft_prompt
-from config_utils import load_config
 
 # 1. Setup Logging
 logging.basicConfig(
@@ -49,15 +48,11 @@ def run_inference(
     model, tokenizer = load_model_and_tokenizer(model_path)
     
     logger.info(f"Loading schemas from {tables_path}")
-    schemas = load_schema_dict(tables_path) if tables_path else {}
+    schemas = load_schema_dict(tables_path)
     
     logger.info(f"Loading data from {data_path}")
-    if data_path.endswith(".jsonl"):
-        with open(data_path, "r", encoding="utf-8") as f:
-            data = [json.loads(line) for line in f]
-    else:
-        with open(data_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
+    with open(data_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
 
     results = []
     logger.info(f"Processing {len(data)} items...")
@@ -71,14 +66,12 @@ def run_inference(
             logger.warning("Skipping item: missing db_id or question.")
             continue
 
-        # 2. Inject Schema if available
-        if db_id and db_id in schemas:
+        # 2. Inject Schema (Crucial for Qwen/Spider)
+        if db_id in schemas:
             # Use the centralized prompt builder to match training format
             instruction = build_sft_prompt(db_id, schemas[db_id], question)
-        elif "instruction" in item:
-            instruction = item["instruction"]
         else:
-            logger.warning(f"No schema or instruction found for item. Using raw question.")
+            logger.warning(f"Schema for {db_id} not found. Using raw question.")
             instruction = f"Question: {question}\nSQL:"
 
         # 3. Format Prompt
@@ -124,39 +117,23 @@ def run_inference(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Unsloth Inference Script")
-    parser.add_argument("--config", type=str, default="config.yaml", help="Path to YAML config")
-    parser.add_argument("--model_path", type=str)
-    parser.add_argument("--data_path", type=str, help="Path to input JSON/JSONL file")
-    parser.add_argument("--tables_path", type=str, default=None, help="Path to tables.json (optional)")
-    parser.add_argument("--output_path", type=str, help="Path to save JSON results")
-    parser.add_argument("--system_prompt", type=str)
-    parser.add_argument("--max_tokens", type=int)
+    parser.add_argument("--model_path", type=str, required=True)
+    parser.add_argument("--data_path", type=str, required=True, help="Path to dev.json")
+    parser.add_argument("--tables_path", type=str, required=True, help="Path to tables.json")
+    parser.add_argument("--output_path", type=str, default="inference_results.json")
+    parser.add_argument("--system_prompt", type=str, default="You are a Text-to-SQL expert.")
+    parser.add_argument("--max_tokens", type=int, default=128)
     
     args = parser.parse_args()
     
-    # Load config and merge
-    config = load_config(args.config)
-    inf_config = config.get("inference", {})
-    
-    model_path = args.model_path or inf_config.get("model_path") or config.get("model_output")
-    data_path = args.data_path or inf_config.get("data_path")
-    tables_path = args.tables_path or inf_config.get("tables_path")
-    output_path = args.output_path or inf_config.get("output_path") or "inference_results.json"
-    system_prompt = args.system_prompt or inf_config.get("system_prompt") or config.get("system_prompt") or "You are a Text-to-SQL expert."
-    max_tokens = args.max_tokens or inf_config.get("max_tokens") or 128
-
-    if not model_path or not data_path:
-        logger.error("model_path and data_path must be specified in CLI or config.")
-        sys.exit(1)
-
     try:
         run_inference(
-            model_path=model_path,
-            data_path=data_path,
-            tables_path=tables_path,
-            output_path=output_path,
-            system_prompt=system_prompt,
-            max_new_tokens=max_tokens
+            model_path=args.model_path,
+            data_path=args.data_path,
+            tables_path=args.tables_path,
+            output_path=args.output_path,
+            system_prompt=args.system_prompt,
+            max_new_tokens=args.max_tokens
         )
     except Exception as e:
         logger.critical(f"Inference crashed: {str(e)}")

@@ -6,7 +6,6 @@ from typing import Optional, Dict, Any
 from unsloth import FastLanguageModel
 from datasets import load_dataset
 from trl import SFTTrainer, SFTConfig
-from config_utils import load_config
 
 # Setup logging
 logging.basicConfig(
@@ -68,32 +67,17 @@ def train_model(
 
     dataset = load_dataset("json", data_files=data_path, split="train")
 
-    from unsloth import is_hf_format, get_chat_template
+    def format_example(example: Dict[str, str]) -> Dict[str, str]:
+        """Formats each example into the ChatML format."""
+        return {
+            "text": (
+                f"<|im_start|>system\n{system_prompt}<|im_end|>\n"
+                f"<|im_start|>user\n{example['instruction']}<|im_end|>\n"
+                f"<|im_start|>assistant\n{example['output']}<|im_end|>"
+            )
+        }
 
-    tokenizer = get_chat_template(
-        tokenizer,
-        chat_template = "chatml", # or another template
-        mapping = {"role" : "from", "content" : "value", "user" : "human", "assistant" : "gpt"}, # standard mapping
-    )
-
-    def format_example(example: Dict[str, Any]) -> Dict[str, str]:
-        """Formats each example using the model's chat template."""
-        if "messages" in example:
-            # Standard OpenAI/HF format
-            return {"text": tokenizer.apply_chat_template(example["messages"], tokenize=False, add_generation_prompt=False)}
-        elif "instruction" in example and "output" in example:
-            # Alpaca style
-            messages = [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": example.get("instruction", "")},
-                {"role": "assistant", "content": example.get("output", "")}
-            ]
-            return {"text": tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)}
-        else:
-            logger.warning(f"Unrecognized example format: {example.keys()}")
-            return {"text": ""}
-
-    logger.info("Applying chat template formatting to dataset...")
+    logger.info("Applying ChatML formatting to dataset...")
     dataset = dataset.map(format_example)
 
     # 4. Configure Trainer
@@ -146,52 +130,26 @@ if __name__ == "__main__":
     sm_data_dir = os.environ.get("SM_CHANNEL_TRAINING")
     sm_model_dir = os.environ.get("SM_MODEL_DIR")
     
-    default_data = os.path.join(sm_data_dir, "train_sft.jsonl") if sm_data_dir else "data/train_sft.jsonl"
+    default_data = os.path.join(sm_data_dir, "train_sft.jsonl") if sm_data_dir else "data/spider_sft/train_sft.jsonl"
     default_output = sm_model_dir if sm_model_dir else "outputs/qwen-text2sql"
 
-    parser.add_argument("--config", type=str, default="config.yaml", help="Path to YAML config")
-    parser.add_argument("--data_path", type=str, help="Path to training data")
-    parser.add_argument("--output_dir", type=str, help="Directory to save the fine-tuned model")
-    parser.add_argument("--model_name", type=str)
-    parser.add_argument("--system_prompt", type=str)
-    parser.add_argument("--epochs", type=int)
-    parser.add_argument("--batch_size", type=int)
-    parser.add_argument("--grad_accum", type=int)
-    parser.add_argument("--learning_rate", type=float)
-    parser.add_argument("--max_seq_length", type=int)
+    parser.add_argument("--data_path", type=str, default=default_data, help="Path to training data")
+    parser.add_argument("--output_dir", type=str, default=default_output, help="Directory to save the fine-tuned model")
+    parser.add_argument("--model_name", type=str, default="Qwen/Qwen2.5-1.5B-Instruct")
+    parser.add_argument("--system_prompt", type=str, default="You are a Text-to-SQL expert.")
+    parser.add_argument("--epochs", type=int, default=2)
+    parser.add_argument("--batch_size", type=int, default=2)
     
     args = parser.parse_args()
     
-    # Load config and merge with args
-    config = load_config(args.config)
-    
-    # Flatten config for easier merging if nested
-    flat_config = config.copy()
-    if "training" in config:
-        flat_config.update(config["training"])
-    
-    # Set defaults if not provided in config or CLI
-    data_path = args.data_path or flat_config.get("data_path") or default_data
-    output_dir = args.output_dir or flat_config.get("model_output") or default_output
-    model_name = args.model_name or flat_config.get("model_name") or "Qwen/Qwen2.5-1.5B-Instruct"
-    system_prompt = args.system_prompt or flat_config.get("system_prompt") or "You are a Text-to-SQL expert."
-    epochs = args.epochs or flat_config.get("epochs") or 2
-    batch_size = args.batch_size or flat_config.get("batch_size") or 2
-    grad_accum = args.grad_accum or flat_config.get("grad_accum") or 8
-    learning_rate = args.learning_rate or flat_config.get("learning_rate") or 2e-4
-    max_seq_length = args.max_seq_length or flat_config.get("max_seq_length") or 2048
-
     try:
         train_model(
-            data_path=data_path,
-            output_dir=output_dir,
-            model_name=model_name,
-            system_prompt=system_prompt,
-            epochs=epochs,
-            batch_size=batch_size,
-            grad_accum=grad_accum,
-            learning_rate=learning_rate,
-            max_seq_length=max_seq_length
+            data_path=args.data_path,
+            output_dir=args.output_dir,
+            model_name=args.model_name,
+            system_prompt=args.system_prompt,
+            epochs=args.epochs,
+            batch_size=args.batch_size
         )
     except Exception as e:
         logger.critical(f"Training pipeline crashed: {str(e)}")

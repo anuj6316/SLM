@@ -1,0 +1,23 @@
+# General Settings
+data_path: "data/train_sft.jsonl"
+model_output: "outputs/qwen-text2sql"
+eval_output: "evaluation_results"
+system_prompt: "You are a Text-to-SQL expert."
+
+# Training Settings
+training:
+  model_name: "Qwen/Qwen2.5-1.5B-Instruct"
+  epochs: 2
+  batch_size: 2
+  grad_accum: 8
+  learning_rate: 0.0002
+  max_seq_length: 2048
+
+# Evaluation Settings
+evaluation:
+  tables_path: null
+  db_dir: null
+
+# Inference Settings
+inference:
+  max_tokens: 128

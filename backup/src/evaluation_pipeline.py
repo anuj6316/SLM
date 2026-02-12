@@ -8,7 +8,6 @@ from typing import Dict, List, Any, Optional
 from tqdm import tqdm
 from unsloth import FastLanguageModel
 from schema_utils import load_schema_dict, build_sft_prompt
-from config_utils import load_config
 
 # Setup logging
 logging.basicConfig(
@@ -73,16 +72,9 @@ def evaluate_model(
 
     # 2. Load Data & Schemas
     try:
-        schemas = load_schema_dict(tables_path) if tables_path else None
-        
-        # Support both JSON and JSONL
-        if data_path.endswith(".jsonl"):
-            with open(data_path, "r", encoding="utf-8") as f:
-                data = [json.loads(line) for line in f]
-        else:
-            with open(data_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                
+        schemas = load_schema_dict(tables_path)
+        with open(data_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
         logger.info(f"Loaded {len(data)} evaluation examples.")
     except Exception as e:
         logger.error(f"Data loading failed: {str(e)}")
@@ -105,14 +97,8 @@ def evaluate_model(
             # Save Gold entry
             f_gold.write(f"{gold_sql}\t{db_id}\n")
             
-            # Prepare prompt
-            if schemas and db_id in schemas:
-                instruction = build_sft_prompt(db_id, schemas[db_id], question)
-            elif "instruction" in ex:
-                instruction = ex["instruction"]
-            else:
-                instruction = f"Question: {question}"
-
+            # Prepare prompt using centralized logic
+            instruction = build_sft_prompt(db_id, schemas[db_id], question)
             prompt = (
                 f"<|im_start|>system\nYou are a Text-to-SQL expert.<|im_end|>\n"
                 f"<|im_start|>user\n{instruction}<|im_end|>\n"
@@ -146,44 +132,26 @@ def evaluate_model(
             
             f_pred.write(f"{pred_sql}\n")
 
-    # 4. Final Evaluation (Only if Spider files are present)
-    if tables_path and db_dir:
-        run_spider_evaluation(spider_eval_path, gold_path, pred_path, db_dir, tables_path)
-    else:
-        logger.info("Skipping official Spider evaluation (missing tables/db). Results saved to pred.txt")
+    # 4. Final Evaluation
+    run_spider_evaluation(spider_eval_path, gold_path, pred_path, db_dir, tables_path)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Evaluation Pipeline")
-    parser.add_argument("--config", type=str, default="config.yaml", help="Path to YAML config")
-    parser.add_argument("--model_path", type=str, help="Path to fine-tuned model")
-    parser.add_argument("--data_path", type=str, help="Path to evaluation JSONL file")
-    parser.add_argument("--tables_path", type=str, default=None, help="Path to tables.json (optional for Spider)")
-    parser.add_argument("--db_dir", type=str, default=None, help="Path to database directory (optional for Spider)")
-    parser.add_argument("--output_dir", type=str, help="Path to save evaluation results")
+    parser = argparse.ArgumentParser(description="Spider Evaluation Pipeline")
+    parser.add_argument("--model_path", type=str, required=True, help="Path to fine-tuned model")
+    parser.add_argument("--data_path", type=str, default="data/spider/dev.json")
+    parser.add_argument("--tables_path", type=str, default="data/spider/tables.json")
+    parser.add_argument("--db_dir", type=str, default="data/spider/database")
+    parser.add_argument("--output_dir", type=str, default="evaluation_results")
     
     args = parser.parse_args()
     
-    # Load config and merge
-    config = load_config(args.config)
-    eval_config = config.get("evaluation", {})
-    
-    model_path = args.model_path or eval_config.get("model_path") or config.get("model_output")
-    data_path = args.data_path or eval_config.get("data_path") or config.get("data_path")
-    tables_path = args.tables_path or eval_config.get("tables_path")
-    db_dir = args.db_dir or eval_config.get("db_dir")
-    output_dir = args.output_dir or eval_config.get("output_dir") or config.get("eval_output") or "evaluation_results"
-
-    if not model_path or not data_path:
-        logger.error("model_path and data_path must be specified in CLI or config.")
-        sys.exit(1)
-
     try:
         evaluate_model(
-            model_path=model_path,
-            data_path=data_path,
-            tables_path=tables_path,
-            db_dir=db_dir,
-            output_dir=output_dir
+            model_path=args.model_path,
+            data_path=args.data_path,
+            tables_path=args.tables_path,
+            db_dir=args.db_dir,
+            output_dir=args.output_dir
         )
     except Exception as e:
         logger.critical(f"Evaluation pipeline crashed: {str(e)}")

@@ -4,8 +4,6 @@ import sys
 import os
 import logging
 from typing import List, Optional
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "src")))
-from config_utils import load_config
 
 # Setup Logging
 logging.basicConfig(
@@ -17,7 +15,8 @@ logger = logging.getLogger("Orchestrator")
 
 # Default Constants
 DEFAULTS = {
-    "DATA_PATH": "data/train_sft.jsonl",
+    "SPIDER_DIR": "data/spider",
+    "DATA_OUTPUT": "data/spider_sft/train_sft.jsonl",
     "MODEL_OUTPUT": "outputs/qwen-text2sql",
     "EVAL_OUTPUT": "evaluation_results",
     "BASE_MODEL": "Qwen/Qwen2.5-1.5B-Instruct",
@@ -57,24 +56,24 @@ def run_command(command: List[str], description: str):
         logger.critical(f"Failed to execute {description}: {str(e)}")
         sys.exit(1)
 
-# Stage: Prepare is removed as we now use JSONL directly
+def run_prepare(args):
+    cmd = [
+        sys.executable, "src/build_jsonl_sft.py",
+        "--spider_dir", args.spider_dir,
+        "--output_path", args.data_output
+    ]
+    run_command(cmd, "Data Preparation")
 
-    # Load config for additional parameters
-    config = load_config(args.config)
-    train_config = config.get("training", {})
-    
+def run_train(args):
     cmd = [
         sys.executable, "src/train.py",
-        "--config", args.config, # Pass config to sub-script
-        "--data_path", args.data_path,
+        "--data_path", args.data_output,
         "--output_dir", args.model_output,
         "--epochs", str(args.epochs),
         "--system_prompt", args.system_prompt
     ]
     if args.base_model:
         cmd.extend(["--model_name", args.base_model])
-    elif "model_name" in train_config:
-        cmd.extend(["--model_name", train_config["model_name"]])
         
     run_command(cmd, "Model Training")
 
@@ -85,9 +84,10 @@ def run_evaluate(args):
 
     cmd = [
         sys.executable, "src/evaluation_pipeline.py",
-        "--config", args.config, # Pass config to sub-script
         "--model_path", args.model_output,
-        "--data_path", args.data_path,
+        "--data_path", os.path.join(args.spider_dir, "dev.json"),
+        "--tables_path", os.path.join(args.spider_dir, "tables.json"),
+        "--db_dir", os.path.join(args.spider_dir, "database"),
         "--output_dir", args.eval_output
     ]
     run_command(cmd, "Model Evaluation")
@@ -99,9 +99,9 @@ def run_inference(args):
 
     cmd = [
         sys.executable, "src/inference.py",
-        "--config", args.config, # Pass config to sub-script
         "--model_path", args.model_output,
         "--data_path", args.inference_data,
+        "--tables_path", os.path.join(args.spider_dir, "tables.json"),
         "--output_path", args.inference_output,
         "--system_prompt", args.system_prompt
     ]
@@ -109,52 +109,41 @@ def run_inference(args):
 
 def main():
     parser = argparse.ArgumentParser(description="Text-to-SQL Pipeline Orchestrator")
-    parser.add_argument("--config", default="config.yaml", help="Path to YAML configuration file")
 
-    # Shared parent parser for common arguments
-    parent_parser = argparse.ArgumentParser(add_help=False)
-    parent_parser.add_argument("--data_path", default=DEFAULTS["DATA_PATH"], help="Path to SFT jsonl file")
-    parent_parser.add_argument("--model_output", default=DEFAULTS["MODEL_OUTPUT"], help="Path to save/load trained model")
-    parent_parser.add_argument("--eval_output", default=DEFAULTS["EVAL_OUTPUT"], help="Path to save evaluation results")
-    parent_parser.add_argument("--system_prompt", default=DEFAULTS["SYSTEM_PROMPT"], help="System prompt for the chat template")
+    # Global arguments
+    parser.add_argument("--spider_dir", default=DEFAULTS["SPIDER_DIR"], help="Path to Spider dataset root")
+    parser.add_argument("--data_output", default=DEFAULTS["DATA_OUTPUT"], help="Path for SFT jsonl file")
+    parser.add_argument("--model_output", default=DEFAULTS["MODEL_OUTPUT"], help="Path to save/load trained model")
+    parser.add_argument("--eval_output", default=DEFAULTS["EVAL_OUTPUT"], help="Path to save evaluation results")
+    parser.add_argument("--system_prompt", default=DEFAULTS["SYSTEM_PROMPT"], help="System prompt for the chat template")
 
     subparsers = parser.add_subparsers(dest="stage", help="Pipeline Stage")
 
-    # Stage: Train
-    parser_train = subparsers.add_parser("train", help="Fine-tune the model", parents=[parent_parser])
-    parser_train.add_argument("--epochs", type=int, default=2)
-    parser_train.add_argument("--base_model", type=str, default=DEFAULTS["BASE_MODEL"])
+    # Stage: Prepare
+    subparsers.add_parser("prepare", help="Prepare SFT dataset")
 
+    _extracted_from_main_17(subparsers, "train", "Fine-tune the model")
     # Stage: Evaluate
-    subparsers.add_parser("evaluate", help="Evaluate the model", parents=[parent_parser])
+    subparsers.add_parser("evaluate", help="Evaluate the model on Dev set")
 
     # Stage: Inference
-    parser_inf = subparsers.add_parser("inference", help="Run batch inference", parents=[parent_parser])
+    parser_inf = subparsers.add_parser("inference", help="Run batch inference")
     parser_inf.add_argument("--inference_data", required=True, help="Path to input JSON/JSONL file")
     parser_inf.add_argument("--inference_output", default="results.json", help="Path to save JSON results")
 
-    # Stage: All
-    parser_all = subparsers.add_parser("all", help="Run complete pipeline", parents=[parent_parser])
-    parser_all.add_argument("--epochs", type=int, default=2)
-    parser_all.add_argument("--base_model", type=str, default=DEFAULTS["BASE_MODEL"])
-
+    _extracted_from_main_17(subparsers, "all", "Run complete pipeline")
     args = parser.parse_args()
-    
-    # Load config and override defaults if not provided in CLI
-    config = load_config(args.config)
-    
-    # Update args with config values if args are still at their default values
-    # This is a bit tricky with argparse, but we can check if the value in config exists
-    # and if the user didn't provide a value on CLI.
-    # For simplicity, we'll merge them in the run_* functions.
-    
-    if args.stage == "train":
+
+    if args.stage == "prepare":
+        run_prepare(args)
+    elif args.stage == "train":
         run_train(args)
     elif args.stage == "evaluate":
         run_evaluate(args)
     elif args.stage == "inference":
         run_inference(args)
     elif args.stage == "all":
+        run_prepare(args)
         run_train(args)
         run_evaluate(args)
     else:
