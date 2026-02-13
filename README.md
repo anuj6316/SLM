@@ -1,119 +1,100 @@
-# Text-to-SQL Fine-Tuning Pipeline (Unsloth + SageMaker)
+# 🚀 SLM Preprocessing & SFT Pipeline
 
-This repository contains a modular, production-grade pipeline for fine-tuning Large Language Models (LLMs) on Text-to-SQL tasks. It is optimized for the **Spider** dataset but is flexible enough to handle any instruction-based dataset.
+A high-performance, streaming-first pipeline designed for fine-tuning Small Language Models (SLMs) like Qwen, Llama, and Mistral. This toolkit handles everything from raw data ingestion to generating a fine-tuned model ready for deployment.
 
-The project supports two modes of operation:
-1.  **Local Development:** Run everything on your own machine (requires GPU).
-2.  **Cloud Training:** Seamlessly scale training to AWS SageMaker Spot Instances.
+---
 
-## 📁 Project Structure
+## 🏗️ Architecture Overview
 
-```text
-SLM/
-├── main.py                 # CLI Orchestrator (The main entry point)
-├── run_sagemaker.py        # Script to launch AWS Training Jobs
-├── src/
-│   ├── train.py            # Generic SFT training script (Unsloth)
-│   ├── inference.py        # Robust inference with Schema Injection
-│   ├── schema_utils.py     # Database schema handling logic
-│   ├── requirements.txt    # Dependencies for the Cloud Container
-│   └── ...
-└── data/                   # Your datasets (Spider, etc.)
+The project is divided into two main phases:
+1.  **Preprocessing Phase**: Standardizes raw data (CSV, Hugging Face) into a clean SFT format.
+2.  **SFT Module**: Fine-tunes the model using **Unsloth** (2x faster, 70% less VRAM).
+
+---
+
+## 🛠️ Phase 1: Preprocessing
+
+The preprocessing module uses a **Streaming-first** approach, meaning it can handle datasets larger than your RAM by processing one row at a time.
+
+### 1. Supported Loaders
+- **CSV Loader**: Fast, native processing for local `.csv` files.
+- **HF Loader**: Seamless integration with the Hugging Face `datasets` library (Local or Remote).
+
+### 2. The SFT Processor
+The `SFTProcessor` maps your raw columns to the standard format required for training:
+- `instruction`: The task or question.
+- `input`: The context (supports combining multiple columns into one string).
+- `output`: The desired response.
+
+### 3. Usage
+Configure your dataset in `config.yaml` and run:
+```bash
+uv run src/preprocess.py
 ```
 
 ---
 
-## 🚀 Quick Start (Local)
+## 🏋️ Phase 2: Supervised Fine-Tuning (SFT)
 
-### 1. Setup Environment
+The training module leverages **Unsloth** and **PEFT (LoRA)** to make training efficient and accessible on consumer hardware.
+
+### Key Features
+- **4-bit Quantization**: Train large models on smaller GPUs.
+- **ChatML Template**: Automatically formats your instructions into a conversational style.
+- **LoRA Adapters**: Only trains a fraction of the model parameters, saving time and memory.
+
+### Usage
+Ensure your preprocessed data is ready, then run:
 ```bash
-# Install dependencies locally
-pip install -r src/requirements.txt
-pip install sagemaker boto3  # If you plan to use AWS
-```
-
-### 2. The Orchestrator (`main.py`)
-All local tasks are handled by `main.py`.
-
-**Step A: Prepare Data**
-Converts the raw Spider dataset into a schema-augmented `.jsonl` format.
-```bash
-python main.py prepare
-```
-
-**Step B: Train the Model**
-Fine-tunes Qwen-2.5-1.5B (or any model) on the prepared data.
-```bash
-# Default: 2 epochs
-python main.py train --epochs 2 --base_model "Qwen/Qwen2.5-1.5B-Instruct"
-```
-
-**Step C: Run Inference**
-Generates SQL queries for a test set (e.g., `dev.json`).
-```bash
-python main.py inference --inference_data data/spider/dev.json --inference_output my_results.json
-```
-
-**Step D: Evaluate**
-Runs the official Spider evaluation script to get Execution Accuracy.
-```bash
-python main.py evaluate
+uv run src/train.py
 ```
 
 ---
 
-## ☁️ Running on AWS SageMaker
+## ⚙️ Configuration (`config.yaml`)
 
-This project is "Cloud-Ready." You can move your training to a powerful GPU in the cloud without changing your code.
+The entire pipeline is controlled by a single configuration file. Here is how to set up your data mapping:
 
-### Prerequisites
-1.  **AWS Credentials:** Configure your local machine with `aws configure`.
-2.  **S3 Bucket:** Upload your `data/spider_sft` folder to an S3 bucket (e.g., `s3://my-bucket/data/`).
-3.  **IAM Role:** Ensure you have an IAM Role ARN with `AmazonSageMakerFullAccess` and `AmazonS3FullAccess`.
+```yaml
+data:
+  source_type: "csv"
+  path: "data/my_data.csv"
+  columns:
+    instruction: "User_Question"     # Map single column
+    input: ["Context", "Schema"]     # Combine multiple columns
+    output: "SQL_Query"              # Map target column
 
-### How to Launch
-1.  Open `run_sagemaker.py`.
-2.  Update the **Configuration** section:
-    ```python
-    S3_BUCKET = "your-bucket-name"
-    ROLE_ARN = "arn:aws:iam::..."
-    ```
-3.  Run the script:
-    ```bash
-    python run_sagemaker.py
-    ```
-
-### Why SageMaker?
-*   **Spot Instances:** This script is configured to use Spot Instances (`use_spot_instances=True`), saving you up to 70% on compute costs.
-*   **Zero Setup:** SageMaker automatically builds the environment using `src/requirements.txt`.
-*   **Auto-Termination:** The GPU machine shuts down immediately after training finishes.
-
----
-
-## 🛠️ Advanced Customization
-
-### Using Custom Datasets
-You can use this pipeline for **non-SQL** tasks too.
-1.  Create a `.jsonl` file with `{"instruction": "...", "output": "..."}` format.
-2.  Upload it to S3.
-3.  Point `run_sagemaker.py` to that S3 location.
-4.  The `train.py` script will automatically detect and train on it.
-
-### Changing the Base Model
-To fine-tune Llama-3, Mistral, or others, simply change the argument:
-```bash
-python main.py train --base_model "unsloth/llama-3-8b-bnb-4bit"
+training:
+  model_name: "Qwen/Qwen2.5-1.5B-Instruct"
+  epochs: 3
+  batch_size: 2
+  learning_rate: 2e-4
 ```
 
 ---
 
-## 🐞 Troubleshooting
+## 🧪 Quality Assurance (QA)
 
-**"ModuleNotFoundError: No module named 'datasets'" on SageMaker**
-*   Ensure `src/requirements.txt` exists and contains `datasets`. SageMaker installs from this file *inside* the container.
+This codebase has been audited for edge cases. It includes:
+- **Lenient Mode**: Skips malformed rows without stopping the pipeline.
+- **Strict Mode**: Optional toggle to fail fast if data quality is a priority.
+- **Detailed Logging**: Change `level: DEBUG` in `preprocess.py` for a row-by-row execution trace.
 
-**Empty SQL Output ("SQL:")**
-*   This usually means the model didn't receive the Database Schema in the prompt. Ensure you are using the correct `inference.py` flow which uses `schema_utils.py`.
+---
 
-**SageMaker Job Fails Immediately**
-*   Check CloudWatch logs. Common issue: The IAM Role doesn't have permission to read the S3 bucket.
+## 📂 Project Structure
+
+- `src/preprocessing/loaders`: Logic for fetching data.
+- `src/preprocessing/processors`: Logic for mapping and cleaning.
+- `src/preprocessing/formatters`: Logic for saving (JSONL).
+- `src/train.py`: The Unsloth training engine.
+- `config.yaml`: The central control hub.
+
+---
+
+## 🚀 Quick Start (Titanic Example)
+1. Update `config.yaml` to point to `data/Titanic-Dataset.csv`.
+2. Map `Name` -> `instruction`, `["Sex", "Age"]` -> `input`, and `Survived` -> `output`.
+3. Run `uv run src/preprocess.py`.
+4. Check `data/train_sft.jsonl` for the results.
+5. Run `uv run src/train.py` to start training!

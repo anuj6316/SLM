@@ -57,8 +57,14 @@ def run_command(command: List[str], description: str):
         logger.critical(f"Failed to execute {description}: {str(e)}")
         sys.exit(1)
 
-# Stage: Prepare is removed as we now use JSONL directly
+def run_preprocess(args):
+    cmd = [
+        sys.executable, "src/preprocess.py",
+        "--config", args.config
+    ]
+    run_command(cmd, "Data Preprocessing")
 
+def run_train(args):
     # Load config for additional parameters
     config = load_config(args.config)
     train_config = config.get("training", {})
@@ -120,6 +126,9 @@ def main():
 
     subparsers = parser.add_subparsers(dest="stage", help="Pipeline Stage")
 
+    # Stage: Preprocess
+    subparsers.add_parser("preprocess", help="Run data loading and preprocessing", parents=[parent_parser])
+
     # Stage: Train
     parser_train = subparsers.add_parser("train", help="Fine-tune the model", parents=[parent_parser])
     parser_train.add_argument("--epochs", type=int, default=2)
@@ -148,13 +157,16 @@ def main():
     # and if the user didn't provide a value on CLI.
     # For simplicity, we'll merge them in the run_* functions.
     
-    if args.stage == "train":
+    if args.stage == "preprocess":
+        run_preprocess(args)
+    elif args.stage == "train":
         run_train(args)
     elif args.stage == "evaluate":
         run_evaluate(args)
     elif args.stage == "inference":
         run_inference(args)
     elif args.stage == "all":
+        run_preprocess(args)
         run_train(args)
         run_evaluate(args)
     else:

@@ -14,6 +14,14 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+class ConfigValidationError(Exception):
+    """Raised when loader configuration is invalid."""
+    pass
+
+class InvalidRowError(Exception):
+    """Raised when a data row fails validation in strict mode."""
+    pass
+
 class LoaderType(Enum):
     """Enum for supported loader types."""
     CSV = "csv"
@@ -67,16 +75,20 @@ class BaseLoader(ABC):
         Args:
             config: Dictionary containing loader configuration
         """
+        logger.debug(f"Initializing {self.__class__.__name__} with config: {config}")
         self.config = config
         self._columns: List[str] = []
         self._row_count: Optional[int] = None
         self._is_shuffled: bool = False
         
         # Validate core config
+        logger.debug("Validating core configuration...")
         self._validate_core_config()
         
         # Apply loader-specific validation
+        logger.debug(f"Calling loader-specific validation for {self.__class__.__name__}")
         self._validate_loader_config(self.dataset_name, self.split)
+        logger.debug(f"{self.__class__.__name__} initialization complete.")
     
     # ┌─────────────────────────────────────────────────────────────────┐
     # │ CONFIGURATION VALIDATION                                         │
@@ -88,15 +100,18 @@ class BaseLoader(ABC):
         
         for field in required_fields:
             if field not in self.config:
+                logger.error(f"Validation failed: Missing required field '{field}'")
                 raise ConfigValidationError(f"Missing required field: {field}")
         
         # Validate source_type
         valid_types = [t.value for t in LoaderType]
         if self.config["source_type"] not in valid_types:
+            logger.error(f"Validation failed: Invalid source_type '{self.config['source_type']}'")
             raise ConfigValidationError(
                 f"Invalid source_type: {self.config['source_type']}. "
                 f"Must be one of: {valid_types}"
             )
+        logger.debug("Core configuration validation successful.")
     
     @abstractmethod
     def _validate_loader_config(self, dataset_name: str, split: str) -> None:
@@ -430,7 +445,9 @@ class LoaderRegistry:
             Instantiated loader object
         """
         loader_type = config.get("source_type")
+        logger.debug(f"Requesting loader creation for type: {loader_type}")
         loader_class = cls.get_loader_class(loader_type)
+        logger.debug(f"Found loader class: {loader_class.__name__}")
         return loader_class(config)
 
 
@@ -447,3 +464,29 @@ def create_loader(config: Dict[str, Any]) -> BaseLoader:
     loader_type = config.get("source_type")
     loader_class = LoaderRegistry.create_loader(config)
     return loader_class
+
+class BaseProcessor(ABC):
+    """
+    Abstract base class for data processors.
+    Handles mapping, filtering, and cleaning.
+    """
+    def __init__(self, config: Dict[str, Any]):
+        self.config = config
+
+    @abstractmethod
+    def process(self, data_stream: Generator[Dict[str, Any], None, None]) -> Generator[Dict[str, Any], None, None]:
+        """Process a stream of data."""
+        pass
+
+class BaseFormatter(ABC):
+    """
+    Abstract base class for data formatters.
+    Handles conversion to training formats (ChatML, JSONL, etc).
+    """
+    def __init__(self, config: Dict[str, Any]):
+        self.config = config
+
+    @abstractmethod
+    def format(self, data_stream: Generator[Dict[str, Any], None, None], output_path: str) -> None:
+        """Format and save the data stream."""
+        pass

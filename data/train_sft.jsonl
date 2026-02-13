@@ -1,0 +1,891 @@
+{"instruction": "Braund, Mr. Owen Harris", "input": "Sex: male | Age: 22 | Pclass: 3", "output": "0"}
+{"instruction": "Cumings, Mrs. John Bradley (Florence Briggs Thayer)", "input": "Sex: female | Age: 38 | Pclass: 1", "output": "1"}
+{"instruction": "Heikkinen, Miss. Laina", "input": "Sex: female | Age: 26 | Pclass: 3", "output": "1"}
+{"instruction": "Futrelle, Mrs. Jacques Heath (Lily May Peel)", "input": "Sex: female | Age: 35 | Pclass: 1", "output": "1"}
+{"instruction": "Allen, Mr. William Henry", "input": "Sex: male | Age: 35 | Pclass: 3", "output": "0"}
+{"instruction": "Moran, Mr. James", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "McCarthy, Mr. Timothy J", "input": "Sex: male | Age: 54 | Pclass: 1", "output": "0"}
+{"instruction": "Palsson, Master. Gosta Leonard", "input": "Sex: male | Age: 2 | Pclass: 3", "output": "0"}
+{"instruction": "Johnson, Mrs. Oscar W (Elisabeth Vilhelmina Berg)", "input": "Sex: female | Age: 27 | Pclass: 3", "output": "1"}
+{"instruction": "Nasser, Mrs. Nicholas (Adele Achem)", "input": "Sex: female | Age: 14 | Pclass: 2", "output": "1"}
+{"instruction": "Sandstrom, Miss. Marguerite Rut", "input": "Sex: female | Age: 4 | Pclass: 3", "output": "1"}
+{"instruction": "Bonnell, Miss. Elizabeth", "input": "Sex: female | Age: 58 | Pclass: 1", "output": "1"}
+{"instruction": "Saundercock, Mr. William Henry", "input": "Sex: male | Age: 20 | Pclass: 3", "output": "0"}
+{"instruction": "Andersson, Mr. Anders Johan", "input": "Sex: male | Age: 39 | Pclass: 3", "output": "0"}
+{"instruction": "Vestrom, Miss. Hulda Amanda Adolfina", "input": "Sex: female | Age: 14 | Pclass: 3", "output": "0"}
+{"instruction": "Hewlett, Mrs. (Mary D Kingcome) ", "input": "Sex: female | Age: 55 | Pclass: 2", "output": "1"}
+{"instruction": "Rice, Master. Eugene", "input": "Sex: male | Age: 2 | Pclass: 3", "output": "0"}
+{"instruction": "Williams, Mr. Charles Eugene", "input": "Sex: male | Age:  | Pclass: 2", "output": "1"}
+{"instruction": "Vander Planke, Mrs. Julius (Emelia Maria Vandemoortele)", "input": "Sex: female | Age: 31 | Pclass: 3", "output": "0"}
+{"instruction": "Masselmani, Mrs. Fatima", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Fynney, Mr. Joseph J", "input": "Sex: male | Age: 35 | Pclass: 2", "output": "0"}
+{"instruction": "Beesley, Mr. Lawrence", "input": "Sex: male | Age: 34 | Pclass: 2", "output": "1"}
+{"instruction": "McGowan, Miss. Anna \"Annie\"", "input": "Sex: female | Age: 15 | Pclass: 3", "output": "1"}
+{"instruction": "Sloper, Mr. William Thompson", "input": "Sex: male | Age: 28 | Pclass: 1", "output": "1"}
+{"instruction": "Palsson, Miss. Torborg Danira", "input": "Sex: female | Age: 8 | Pclass: 3", "output": "0"}
+{"instruction": "Asplund, Mrs. Carl Oscar (Selma Augusta Emilia Johansson)", "input": "Sex: female | Age: 38 | Pclass: 3", "output": "1"}
+{"instruction": "Emir, Mr. Farred Chehab", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Fortune, Mr. Charles Alexander", "input": "Sex: male | Age: 19 | Pclass: 1", "output": "0"}
+{"instruction": "O'Dwyer, Miss. Ellen \"Nellie\"", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Todoroff, Mr. Lalio", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Uruchurtu, Don. Manuel E", "input": "Sex: male | Age: 40 | Pclass: 1", "output": "0"}
+{"instruction": "Spencer, Mrs. William Augustus (Marie Eugenie)", "input": "Sex: female | Age:  | Pclass: 1", "output": "1"}
+{"instruction": "Glynn, Miss. Mary Agatha", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Wheadon, Mr. Edward H", "input": "Sex: male | Age: 66 | Pclass: 2", "output": "0"}
+{"instruction": "Meyer, Mr. Edgar Joseph", "input": "Sex: male | Age: 28 | Pclass: 1", "output": "0"}
+{"instruction": "Holverson, Mr. Alexander Oskar", "input": "Sex: male | Age: 42 | Pclass: 1", "output": "0"}
+{"instruction": "Mamee, Mr. Hanna", "input": "Sex: male | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Cann, Mr. Ernest Charles", "input": "Sex: male | Age: 21 | Pclass: 3", "output": "0"}
+{"instruction": "Vander Planke, Miss. Augusta Maria", "input": "Sex: female | Age: 18 | Pclass: 3", "output": "0"}
+{"instruction": "Nicola-Yarred, Miss. Jamila", "input": "Sex: female | Age: 14 | Pclass: 3", "output": "1"}
+{"instruction": "Ahlin, Mrs. Johan (Johanna Persdotter Larsson)", "input": "Sex: female | Age: 40 | Pclass: 3", "output": "0"}
+{"instruction": "Turpin, Mrs. William John Robert (Dorothy Ann Wonnacott)", "input": "Sex: female | Age: 27 | Pclass: 2", "output": "0"}
+{"instruction": "Kraeff, Mr. Theodor", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Laroche, Miss. Simonne Marie Anne Andree", "input": "Sex: female | Age: 3 | Pclass: 2", "output": "1"}
+{"instruction": "Devaney, Miss. Margaret Delia", "input": "Sex: female | Age: 19 | Pclass: 3", "output": "1"}
+{"instruction": "Rogers, Mr. William John", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Lennon, Mr. Denis", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "O'Driscoll, Miss. Bridget", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Samaan, Mr. Youssef", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Arnold-Franchi, Mrs. Josef (Josefine Franchi)", "input": "Sex: female | Age: 18 | Pclass: 3", "output": "0"}
+{"instruction": "Panula, Master. Juha Niilo", "input": "Sex: male | Age: 7 | Pclass: 3", "output": "0"}
+{"instruction": "Nosworthy, Mr. Richard Cater", "input": "Sex: male | Age: 21 | Pclass: 3", "output": "0"}
+{"instruction": "Harper, Mrs. Henry Sleeper (Myna Haxtun)", "input": "Sex: female | Age: 49 | Pclass: 1", "output": "1"}
+{"instruction": "Faunthorpe, Mrs. Lizzie (Elizabeth Anne Wilkinson)", "input": "Sex: female | Age: 29 | Pclass: 2", "output": "1"}
+{"instruction": "Ostby, Mr. Engelhart Cornelius", "input": "Sex: male | Age: 65 | Pclass: 1", "output": "0"}
+{"instruction": "Woolner, Mr. Hugh", "input": "Sex: male | Age:  | Pclass: 1", "output": "1"}
+{"instruction": "Rugg, Miss. Emily", "input": "Sex: female | Age: 21 | Pclass: 2", "output": "1"}
+{"instruction": "Novel, Mr. Mansouer", "input": "Sex: male | Age: 28.5 | Pclass: 3", "output": "0"}
+{"instruction": "West, Miss. Constance Mirium", "input": "Sex: female | Age: 5 | Pclass: 2", "output": "1"}
+{"instruction": "Goodwin, Master. William Frederick", "input": "Sex: male | Age: 11 | Pclass: 3", "output": "0"}
+{"instruction": "Sirayanian, Mr. Orsen", "input": "Sex: male | Age: 22 | Pclass: 3", "output": "0"}
+{"instruction": "Icard, Miss. Amelie", "input": "Sex: female | Age: 38 | Pclass: 1", "output": "1"}
+{"instruction": "Harris, Mr. Henry Birkhardt", "input": "Sex: male | Age: 45 | Pclass: 1", "output": "0"}
+{"instruction": "Skoog, Master. Harald", "input": "Sex: male | Age: 4 | Pclass: 3", "output": "0"}
+{"instruction": "Stewart, Mr. Albert A", "input": "Sex: male | Age:  | Pclass: 1", "output": "0"}
+{"instruction": "Moubarek, Master. Gerios", "input": "Sex: male | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Nye, Mrs. (Elizabeth Ramell)", "input": "Sex: female | Age: 29 | Pclass: 2", "output": "1"}
+{"instruction": "Crease, Mr. Ernest James", "input": "Sex: male | Age: 19 | Pclass: 3", "output": "0"}
+{"instruction": "Andersson, Miss. Erna Alexandra", "input": "Sex: female | Age: 17 | Pclass: 3", "output": "1"}
+{"instruction": "Kink, Mr. Vincenz", "input": "Sex: male | Age: 26 | Pclass: 3", "output": "0"}
+{"instruction": "Jenkin, Mr. Stephen Curnow", "input": "Sex: male | Age: 32 | Pclass: 2", "output": "0"}
+{"instruction": "Goodwin, Miss. Lillian Amy", "input": "Sex: female | Age: 16 | Pclass: 3", "output": "0"}
+{"instruction": "Hood, Mr. Ambrose Jr", "input": "Sex: male | Age: 21 | Pclass: 2", "output": "0"}
+{"instruction": "Chronopoulos, Mr. Apostolos", "input": "Sex: male | Age: 26 | Pclass: 3", "output": "0"}
+{"instruction": "Bing, Mr. Lee", "input": "Sex: male | Age: 32 | Pclass: 3", "output": "1"}
+{"instruction": "Moen, Mr. Sigurd Hansen", "input": "Sex: male | Age: 25 | Pclass: 3", "output": "0"}
+{"instruction": "Staneff, Mr. Ivan", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Moutal, Mr. Rahamin Haim", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Caldwell, Master. Alden Gates", "input": "Sex: male | Age: 0.83 | Pclass: 2", "output": "1"}
+{"instruction": "Dowdell, Miss. Elizabeth", "input": "Sex: female | Age: 30 | Pclass: 3", "output": "1"}
+{"instruction": "Waelens, Mr. Achille", "input": "Sex: male | Age: 22 | Pclass: 3", "output": "0"}
+{"instruction": "Sheerlinck, Mr. Jan Baptist", "input": "Sex: male | Age: 29 | Pclass: 3", "output": "1"}
+{"instruction": "McDermott, Miss. Brigdet Delia", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Carrau, Mr. Francisco M", "input": "Sex: male | Age: 28 | Pclass: 1", "output": "0"}
+{"instruction": "Ilett, Miss. Bertha", "input": "Sex: female | Age: 17 | Pclass: 2", "output": "1"}
+{"instruction": "Backstrom, Mrs. Karl Alfred (Maria Mathilda Gustafsson)", "input": "Sex: female | Age: 33 | Pclass: 3", "output": "1"}
+{"instruction": "Ford, Mr. William Neal", "input": "Sex: male | Age: 16 | Pclass: 3", "output": "0"}
+{"instruction": "Slocovski, Mr. Selman Francis", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Fortune, Miss. Mabel Helen", "input": "Sex: female | Age: 23 | Pclass: 1", "output": "1"}
+{"instruction": "Celotti, Mr. Francesco", "input": "Sex: male | Age: 24 | Pclass: 3", "output": "0"}
+{"instruction": "Christmann, Mr. Emil", "input": "Sex: male | Age: 29 | Pclass: 3", "output": "0"}
+{"instruction": "Andreasson, Mr. Paul Edvin", "input": "Sex: male | Age: 20 | Pclass: 3", "output": "0"}
+{"instruction": "Chaffee, Mr. Herbert Fuller", "input": "Sex: male | Age: 46 | Pclass: 1", "output": "0"}
+{"instruction": "Dean, Mr. Bertram Frank", "input": "Sex: male | Age: 26 | Pclass: 3", "output": "0"}
+{"instruction": "Coxon, Mr. Daniel", "input": "Sex: male | Age: 59 | Pclass: 3", "output": "0"}
+{"instruction": "Shorney, Mr. Charles Joseph", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Goldschmidt, Mr. George B", "input": "Sex: male | Age: 71 | Pclass: 1", "output": "0"}
+{"instruction": "Greenfield, Mr. William Bertram", "input": "Sex: male | Age: 23 | Pclass: 1", "output": "1"}
+{"instruction": "Doling, Mrs. John T (Ada Julia Bone)", "input": "Sex: female | Age: 34 | Pclass: 2", "output": "1"}
+{"instruction": "Kantor, Mr. Sinai", "input": "Sex: male | Age: 34 | Pclass: 2", "output": "0"}
+{"instruction": "Petranec, Miss. Matilda", "input": "Sex: female | Age: 28 | Pclass: 3", "output": "0"}
+{"instruction": "Petroff, Mr. Pastcho (\"Pentcho\")", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "White, Mr. Richard Frasar", "input": "Sex: male | Age: 21 | Pclass: 1", "output": "0"}
+{"instruction": "Johansson, Mr. Gustaf Joel", "input": "Sex: male | Age: 33 | Pclass: 3", "output": "0"}
+{"instruction": "Gustafsson, Mr. Anders Vilhelm", "input": "Sex: male | Age: 37 | Pclass: 3", "output": "0"}
+{"instruction": "Mionoff, Mr. Stoytcho", "input": "Sex: male | Age: 28 | Pclass: 3", "output": "0"}
+{"instruction": "Salkjelsvik, Miss. Anna Kristine", "input": "Sex: female | Age: 21 | Pclass: 3", "output": "1"}
+{"instruction": "Moss, Mr. Albert Johan", "input": "Sex: male | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Rekic, Mr. Tido", "input": "Sex: male | Age: 38 | Pclass: 3", "output": "0"}
+{"instruction": "Moran, Miss. Bertha", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Porter, Mr. Walter Chamberlain", "input": "Sex: male | Age: 47 | Pclass: 1", "output": "0"}
+{"instruction": "Zabour, Miss. Hileni", "input": "Sex: female | Age: 14.5 | Pclass: 3", "output": "0"}
+{"instruction": "Barton, Mr. David John", "input": "Sex: male | Age: 22 | Pclass: 3", "output": "0"}
+{"instruction": "Jussila, Miss. Katriina", "input": "Sex: female | Age: 20 | Pclass: 3", "output": "0"}
+{"instruction": "Attalah, Miss. Malake", "input": "Sex: female | Age: 17 | Pclass: 3", "output": "0"}
+{"instruction": "Pekoniemi, Mr. Edvard", "input": "Sex: male | Age: 21 | Pclass: 3", "output": "0"}
+{"instruction": "Connors, Mr. Patrick", "input": "Sex: male | Age: 70.5 | Pclass: 3", "output": "0"}
+{"instruction": "Turpin, Mr. William John Robert", "input": "Sex: male | Age: 29 | Pclass: 2", "output": "0"}
+{"instruction": "Baxter, Mr. Quigg Edmond", "input": "Sex: male | Age: 24 | Pclass: 1", "output": "0"}
+{"instruction": "Andersson, Miss. Ellis Anna Maria", "input": "Sex: female | Age: 2 | Pclass: 3", "output": "0"}
+{"instruction": "Hickman, Mr. Stanley George", "input": "Sex: male | Age: 21 | Pclass: 2", "output": "0"}
+{"instruction": "Moore, Mr. Leonard Charles", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Nasser, Mr. Nicholas", "input": "Sex: male | Age: 32.5 | Pclass: 2", "output": "0"}
+{"instruction": "Webber, Miss. Susan", "input": "Sex: female | Age: 32.5 | Pclass: 2", "output": "1"}
+{"instruction": "White, Mr. Percival Wayland", "input": "Sex: male | Age: 54 | Pclass: 1", "output": "0"}
+{"instruction": "Nicola-Yarred, Master. Elias", "input": "Sex: male | Age: 12 | Pclass: 3", "output": "1"}
+{"instruction": "McMahon, Mr. Martin", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Madsen, Mr. Fridtjof Arne", "input": "Sex: male | Age: 24 | Pclass: 3", "output": "1"}
+{"instruction": "Peter, Miss. Anna", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Ekstrom, Mr. Johan", "input": "Sex: male | Age: 45 | Pclass: 3", "output": "0"}
+{"instruction": "Drazenoic, Mr. Jozef", "input": "Sex: male | Age: 33 | Pclass: 3", "output": "0"}
+{"instruction": "Coelho, Mr. Domingos Fernandeo", "input": "Sex: male | Age: 20 | Pclass: 3", "output": "0"}
+{"instruction": "Robins, Mrs. Alexander A (Grace Charity Laury)", "input": "Sex: female | Age: 47 | Pclass: 3", "output": "0"}
+{"instruction": "Weisz, Mrs. Leopold (Mathilde Francoise Pede)", "input": "Sex: female | Age: 29 | Pclass: 2", "output": "1"}
+{"instruction": "Sobey, Mr. Samuel James Hayden", "input": "Sex: male | Age: 25 | Pclass: 2", "output": "0"}
+{"instruction": "Richard, Mr. Emile", "input": "Sex: male | Age: 23 | Pclass: 2", "output": "0"}
+{"instruction": "Newsom, Miss. Helen Monypeny", "input": "Sex: female | Age: 19 | Pclass: 1", "output": "1"}
+{"instruction": "Futrelle, Mr. Jacques Heath", "input": "Sex: male | Age: 37 | Pclass: 1", "output": "0"}
+{"instruction": "Osen, Mr. Olaf Elon", "input": "Sex: male | Age: 16 | Pclass: 3", "output": "0"}
+{"instruction": "Giglio, Mr. Victor", "input": "Sex: male | Age: 24 | Pclass: 1", "output": "0"}
+{"instruction": "Boulos, Mrs. Joseph (Sultana)", "input": "Sex: female | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Nysten, Miss. Anna Sofia", "input": "Sex: female | Age: 22 | Pclass: 3", "output": "1"}
+{"instruction": "Hakkarainen, Mrs. Pekka Pietari (Elin Matilda Dolck)", "input": "Sex: female | Age: 24 | Pclass: 3", "output": "1"}
+{"instruction": "Burke, Mr. Jeremiah", "input": "Sex: male | Age: 19 | Pclass: 3", "output": "0"}
+{"instruction": "Andrew, Mr. Edgardo Samuel", "input": "Sex: male | Age: 18 | Pclass: 2", "output": "0"}
+{"instruction": "Nicholls, Mr. Joseph Charles", "input": "Sex: male | Age: 19 | Pclass: 2", "output": "0"}
+{"instruction": "Andersson, Mr. August Edvard (\"Wennerstrom\")", "input": "Sex: male | Age: 27 | Pclass: 3", "output": "1"}
+{"instruction": "Ford, Miss. Robina Maggie \"Ruby\"", "input": "Sex: female | Age: 9 | Pclass: 3", "output": "0"}
+{"instruction": "Navratil, Mr. Michel (\"Louis M Hoffman\")", "input": "Sex: male | Age: 36.5 | Pclass: 2", "output": "0"}
+{"instruction": "Byles, Rev. Thomas Roussel Davids", "input": "Sex: male | Age: 42 | Pclass: 2", "output": "0"}
+{"instruction": "Bateman, Rev. Robert James", "input": "Sex: male | Age: 51 | Pclass: 2", "output": "0"}
+{"instruction": "Pears, Mrs. Thomas (Edith Wearne)", "input": "Sex: female | Age: 22 | Pclass: 1", "output": "1"}
+{"instruction": "Meo, Mr. Alfonzo", "input": "Sex: male | Age: 55.5 | Pclass: 3", "output": "0"}
+{"instruction": "van Billiard, Mr. Austin Blyler", "input": "Sex: male | Age: 40.5 | Pclass: 3", "output": "0"}
+{"instruction": "Olsen, Mr. Ole Martin", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Williams, Mr. Charles Duane", "input": "Sex: male | Age: 51 | Pclass: 1", "output": "0"}
+{"instruction": "Gilnagh, Miss. Katherine \"Katie\"", "input": "Sex: female | Age: 16 | Pclass: 3", "output": "1"}
+{"instruction": "Corn, Mr. Harry", "input": "Sex: male | Age: 30 | Pclass: 3", "output": "0"}
+{"instruction": "Smiljanic, Mr. Mile", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Sage, Master. Thomas Henry", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Cribb, Mr. John Hatfield", "input": "Sex: male | Age: 44 | Pclass: 3", "output": "0"}
+{"instruction": "Watt, Mrs. James (Elizabeth \"Bessie\" Inglis Milne)", "input": "Sex: female | Age: 40 | Pclass: 2", "output": "1"}
+{"instruction": "Bengtsson, Mr. John Viktor", "input": "Sex: male | Age: 26 | Pclass: 3", "output": "0"}
+{"instruction": "Calic, Mr. Jovo", "input": "Sex: male | Age: 17 | Pclass: 3", "output": "0"}
+{"instruction": "Panula, Master. Eino Viljami", "input": "Sex: male | Age: 1 | Pclass: 3", "output": "0"}
+{"instruction": "Goldsmith, Master. Frank John William \"Frankie\"", "input": "Sex: male | Age: 9 | Pclass: 3", "output": "1"}
+{"instruction": "Chibnall, Mrs. (Edith Martha Bowerman)", "input": "Sex: female | Age:  | Pclass: 1", "output": "1"}
+{"instruction": "Skoog, Mrs. William (Anna Bernhardina Karlsson)", "input": "Sex: female | Age: 45 | Pclass: 3", "output": "0"}
+{"instruction": "Baumann, Mr. John D", "input": "Sex: male | Age:  | Pclass: 1", "output": "0"}
+{"instruction": "Ling, Mr. Lee", "input": "Sex: male | Age: 28 | Pclass: 3", "output": "0"}
+{"instruction": "Van der hoef, Mr. Wyckoff", "input": "Sex: male | Age: 61 | Pclass: 1", "output": "0"}
+{"instruction": "Rice, Master. Arthur", "input": "Sex: male | Age: 4 | Pclass: 3", "output": "0"}
+{"instruction": "Johnson, Miss. Eleanor Ileen", "input": "Sex: female | Age: 1 | Pclass: 3", "output": "1"}
+{"instruction": "Sivola, Mr. Antti Wilhelm", "input": "Sex: male | Age: 21 | Pclass: 3", "output": "0"}
+{"instruction": "Smith, Mr. James Clinch", "input": "Sex: male | Age: 56 | Pclass: 1", "output": "0"}
+{"instruction": "Klasen, Mr. Klas Albin", "input": "Sex: male | Age: 18 | Pclass: 3", "output": "0"}
+{"instruction": "Lefebre, Master. Henry Forbes", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Isham, Miss. Ann Elizabeth", "input": "Sex: female | Age: 50 | Pclass: 1", "output": "0"}
+{"instruction": "Hale, Mr. Reginald", "input": "Sex: male | Age: 30 | Pclass: 2", "output": "0"}
+{"instruction": "Leonard, Mr. Lionel", "input": "Sex: male | Age: 36 | Pclass: 3", "output": "0"}
+{"instruction": "Sage, Miss. Constance Gladys", "input": "Sex: female | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Pernot, Mr. Rene", "input": "Sex: male | Age:  | Pclass: 2", "output": "0"}
+{"instruction": "Asplund, Master. Clarence Gustaf Hugo", "input": "Sex: male | Age: 9 | Pclass: 3", "output": "0"}
+{"instruction": "Becker, Master. Richard F", "input": "Sex: male | Age: 1 | Pclass: 2", "output": "1"}
+{"instruction": "Kink-Heilmann, Miss. Luise Gretchen", "input": "Sex: female | Age: 4 | Pclass: 3", "output": "1"}
+{"instruction": "Rood, Mr. Hugh Roscoe", "input": "Sex: male | Age:  | Pclass: 1", "output": "0"}
+{"instruction": "O'Brien, Mrs. Thomas (Johanna \"Hannah\" Godfrey)", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Romaine, Mr. Charles Hallace (\"Mr C Rolmane\")", "input": "Sex: male | Age: 45 | Pclass: 1", "output": "1"}
+{"instruction": "Bourke, Mr. John", "input": "Sex: male | Age: 40 | Pclass: 3", "output": "0"}
+{"instruction": "Turcin, Mr. Stjepan", "input": "Sex: male | Age: 36 | Pclass: 3", "output": "0"}
+{"instruction": "Pinsky, Mrs. (Rosa)", "input": "Sex: female | Age: 32 | Pclass: 2", "output": "1"}
+{"instruction": "Carbines, Mr. William", "input": "Sex: male | Age: 19 | Pclass: 2", "output": "0"}
+{"instruction": "Andersen-Jensen, Miss. Carla Christine Nielsine", "input": "Sex: female | Age: 19 | Pclass: 3", "output": "1"}
+{"instruction": "Navratil, Master. Michel M", "input": "Sex: male | Age: 3 | Pclass: 2", "output": "1"}
+{"instruction": "Brown, Mrs. James Joseph (Margaret Tobin)", "input": "Sex: female | Age: 44 | Pclass: 1", "output": "1"}
+{"instruction": "Lurette, Miss. Elise", "input": "Sex: female | Age: 58 | Pclass: 1", "output": "1"}
+{"instruction": "Mernagh, Mr. Robert", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Olsen, Mr. Karl Siegwart Andreas", "input": "Sex: male | Age: 42 | Pclass: 3", "output": "0"}
+{"instruction": "Madigan, Miss. Margaret \"Maggie\"", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Yrois, Miss. Henriette (\"Mrs Harbeck\")", "input": "Sex: female | Age: 24 | Pclass: 2", "output": "0"}
+{"instruction": "Vande Walle, Mr. Nestor Cyriel", "input": "Sex: male | Age: 28 | Pclass: 3", "output": "0"}
+{"instruction": "Sage, Mr. Frederick", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Johanson, Mr. Jakob Alfred", "input": "Sex: male | Age: 34 | Pclass: 3", "output": "0"}
+{"instruction": "Youseff, Mr. Gerious", "input": "Sex: male | Age: 45.5 | Pclass: 3", "output": "0"}
+{"instruction": "Cohen, Mr. Gurshon \"Gus\"", "input": "Sex: male | Age: 18 | Pclass: 3", "output": "1"}
+{"instruction": "Strom, Miss. Telma Matilda", "input": "Sex: female | Age: 2 | Pclass: 3", "output": "0"}
+{"instruction": "Backstrom, Mr. Karl Alfred", "input": "Sex: male | Age: 32 | Pclass: 3", "output": "0"}
+{"instruction": "Albimona, Mr. Nassef Cassem", "input": "Sex: male | Age: 26 | Pclass: 3", "output": "1"}
+{"instruction": "Carr, Miss. Helen \"Ellen\"", "input": "Sex: female | Age: 16 | Pclass: 3", "output": "1"}
+{"instruction": "Blank, Mr. Henry", "input": "Sex: male | Age: 40 | Pclass: 1", "output": "1"}
+{"instruction": "Ali, Mr. Ahmed", "input": "Sex: male | Age: 24 | Pclass: 3", "output": "0"}
+{"instruction": "Cameron, Miss. Clear Annie", "input": "Sex: female | Age: 35 | Pclass: 2", "output": "1"}
+{"instruction": "Perkin, Mr. John Henry", "input": "Sex: male | Age: 22 | Pclass: 3", "output": "0"}
+{"instruction": "Givard, Mr. Hans Kristensen", "input": "Sex: male | Age: 30 | Pclass: 2", "output": "0"}
+{"instruction": "Kiernan, Mr. Philip", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Newell, Miss. Madeleine", "input": "Sex: female | Age: 31 | Pclass: 1", "output": "1"}
+{"instruction": "Honkanen, Miss. Eliina", "input": "Sex: female | Age: 27 | Pclass: 3", "output": "1"}
+{"instruction": "Jacobsohn, Mr. Sidney Samuel", "input": "Sex: male | Age: 42 | Pclass: 2", "output": "0"}
+{"instruction": "Bazzani, Miss. Albina", "input": "Sex: female | Age: 32 | Pclass: 1", "output": "1"}
+{"instruction": "Harris, Mr. Walter", "input": "Sex: male | Age: 30 | Pclass: 2", "output": "0"}
+{"instruction": "Sunderland, Mr. Victor Francis", "input": "Sex: male | Age: 16 | Pclass: 3", "output": "1"}
+{"instruction": "Bracken, Mr. James H", "input": "Sex: male | Age: 27 | Pclass: 2", "output": "0"}
+{"instruction": "Green, Mr. George Henry", "input": "Sex: male | Age: 51 | Pclass: 3", "output": "0"}
+{"instruction": "Nenkoff, Mr. Christo", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Hoyt, Mr. Frederick Maxfield", "input": "Sex: male | Age: 38 | Pclass: 1", "output": "1"}
+{"instruction": "Berglund, Mr. Karl Ivar Sven", "input": "Sex: male | Age: 22 | Pclass: 3", "output": "0"}
+{"instruction": "Mellors, Mr. William John", "input": "Sex: male | Age: 19 | Pclass: 2", "output": "1"}
+{"instruction": "Lovell, Mr. John Hall (\"Henry\")", "input": "Sex: male | Age: 20.5 | Pclass: 3", "output": "0"}
+{"instruction": "Fahlstrom, Mr. Arne Jonas", "input": "Sex: male | Age: 18 | Pclass: 2", "output": "0"}
+{"instruction": "Lefebre, Miss. Mathilde", "input": "Sex: female | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Harris, Mrs. Henry Birkhardt (Irene Wallach)", "input": "Sex: female | Age: 35 | Pclass: 1", "output": "1"}
+{"instruction": "Larsson, Mr. Bengt Edvin", "input": "Sex: male | Age: 29 | Pclass: 3", "output": "0"}
+{"instruction": "Sjostedt, Mr. Ernst Adolf", "input": "Sex: male | Age: 59 | Pclass: 2", "output": "0"}
+{"instruction": "Asplund, Miss. Lillian Gertrud", "input": "Sex: female | Age: 5 | Pclass: 3", "output": "1"}
+{"instruction": "Leyson, Mr. Robert William Norman", "input": "Sex: male | Age: 24 | Pclass: 2", "output": "0"}
+{"instruction": "Harknett, Miss. Alice Phoebe", "input": "Sex: female | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Hold, Mr. Stephen", "input": "Sex: male | Age: 44 | Pclass: 2", "output": "0"}
+{"instruction": "Collyer, Miss. Marjorie \"Lottie\"", "input": "Sex: female | Age: 8 | Pclass: 2", "output": "1"}
+{"instruction": "Pengelly, Mr. Frederick William", "input": "Sex: male | Age: 19 | Pclass: 2", "output": "0"}
+{"instruction": "Hunt, Mr. George Henry", "input": "Sex: male | Age: 33 | Pclass: 2", "output": "0"}
+{"instruction": "Zabour, Miss. Thamine", "input": "Sex: female | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Murphy, Miss. Katherine \"Kate\"", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Coleridge, Mr. Reginald Charles", "input": "Sex: male | Age: 29 | Pclass: 2", "output": "0"}
+{"instruction": "Maenpaa, Mr. Matti Alexanteri", "input": "Sex: male | Age: 22 | Pclass: 3", "output": "0"}
+{"instruction": "Attalah, Mr. Sleiman", "input": "Sex: male | Age: 30 | Pclass: 3", "output": "0"}
+{"instruction": "Minahan, Dr. William Edward", "input": "Sex: male | Age: 44 | Pclass: 1", "output": "0"}
+{"instruction": "Lindahl, Miss. Agda Thorilda Viktoria", "input": "Sex: female | Age: 25 | Pclass: 3", "output": "0"}
+{"instruction": "Hamalainen, Mrs. William (Anna)", "input": "Sex: female | Age: 24 | Pclass: 2", "output": "1"}
+{"instruction": "Beckwith, Mr. Richard Leonard", "input": "Sex: male | Age: 37 | Pclass: 1", "output": "1"}
+{"instruction": "Carter, Rev. Ernest Courtenay", "input": "Sex: male | Age: 54 | Pclass: 2", "output": "0"}
+{"instruction": "Reed, Mr. James George", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Strom, Mrs. Wilhelm (Elna Matilda Persson)", "input": "Sex: female | Age: 29 | Pclass: 3", "output": "0"}
+{"instruction": "Stead, Mr. William Thomas", "input": "Sex: male | Age: 62 | Pclass: 1", "output": "0"}
+{"instruction": "Lobb, Mr. William Arthur", "input": "Sex: male | Age: 30 | Pclass: 3", "output": "0"}
+{"instruction": "Rosblom, Mrs. Viktor (Helena Wilhelmina)", "input": "Sex: female | Age: 41 | Pclass: 3", "output": "0"}
+{"instruction": "Touma, Mrs. Darwis (Hanne Youssef Razi)", "input": "Sex: female | Age: 29 | Pclass: 3", "output": "1"}
+{"instruction": "Thorne, Mrs. Gertrude Maybelle", "input": "Sex: female | Age:  | Pclass: 1", "output": "1"}
+{"instruction": "Cherry, Miss. Gladys", "input": "Sex: female | Age: 30 | Pclass: 1", "output": "1"}
+{"instruction": "Ward, Miss. Anna", "input": "Sex: female | Age: 35 | Pclass: 1", "output": "1"}
+{"instruction": "Parrish, Mrs. (Lutie Davis)", "input": "Sex: female | Age: 50 | Pclass: 2", "output": "1"}
+{"instruction": "Smith, Mr. Thomas", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Asplund, Master. Edvin Rojj Felix", "input": "Sex: male | Age: 3 | Pclass: 3", "output": "1"}
+{"instruction": "Taussig, Mr. Emil", "input": "Sex: male | Age: 52 | Pclass: 1", "output": "0"}
+{"instruction": "Harrison, Mr. William", "input": "Sex: male | Age: 40 | Pclass: 1", "output": "0"}
+{"instruction": "Henry, Miss. Delia", "input": "Sex: female | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Reeves, Mr. David", "input": "Sex: male | Age: 36 | Pclass: 2", "output": "0"}
+{"instruction": "Panula, Mr. Ernesti Arvid", "input": "Sex: male | Age: 16 | Pclass: 3", "output": "0"}
+{"instruction": "Persson, Mr. Ernst Ulrik", "input": "Sex: male | Age: 25 | Pclass: 3", "output": "1"}
+{"instruction": "Graham, Mrs. William Thompson (Edith Junkins)", "input": "Sex: female | Age: 58 | Pclass: 1", "output": "1"}
+{"instruction": "Bissette, Miss. Amelia", "input": "Sex: female | Age: 35 | Pclass: 1", "output": "1"}
+{"instruction": "Cairns, Mr. Alexander", "input": "Sex: male | Age:  | Pclass: 1", "output": "0"}
+{"instruction": "Tornquist, Mr. William Henry", "input": "Sex: male | Age: 25 | Pclass: 3", "output": "1"}
+{"instruction": "Mellinger, Mrs. (Elizabeth Anne Maidment)", "input": "Sex: female | Age: 41 | Pclass: 2", "output": "1"}
+{"instruction": "Natsch, Mr. Charles H", "input": "Sex: male | Age: 37 | Pclass: 1", "output": "0"}
+{"instruction": "Healy, Miss. Hanora \"Nora\"", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Andrews, Miss. Kornelia Theodosia", "input": "Sex: female | Age: 63 | Pclass: 1", "output": "1"}
+{"instruction": "Lindblom, Miss. Augusta Charlotta", "input": "Sex: female | Age: 45 | Pclass: 3", "output": "0"}
+{"instruction": "Parkes, Mr. Francis \"Frank\"", "input": "Sex: male | Age:  | Pclass: 2", "output": "0"}
+{"instruction": "Rice, Master. Eric", "input": "Sex: male | Age: 7 | Pclass: 3", "output": "0"}
+{"instruction": "Abbott, Mrs. Stanton (Rosa Hunt)", "input": "Sex: female | Age: 35 | Pclass: 3", "output": "1"}
+{"instruction": "Duane, Mr. Frank", "input": "Sex: male | Age: 65 | Pclass: 3", "output": "0"}
+{"instruction": "Olsson, Mr. Nils Johan Goransson", "input": "Sex: male | Age: 28 | Pclass: 3", "output": "0"}
+{"instruction": "de Pelsmaeker, Mr. Alfons", "input": "Sex: male | Age: 16 | Pclass: 3", "output": "0"}
+{"instruction": "Dorking, Mr. Edward Arthur", "input": "Sex: male | Age: 19 | Pclass: 3", "output": "1"}
+{"instruction": "Smith, Mr. Richard William", "input": "Sex: male | Age:  | Pclass: 1", "output": "0"}
+{"instruction": "Stankovic, Mr. Ivan", "input": "Sex: male | Age: 33 | Pclass: 3", "output": "0"}
+{"instruction": "de Mulder, Mr. Theodore", "input": "Sex: male | Age: 30 | Pclass: 3", "output": "1"}
+{"instruction": "Naidenoff, Mr. Penko", "input": "Sex: male | Age: 22 | Pclass: 3", "output": "0"}
+{"instruction": "Hosono, Mr. Masabumi", "input": "Sex: male | Age: 42 | Pclass: 2", "output": "1"}
+{"instruction": "Connolly, Miss. Kate", "input": "Sex: female | Age: 22 | Pclass: 3", "output": "1"}
+{"instruction": "Barber, Miss. Ellen \"Nellie\"", "input": "Sex: female | Age: 26 | Pclass: 1", "output": "1"}
+{"instruction": "Bishop, Mrs. Dickinson H (Helen Walton)", "input": "Sex: female | Age: 19 | Pclass: 1", "output": "1"}
+{"instruction": "Levy, Mr. Rene Jacques", "input": "Sex: male | Age: 36 | Pclass: 2", "output": "0"}
+{"instruction": "Haas, Miss. Aloisia", "input": "Sex: female | Age: 24 | Pclass: 3", "output": "0"}
+{"instruction": "Mineff, Mr. Ivan", "input": "Sex: male | Age: 24 | Pclass: 3", "output": "0"}
+{"instruction": "Lewy, Mr. Ervin G", "input": "Sex: male | Age:  | Pclass: 1", "output": "0"}
+{"instruction": "Hanna, Mr. Mansour", "input": "Sex: male | Age: 23.5 | Pclass: 3", "output": "0"}
+{"instruction": "Allison, Miss. Helen Loraine", "input": "Sex: female | Age: 2 | Pclass: 1", "output": "0"}
+{"instruction": "Saalfeld, Mr. Adolphe", "input": "Sex: male | Age:  | Pclass: 1", "output": "1"}
+{"instruction": "Baxter, Mrs. James (Helene DeLaudeniere Chaput)", "input": "Sex: female | Age: 50 | Pclass: 1", "output": "1"}
+{"instruction": "Kelly, Miss. Anna Katherine \"Annie Kate\"", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "McCoy, Mr. Bernard", "input": "Sex: male | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Johnson, Mr. William Cahoone Jr", "input": "Sex: male | Age: 19 | Pclass: 3", "output": "0"}
+{"instruction": "Keane, Miss. Nora A", "input": "Sex: female | Age:  | Pclass: 2", "output": "1"}
+{"instruction": "Williams, Mr. Howard Hugh \"Harry\"", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Allison, Master. Hudson Trevor", "input": "Sex: male | Age: 0.92 | Pclass: 1", "output": "1"}
+{"instruction": "Fleming, Miss. Margaret", "input": "Sex: female | Age:  | Pclass: 1", "output": "1"}
+{"instruction": "Penasco y Castellana, Mrs. Victor de Satode (Maria Josefa Perez de Soto y Vallejo)", "input": "Sex: female | Age: 17 | Pclass: 1", "output": "1"}
+{"instruction": "Abelson, Mr. Samuel", "input": "Sex: male | Age: 30 | Pclass: 2", "output": "0"}
+{"instruction": "Francatelli, Miss. Laura Mabel", "input": "Sex: female | Age: 30 | Pclass: 1", "output": "1"}
+{"instruction": "Hays, Miss. Margaret Bechstein", "input": "Sex: female | Age: 24 | Pclass: 1", "output": "1"}
+{"instruction": "Ryerson, Miss. Emily Borie", "input": "Sex: female | Age: 18 | Pclass: 1", "output": "1"}
+{"instruction": "Lahtinen, Mrs. William (Anna Sylfven)", "input": "Sex: female | Age: 26 | Pclass: 2", "output": "0"}
+{"instruction": "Hendekovic, Mr. Ignjac", "input": "Sex: male | Age: 28 | Pclass: 3", "output": "0"}
+{"instruction": "Hart, Mr. Benjamin", "input": "Sex: male | Age: 43 | Pclass: 2", "output": "0"}
+{"instruction": "Nilsson, Miss. Helmina Josefina", "input": "Sex: female | Age: 26 | Pclass: 3", "output": "1"}
+{"instruction": "Kantor, Mrs. Sinai (Miriam Sternin)", "input": "Sex: female | Age: 24 | Pclass: 2", "output": "1"}
+{"instruction": "Moraweck, Dr. Ernest", "input": "Sex: male | Age: 54 | Pclass: 2", "output": "0"}
+{"instruction": "Wick, Miss. Mary Natalie", "input": "Sex: female | Age: 31 | Pclass: 1", "output": "1"}
+{"instruction": "Spedden, Mrs. Frederic Oakley (Margaretta Corning Stone)", "input": "Sex: female | Age: 40 | Pclass: 1", "output": "1"}
+{"instruction": "Dennis, Mr. Samuel", "input": "Sex: male | Age: 22 | Pclass: 3", "output": "0"}
+{"instruction": "Danoff, Mr. Yoto", "input": "Sex: male | Age: 27 | Pclass: 3", "output": "0"}
+{"instruction": "Slayter, Miss. Hilda Mary", "input": "Sex: female | Age: 30 | Pclass: 2", "output": "1"}
+{"instruction": "Caldwell, Mrs. Albert Francis (Sylvia Mae Harbaugh)", "input": "Sex: female | Age: 22 | Pclass: 2", "output": "1"}
+{"instruction": "Sage, Mr. George John Jr", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Young, Miss. Marie Grice", "input": "Sex: female | Age: 36 | Pclass: 1", "output": "1"}
+{"instruction": "Nysveen, Mr. Johan Hansen", "input": "Sex: male | Age: 61 | Pclass: 3", "output": "0"}
+{"instruction": "Ball, Mrs. (Ada E Hall)", "input": "Sex: female | Age: 36 | Pclass: 2", "output": "1"}
+{"instruction": "Goldsmith, Mrs. Frank John (Emily Alice Brown)", "input": "Sex: female | Age: 31 | Pclass: 3", "output": "1"}
+{"instruction": "Hippach, Miss. Jean Gertrude", "input": "Sex: female | Age: 16 | Pclass: 1", "output": "1"}
+{"instruction": "McCoy, Miss. Agnes", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Partner, Mr. Austen", "input": "Sex: male | Age: 45.5 | Pclass: 1", "output": "0"}
+{"instruction": "Graham, Mr. George Edward", "input": "Sex: male | Age: 38 | Pclass: 1", "output": "0"}
+{"instruction": "Vander Planke, Mr. Leo Edmondus", "input": "Sex: male | Age: 16 | Pclass: 3", "output": "0"}
+{"instruction": "Frauenthal, Mrs. Henry William (Clara Heinsheimer)", "input": "Sex: female | Age:  | Pclass: 1", "output": "1"}
+{"instruction": "Denkoff, Mr. Mitto", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Pears, Mr. Thomas Clinton", "input": "Sex: male | Age: 29 | Pclass: 1", "output": "0"}
+{"instruction": "Burns, Miss. Elizabeth Margaret", "input": "Sex: female | Age: 41 | Pclass: 1", "output": "1"}
+{"instruction": "Dahl, Mr. Karl Edwart", "input": "Sex: male | Age: 45 | Pclass: 3", "output": "1"}
+{"instruction": "Blackwell, Mr. Stephen Weart", "input": "Sex: male | Age: 45 | Pclass: 1", "output": "0"}
+{"instruction": "Navratil, Master. Edmond Roger", "input": "Sex: male | Age: 2 | Pclass: 2", "output": "1"}
+{"instruction": "Fortune, Miss. Alice Elizabeth", "input": "Sex: female | Age: 24 | Pclass: 1", "output": "1"}
+{"instruction": "Collander, Mr. Erik Gustaf", "input": "Sex: male | Age: 28 | Pclass: 2", "output": "0"}
+{"instruction": "Sedgwick, Mr. Charles Frederick Waddington", "input": "Sex: male | Age: 25 | Pclass: 2", "output": "0"}
+{"instruction": "Fox, Mr. Stanley Hubert", "input": "Sex: male | Age: 36 | Pclass: 2", "output": "0"}
+{"instruction": "Brown, Miss. Amelia \"Mildred\"", "input": "Sex: female | Age: 24 | Pclass: 2", "output": "1"}
+{"instruction": "Smith, Miss. Marion Elsie", "input": "Sex: female | Age: 40 | Pclass: 2", "output": "1"}
+{"instruction": "Davison, Mrs. Thomas Henry (Mary E Finck)", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Coutts, Master. William Loch \"William\"", "input": "Sex: male | Age: 3 | Pclass: 3", "output": "1"}
+{"instruction": "Dimic, Mr. Jovan", "input": "Sex: male | Age: 42 | Pclass: 3", "output": "0"}
+{"instruction": "Odahl, Mr. Nils Martin", "input": "Sex: male | Age: 23 | Pclass: 3", "output": "0"}
+{"instruction": "Williams-Lambert, Mr. Fletcher Fellows", "input": "Sex: male | Age:  | Pclass: 1", "output": "0"}
+{"instruction": "Elias, Mr. Tannous", "input": "Sex: male | Age: 15 | Pclass: 3", "output": "0"}
+{"instruction": "Arnold-Franchi, Mr. Josef", "input": "Sex: male | Age: 25 | Pclass: 3", "output": "0"}
+{"instruction": "Yousif, Mr. Wazli", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Vanden Steen, Mr. Leo Peter", "input": "Sex: male | Age: 28 | Pclass: 3", "output": "0"}
+{"instruction": "Bowerman, Miss. Elsie Edith", "input": "Sex: female | Age: 22 | Pclass: 1", "output": "1"}
+{"instruction": "Funk, Miss. Annie Clemmer", "input": "Sex: female | Age: 38 | Pclass: 2", "output": "0"}
+{"instruction": "McGovern, Miss. Mary", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Mockler, Miss. Helen Mary \"Ellie\"", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Skoog, Mr. Wilhelm", "input": "Sex: male | Age: 40 | Pclass: 3", "output": "0"}
+{"instruction": "del Carlo, Mr. Sebastiano", "input": "Sex: male | Age: 29 | Pclass: 2", "output": "0"}
+{"instruction": "Barbara, Mrs. (Catherine David)", "input": "Sex: female | Age: 45 | Pclass: 3", "output": "0"}
+{"instruction": "Asim, Mr. Adola", "input": "Sex: male | Age: 35 | Pclass: 3", "output": "0"}
+{"instruction": "O'Brien, Mr. Thomas", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Adahl, Mr. Mauritz Nils Martin", "input": "Sex: male | Age: 30 | Pclass: 3", "output": "0"}
+{"instruction": "Warren, Mrs. Frank Manley (Anna Sophia Atkinson)", "input": "Sex: female | Age: 60 | Pclass: 1", "output": "1"}
+{"instruction": "Moussa, Mrs. (Mantoura Boulos)", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Jermyn, Miss. Annie", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Aubart, Mme. Leontine Pauline", "input": "Sex: female | Age: 24 | Pclass: 1", "output": "1"}
+{"instruction": "Harder, Mr. George Achilles", "input": "Sex: male | Age: 25 | Pclass: 1", "output": "1"}
+{"instruction": "Wiklund, Mr. Jakob Alfred", "input": "Sex: male | Age: 18 | Pclass: 3", "output": "0"}
+{"instruction": "Beavan, Mr. William Thomas", "input": "Sex: male | Age: 19 | Pclass: 3", "output": "0"}
+{"instruction": "Ringhini, Mr. Sante", "input": "Sex: male | Age: 22 | Pclass: 1", "output": "0"}
+{"instruction": "Palsson, Miss. Stina Viola", "input": "Sex: female | Age: 3 | Pclass: 3", "output": "0"}
+{"instruction": "Meyer, Mrs. Edgar Joseph (Leila Saks)", "input": "Sex: female | Age:  | Pclass: 1", "output": "1"}
+{"instruction": "Landergren, Miss. Aurora Adelia", "input": "Sex: female | Age: 22 | Pclass: 3", "output": "1"}
+{"instruction": "Widener, Mr. Harry Elkins", "input": "Sex: male | Age: 27 | Pclass: 1", "output": "0"}
+{"instruction": "Betros, Mr. Tannous", "input": "Sex: male | Age: 20 | Pclass: 3", "output": "0"}
+{"instruction": "Gustafsson, Mr. Karl Gideon", "input": "Sex: male | Age: 19 | Pclass: 3", "output": "0"}
+{"instruction": "Bidois, Miss. Rosalie", "input": "Sex: female | Age: 42 | Pclass: 1", "output": "1"}
+{"instruction": "Nakid, Miss. Maria (\"Mary\")", "input": "Sex: female | Age: 1 | Pclass: 3", "output": "1"}
+{"instruction": "Tikkanen, Mr. Juho", "input": "Sex: male | Age: 32 | Pclass: 3", "output": "0"}
+{"instruction": "Holverson, Mrs. Alexander Oskar (Mary Aline Towner)", "input": "Sex: female | Age: 35 | Pclass: 1", "output": "1"}
+{"instruction": "Plotcharsky, Mr. Vasil", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Davies, Mr. Charles Henry", "input": "Sex: male | Age: 18 | Pclass: 2", "output": "0"}
+{"instruction": "Goodwin, Master. Sidney Leonard", "input": "Sex: male | Age: 1 | Pclass: 3", "output": "0"}
+{"instruction": "Buss, Miss. Kate", "input": "Sex: female | Age: 36 | Pclass: 2", "output": "1"}
+{"instruction": "Sadlier, Mr. Matthew", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Lehmann, Miss. Bertha", "input": "Sex: female | Age: 17 | Pclass: 2", "output": "1"}
+{"instruction": "Carter, Mr. William Ernest", "input": "Sex: male | Age: 36 | Pclass: 1", "output": "1"}
+{"instruction": "Jansson, Mr. Carl Olof", "input": "Sex: male | Age: 21 | Pclass: 3", "output": "1"}
+{"instruction": "Gustafsson, Mr. Johan Birger", "input": "Sex: male | Age: 28 | Pclass: 3", "output": "0"}
+{"instruction": "Newell, Miss. Marjorie", "input": "Sex: female | Age: 23 | Pclass: 1", "output": "1"}
+{"instruction": "Sandstrom, Mrs. Hjalmar (Agnes Charlotta Bengtsson)", "input": "Sex: female | Age: 24 | Pclass: 3", "output": "1"}
+{"instruction": "Johansson, Mr. Erik", "input": "Sex: male | Age: 22 | Pclass: 3", "output": "0"}
+{"instruction": "Olsson, Miss. Elina", "input": "Sex: female | Age: 31 | Pclass: 3", "output": "0"}
+{"instruction": "McKane, Mr. Peter David", "input": "Sex: male | Age: 46 | Pclass: 2", "output": "0"}
+{"instruction": "Pain, Dr. Alfred", "input": "Sex: male | Age: 23 | Pclass: 2", "output": "0"}
+{"instruction": "Trout, Mrs. William H (Jessie L)", "input": "Sex: female | Age: 28 | Pclass: 2", "output": "1"}
+{"instruction": "Niskanen, Mr. Juha", "input": "Sex: male | Age: 39 | Pclass: 3", "output": "1"}
+{"instruction": "Adams, Mr. John", "input": "Sex: male | Age: 26 | Pclass: 3", "output": "0"}
+{"instruction": "Jussila, Miss. Mari Aina", "input": "Sex: female | Age: 21 | Pclass: 3", "output": "0"}
+{"instruction": "Hakkarainen, Mr. Pekka Pietari", "input": "Sex: male | Age: 28 | Pclass: 3", "output": "0"}
+{"instruction": "Oreskovic, Miss. Marija", "input": "Sex: female | Age: 20 | Pclass: 3", "output": "0"}
+{"instruction": "Gale, Mr. Shadrach", "input": "Sex: male | Age: 34 | Pclass: 2", "output": "0"}
+{"instruction": "Widegren, Mr. Carl/Charles Peter", "input": "Sex: male | Age: 51 | Pclass: 3", "output": "0"}
+{"instruction": "Richards, Master. William Rowe", "input": "Sex: male | Age: 3 | Pclass: 2", "output": "1"}
+{"instruction": "Birkeland, Mr. Hans Martin Monsen", "input": "Sex: male | Age: 21 | Pclass: 3", "output": "0"}
+{"instruction": "Lefebre, Miss. Ida", "input": "Sex: female | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Sdycoff, Mr. Todor", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Hart, Mr. Henry", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Minahan, Miss. Daisy E", "input": "Sex: female | Age: 33 | Pclass: 1", "output": "1"}
+{"instruction": "Cunningham, Mr. Alfred Fleming", "input": "Sex: male | Age:  | Pclass: 2", "output": "0"}
+{"instruction": "Sundman, Mr. Johan Julian", "input": "Sex: male | Age: 44 | Pclass: 3", "output": "1"}
+{"instruction": "Meek, Mrs. Thomas (Annie Louise Rowley)", "input": "Sex: female | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Drew, Mrs. James Vivian (Lulu Thorne Christian)", "input": "Sex: female | Age: 34 | Pclass: 2", "output": "1"}
+{"instruction": "Silven, Miss. Lyyli Karoliina", "input": "Sex: female | Age: 18 | Pclass: 2", "output": "1"}
+{"instruction": "Matthews, Mr. William John", "input": "Sex: male | Age: 30 | Pclass: 2", "output": "0"}
+{"instruction": "Van Impe, Miss. Catharina", "input": "Sex: female | Age: 10 | Pclass: 3", "output": "0"}
+{"instruction": "Gheorgheff, Mr. Stanio", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Charters, Mr. David", "input": "Sex: male | Age: 21 | Pclass: 3", "output": "0"}
+{"instruction": "Zimmerman, Mr. Leo", "input": "Sex: male | Age: 29 | Pclass: 3", "output": "0"}
+{"instruction": "Danbom, Mrs. Ernst Gilbert (Anna Sigrid Maria Brogren)", "input": "Sex: female | Age: 28 | Pclass: 3", "output": "0"}
+{"instruction": "Rosblom, Mr. Viktor Richard", "input": "Sex: male | Age: 18 | Pclass: 3", "output": "0"}
+{"instruction": "Wiseman, Mr. Phillippe", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Clarke, Mrs. Charles V (Ada Maria Winfield)", "input": "Sex: female | Age: 28 | Pclass: 2", "output": "1"}
+{"instruction": "Phillips, Miss. Kate Florence (\"Mrs Kate Louise Phillips Marshall\")", "input": "Sex: female | Age: 19 | Pclass: 2", "output": "1"}
+{"instruction": "Flynn, Mr. James", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Pickard, Mr. Berk (Berk Trembisky)", "input": "Sex: male | Age: 32 | Pclass: 3", "output": "1"}
+{"instruction": "Bjornstrom-Steffansson, Mr. Mauritz Hakan", "input": "Sex: male | Age: 28 | Pclass: 1", "output": "1"}
+{"instruction": "Thorneycroft, Mrs. Percival (Florence Kate White)", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Louch, Mrs. Charles Alexander (Alice Adelaide Slow)", "input": "Sex: female | Age: 42 | Pclass: 2", "output": "1"}
+{"instruction": "Kallio, Mr. Nikolai Erland", "input": "Sex: male | Age: 17 | Pclass: 3", "output": "0"}
+{"instruction": "Silvey, Mr. William Baird", "input": "Sex: male | Age: 50 | Pclass: 1", "output": "0"}
+{"instruction": "Carter, Miss. Lucile Polk", "input": "Sex: female | Age: 14 | Pclass: 1", "output": "1"}
+{"instruction": "Ford, Miss. Doolina Margaret \"Daisy\"", "input": "Sex: female | Age: 21 | Pclass: 3", "output": "0"}
+{"instruction": "Richards, Mrs. Sidney (Emily Hocking)", "input": "Sex: female | Age: 24 | Pclass: 2", "output": "1"}
+{"instruction": "Fortune, Mr. Mark", "input": "Sex: male | Age: 64 | Pclass: 1", "output": "0"}
+{"instruction": "Kvillner, Mr. Johan Henrik Johannesson", "input": "Sex: male | Age: 31 | Pclass: 2", "output": "0"}
+{"instruction": "Hart, Mrs. Benjamin (Esther Ada Bloomfield)", "input": "Sex: female | Age: 45 | Pclass: 2", "output": "1"}
+{"instruction": "Hampe, Mr. Leon", "input": "Sex: male | Age: 20 | Pclass: 3", "output": "0"}
+{"instruction": "Petterson, Mr. Johan Emil", "input": "Sex: male | Age: 25 | Pclass: 3", "output": "0"}
+{"instruction": "Reynaldo, Ms. Encarnacion", "input": "Sex: female | Age: 28 | Pclass: 2", "output": "1"}
+{"instruction": "Johannesen-Bratthammer, Mr. Bernt", "input": "Sex: male | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Dodge, Master. Washington", "input": "Sex: male | Age: 4 | Pclass: 1", "output": "1"}
+{"instruction": "Mellinger, Miss. Madeleine Violet", "input": "Sex: female | Age: 13 | Pclass: 2", "output": "1"}
+{"instruction": "Seward, Mr. Frederic Kimber", "input": "Sex: male | Age: 34 | Pclass: 1", "output": "1"}
+{"instruction": "Baclini, Miss. Marie Catherine", "input": "Sex: female | Age: 5 | Pclass: 3", "output": "1"}
+{"instruction": "Peuchen, Major. Arthur Godfrey", "input": "Sex: male | Age: 52 | Pclass: 1", "output": "1"}
+{"instruction": "West, Mr. Edwy Arthur", "input": "Sex: male | Age: 36 | Pclass: 2", "output": "0"}
+{"instruction": "Hagland, Mr. Ingvald Olai Olsen", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Foreman, Mr. Benjamin Laventall", "input": "Sex: male | Age: 30 | Pclass: 1", "output": "0"}
+{"instruction": "Goldenberg, Mr. Samuel L", "input": "Sex: male | Age: 49 | Pclass: 1", "output": "1"}
+{"instruction": "Peduzzi, Mr. Joseph", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Jalsevac, Mr. Ivan", "input": "Sex: male | Age: 29 | Pclass: 3", "output": "1"}
+{"instruction": "Millet, Mr. Francis Davis", "input": "Sex: male | Age: 65 | Pclass: 1", "output": "0"}
+{"instruction": "Kenyon, Mrs. Frederick R (Marion)", "input": "Sex: female | Age:  | Pclass: 1", "output": "1"}
+{"instruction": "Toomey, Miss. Ellen", "input": "Sex: female | Age: 50 | Pclass: 2", "output": "1"}
+{"instruction": "O'Connor, Mr. Maurice", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Anderson, Mr. Harry", "input": "Sex: male | Age: 48 | Pclass: 1", "output": "1"}
+{"instruction": "Morley, Mr. William", "input": "Sex: male | Age: 34 | Pclass: 3", "output": "0"}
+{"instruction": "Gee, Mr. Arthur H", "input": "Sex: male | Age: 47 | Pclass: 1", "output": "0"}
+{"instruction": "Milling, Mr. Jacob Christian", "input": "Sex: male | Age: 48 | Pclass: 2", "output": "0"}
+{"instruction": "Maisner, Mr. Simon", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Goncalves, Mr. Manuel Estanslas", "input": "Sex: male | Age: 38 | Pclass: 3", "output": "0"}
+{"instruction": "Campbell, Mr. William", "input": "Sex: male | Age:  | Pclass: 2", "output": "0"}
+{"instruction": "Smart, Mr. John Montgomery", "input": "Sex: male | Age: 56 | Pclass: 1", "output": "0"}
+{"instruction": "Scanlan, Mr. James", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Baclini, Miss. Helene Barbara", "input": "Sex: female | Age: 0.75 | Pclass: 3", "output": "1"}
+{"instruction": "Keefe, Mr. Arthur", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Cacic, Mr. Luka", "input": "Sex: male | Age: 38 | Pclass: 3", "output": "0"}
+{"instruction": "West, Mrs. Edwy Arthur (Ada Mary Worth)", "input": "Sex: female | Age: 33 | Pclass: 2", "output": "1"}
+{"instruction": "Jerwan, Mrs. Amin S (Marie Marthe Thuillard)", "input": "Sex: female | Age: 23 | Pclass: 2", "output": "1"}
+{"instruction": "Strandberg, Miss. Ida Sofia", "input": "Sex: female | Age: 22 | Pclass: 3", "output": "0"}
+{"instruction": "Clifford, Mr. George Quincy", "input": "Sex: male | Age:  | Pclass: 1", "output": "0"}
+{"instruction": "Renouf, Mr. Peter Henry", "input": "Sex: male | Age: 34 | Pclass: 2", "output": "0"}
+{"instruction": "Braund, Mr. Lewis Richard", "input": "Sex: male | Age: 29 | Pclass: 3", "output": "0"}
+{"instruction": "Karlsson, Mr. Nils August", "input": "Sex: male | Age: 22 | Pclass: 3", "output": "0"}
+{"instruction": "Hirvonen, Miss. Hildur E", "input": "Sex: female | Age: 2 | Pclass: 3", "output": "1"}
+{"instruction": "Goodwin, Master. Harold Victor", "input": "Sex: male | Age: 9 | Pclass: 3", "output": "0"}
+{"instruction": "Frost, Mr. Anthony Wood \"Archie\"", "input": "Sex: male | Age:  | Pclass: 2", "output": "0"}
+{"instruction": "Rouse, Mr. Richard Henry", "input": "Sex: male | Age: 50 | Pclass: 3", "output": "0"}
+{"instruction": "Turkula, Mrs. (Hedwig)", "input": "Sex: female | Age: 63 | Pclass: 3", "output": "1"}
+{"instruction": "Bishop, Mr. Dickinson H", "input": "Sex: male | Age: 25 | Pclass: 1", "output": "1"}
+{"instruction": "Lefebre, Miss. Jeannie", "input": "Sex: female | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Hoyt, Mrs. Frederick Maxfield (Jane Anne Forby)", "input": "Sex: female | Age: 35 | Pclass: 1", "output": "1"}
+{"instruction": "Kent, Mr. Edward Austin", "input": "Sex: male | Age: 58 | Pclass: 1", "output": "0"}
+{"instruction": "Somerton, Mr. Francis William", "input": "Sex: male | Age: 30 | Pclass: 3", "output": "0"}
+{"instruction": "Coutts, Master. Eden Leslie \"Neville\"", "input": "Sex: male | Age: 9 | Pclass: 3", "output": "1"}
+{"instruction": "Hagland, Mr. Konrad Mathias Reiersen", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Windelov, Mr. Einar", "input": "Sex: male | Age: 21 | Pclass: 3", "output": "0"}
+{"instruction": "Molson, Mr. Harry Markland", "input": "Sex: male | Age: 55 | Pclass: 1", "output": "0"}
+{"instruction": "Artagaveytia, Mr. Ramon", "input": "Sex: male | Age: 71 | Pclass: 1", "output": "0"}
+{"instruction": "Stanley, Mr. Edward Roland", "input": "Sex: male | Age: 21 | Pclass: 3", "output": "0"}
+{"instruction": "Yousseff, Mr. Gerious", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Eustis, Miss. Elizabeth Mussey", "input": "Sex: female | Age: 54 | Pclass: 1", "output": "1"}
+{"instruction": "Shellard, Mr. Frederick William", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Allison, Mrs. Hudson J C (Bessie Waldo Daniels)", "input": "Sex: female | Age: 25 | Pclass: 1", "output": "0"}
+{"instruction": "Svensson, Mr. Olof", "input": "Sex: male | Age: 24 | Pclass: 3", "output": "0"}
+{"instruction": "Calic, Mr. Petar", "input": "Sex: male | Age: 17 | Pclass: 3", "output": "0"}
+{"instruction": "Canavan, Miss. Mary", "input": "Sex: female | Age: 21 | Pclass: 3", "output": "0"}
+{"instruction": "O'Sullivan, Miss. Bridget Mary", "input": "Sex: female | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Laitinen, Miss. Kristina Sofia", "input": "Sex: female | Age: 37 | Pclass: 3", "output": "0"}
+{"instruction": "Maioni, Miss. Roberta", "input": "Sex: female | Age: 16 | Pclass: 1", "output": "1"}
+{"instruction": "Penasco y Castellana, Mr. Victor de Satode", "input": "Sex: male | Age: 18 | Pclass: 1", "output": "0"}
+{"instruction": "Quick, Mrs. Frederick Charles (Jane Richards)", "input": "Sex: female | Age: 33 | Pclass: 2", "output": "1"}
+{"instruction": "Bradley, Mr. George (\"George Arthur Brayton\")", "input": "Sex: male | Age:  | Pclass: 1", "output": "1"}
+{"instruction": "Olsen, Mr. Henry Margido", "input": "Sex: male | Age: 28 | Pclass: 3", "output": "0"}
+{"instruction": "Lang, Mr. Fang", "input": "Sex: male | Age: 26 | Pclass: 3", "output": "1"}
+{"instruction": "Daly, Mr. Eugene Patrick", "input": "Sex: male | Age: 29 | Pclass: 3", "output": "1"}
+{"instruction": "Webber, Mr. James", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "McGough, Mr. James Robert", "input": "Sex: male | Age: 36 | Pclass: 1", "output": "1"}
+{"instruction": "Rothschild, Mrs. Martin (Elizabeth L. Barrett)", "input": "Sex: female | Age: 54 | Pclass: 1", "output": "1"}
+{"instruction": "Coleff, Mr. Satio", "input": "Sex: male | Age: 24 | Pclass: 3", "output": "0"}
+{"instruction": "Walker, Mr. William Anderson", "input": "Sex: male | Age: 47 | Pclass: 1", "output": "0"}
+{"instruction": "Lemore, Mrs. (Amelia Milley)", "input": "Sex: female | Age: 34 | Pclass: 2", "output": "1"}
+{"instruction": "Ryan, Mr. Patrick", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Angle, Mrs. William A (Florence \"Mary\" Agnes Hughes)", "input": "Sex: female | Age: 36 | Pclass: 2", "output": "1"}
+{"instruction": "Pavlovic, Mr. Stefo", "input": "Sex: male | Age: 32 | Pclass: 3", "output": "0"}
+{"instruction": "Perreault, Miss. Anne", "input": "Sex: female | Age: 30 | Pclass: 1", "output": "1"}
+{"instruction": "Vovk, Mr. Janko", "input": "Sex: male | Age: 22 | Pclass: 3", "output": "0"}
+{"instruction": "Lahoud, Mr. Sarkis", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Hippach, Mrs. Louis Albert (Ida Sophia Fischer)", "input": "Sex: female | Age: 44 | Pclass: 1", "output": "1"}
+{"instruction": "Kassem, Mr. Fared", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Farrell, Mr. James", "input": "Sex: male | Age: 40.5 | Pclass: 3", "output": "0"}
+{"instruction": "Ridsdale, Miss. Lucy", "input": "Sex: female | Age: 50 | Pclass: 2", "output": "1"}
+{"instruction": "Farthing, Mr. John", "input": "Sex: male | Age:  | Pclass: 1", "output": "0"}
+{"instruction": "Salonen, Mr. Johan Werner", "input": "Sex: male | Age: 39 | Pclass: 3", "output": "0"}
+{"instruction": "Hocking, Mr. Richard George", "input": "Sex: male | Age: 23 | Pclass: 2", "output": "0"}
+{"instruction": "Quick, Miss. Phyllis May", "input": "Sex: female | Age: 2 | Pclass: 2", "output": "1"}
+{"instruction": "Toufik, Mr. Nakli", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Elias, Mr. Joseph Jr", "input": "Sex: male | Age: 17 | Pclass: 3", "output": "0"}
+{"instruction": "Peter, Mrs. Catherine (Catherine Rizk)", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Cacic, Miss. Marija", "input": "Sex: female | Age: 30 | Pclass: 3", "output": "0"}
+{"instruction": "Hart, Miss. Eva Miriam", "input": "Sex: female | Age: 7 | Pclass: 2", "output": "1"}
+{"instruction": "Butt, Major. Archibald Willingham", "input": "Sex: male | Age: 45 | Pclass: 1", "output": "0"}
+{"instruction": "LeRoy, Miss. Bertha", "input": "Sex: female | Age: 30 | Pclass: 1", "output": "1"}
+{"instruction": "Risien, Mr. Samuel Beard", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Frolicher, Miss. Hedwig Margaritha", "input": "Sex: female | Age: 22 | Pclass: 1", "output": "1"}
+{"instruction": "Crosby, Miss. Harriet R", "input": "Sex: female | Age: 36 | Pclass: 1", "output": "1"}
+{"instruction": "Andersson, Miss. Ingeborg Constanzia", "input": "Sex: female | Age: 9 | Pclass: 3", "output": "0"}
+{"instruction": "Andersson, Miss. Sigrid Elisabeth", "input": "Sex: female | Age: 11 | Pclass: 3", "output": "0"}
+{"instruction": "Beane, Mr. Edward", "input": "Sex: male | Age: 32 | Pclass: 2", "output": "1"}
+{"instruction": "Douglas, Mr. Walter Donald", "input": "Sex: male | Age: 50 | Pclass: 1", "output": "0"}
+{"instruction": "Nicholson, Mr. Arthur Ernest", "input": "Sex: male | Age: 64 | Pclass: 1", "output": "0"}
+{"instruction": "Beane, Mrs. Edward (Ethel Clarke)", "input": "Sex: female | Age: 19 | Pclass: 2", "output": "1"}
+{"instruction": "Padro y Manent, Mr. Julian", "input": "Sex: male | Age:  | Pclass: 2", "output": "1"}
+{"instruction": "Goldsmith, Mr. Frank John", "input": "Sex: male | Age: 33 | Pclass: 3", "output": "0"}
+{"instruction": "Davies, Master. John Morgan Jr", "input": "Sex: male | Age: 8 | Pclass: 2", "output": "1"}
+{"instruction": "Thayer, Mr. John Borland Jr", "input": "Sex: male | Age: 17 | Pclass: 1", "output": "1"}
+{"instruction": "Sharp, Mr. Percival James R", "input": "Sex: male | Age: 27 | Pclass: 2", "output": "0"}
+{"instruction": "O'Brien, Mr. Timothy", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Leeni, Mr. Fahim (\"Philip Zenni\")", "input": "Sex: male | Age: 22 | Pclass: 3", "output": "1"}
+{"instruction": "Ohman, Miss. Velin", "input": "Sex: female | Age: 22 | Pclass: 3", "output": "1"}
+{"instruction": "Wright, Mr. George", "input": "Sex: male | Age: 62 | Pclass: 1", "output": "0"}
+{"instruction": "Duff Gordon, Lady. (Lucille Christiana Sutherland) (\"Mrs Morgan\")", "input": "Sex: female | Age: 48 | Pclass: 1", "output": "1"}
+{"instruction": "Robbins, Mr. Victor", "input": "Sex: male | Age:  | Pclass: 1", "output": "0"}
+{"instruction": "Taussig, Mrs. Emil (Tillie Mandelbaum)", "input": "Sex: female | Age: 39 | Pclass: 1", "output": "1"}
+{"instruction": "de Messemaeker, Mrs. Guillaume Joseph (Emma)", "input": "Sex: female | Age: 36 | Pclass: 3", "output": "1"}
+{"instruction": "Morrow, Mr. Thomas Rowan", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Sivic, Mr. Husein", "input": "Sex: male | Age: 40 | Pclass: 3", "output": "0"}
+{"instruction": "Norman, Mr. Robert Douglas", "input": "Sex: male | Age: 28 | Pclass: 2", "output": "0"}
+{"instruction": "Simmons, Mr. John", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Meanwell, Miss. (Marion Ogden)", "input": "Sex: female | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Davies, Mr. Alfred J", "input": "Sex: male | Age: 24 | Pclass: 3", "output": "0"}
+{"instruction": "Stoytcheff, Mr. Ilia", "input": "Sex: male | Age: 19 | Pclass: 3", "output": "0"}
+{"instruction": "Palsson, Mrs. Nils (Alma Cornelia Berglund)", "input": "Sex: female | Age: 29 | Pclass: 3", "output": "0"}
+{"instruction": "Doharr, Mr. Tannous", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Jonsson, Mr. Carl", "input": "Sex: male | Age: 32 | Pclass: 3", "output": "1"}
+{"instruction": "Harris, Mr. George", "input": "Sex: male | Age: 62 | Pclass: 2", "output": "1"}
+{"instruction": "Appleton, Mrs. Edward Dale (Charlotte Lamson)", "input": "Sex: female | Age: 53 | Pclass: 1", "output": "1"}
+{"instruction": "Flynn, Mr. John Irwin (\"Irving\")", "input": "Sex: male | Age: 36 | Pclass: 1", "output": "1"}
+{"instruction": "Kelly, Miss. Mary", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Rush, Mr. Alfred George John", "input": "Sex: male | Age: 16 | Pclass: 3", "output": "0"}
+{"instruction": "Patchett, Mr. George", "input": "Sex: male | Age: 19 | Pclass: 3", "output": "0"}
+{"instruction": "Garside, Miss. Ethel", "input": "Sex: female | Age: 34 | Pclass: 2", "output": "1"}
+{"instruction": "Silvey, Mrs. William Baird (Alice Munger)", "input": "Sex: female | Age: 39 | Pclass: 1", "output": "1"}
+{"instruction": "Caram, Mrs. Joseph (Maria Elias)", "input": "Sex: female | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Jussila, Mr. Eiriik", "input": "Sex: male | Age: 32 | Pclass: 3", "output": "1"}
+{"instruction": "Christy, Miss. Julie Rachel", "input": "Sex: female | Age: 25 | Pclass: 2", "output": "1"}
+{"instruction": "Thayer, Mrs. John Borland (Marian Longstreth Morris)", "input": "Sex: female | Age: 39 | Pclass: 1", "output": "1"}
+{"instruction": "Downton, Mr. William James", "input": "Sex: male | Age: 54 | Pclass: 2", "output": "0"}
+{"instruction": "Ross, Mr. John Hugo", "input": "Sex: male | Age: 36 | Pclass: 1", "output": "0"}
+{"instruction": "Paulner, Mr. Uscher", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Taussig, Miss. Ruth", "input": "Sex: female | Age: 18 | Pclass: 1", "output": "1"}
+{"instruction": "Jarvis, Mr. John Denzil", "input": "Sex: male | Age: 47 | Pclass: 2", "output": "0"}
+{"instruction": "Frolicher-Stehli, Mr. Maxmillian", "input": "Sex: male | Age: 60 | Pclass: 1", "output": "1"}
+{"instruction": "Gilinski, Mr. Eliezer", "input": "Sex: male | Age: 22 | Pclass: 3", "output": "0"}
+{"instruction": "Murdlin, Mr. Joseph", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Rintamaki, Mr. Matti", "input": "Sex: male | Age: 35 | Pclass: 3", "output": "0"}
+{"instruction": "Stephenson, Mrs. Walter Bertram (Martha Eustis)", "input": "Sex: female | Age: 52 | Pclass: 1", "output": "1"}
+{"instruction": "Elsbury, Mr. William James", "input": "Sex: male | Age: 47 | Pclass: 3", "output": "0"}
+{"instruction": "Bourke, Miss. Mary", "input": "Sex: female | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Chapman, Mr. John Henry", "input": "Sex: male | Age: 37 | Pclass: 2", "output": "0"}
+{"instruction": "Van Impe, Mr. Jean Baptiste", "input": "Sex: male | Age: 36 | Pclass: 3", "output": "0"}
+{"instruction": "Leitch, Miss. Jessie Wills", "input": "Sex: female | Age:  | Pclass: 2", "output": "1"}
+{"instruction": "Johnson, Mr. Alfred", "input": "Sex: male | Age: 49 | Pclass: 3", "output": "0"}
+{"instruction": "Boulos, Mr. Hanna", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Duff Gordon, Sir. Cosmo Edmund (\"Mr Morgan\")", "input": "Sex: male | Age: 49 | Pclass: 1", "output": "1"}
+{"instruction": "Jacobsohn, Mrs. Sidney Samuel (Amy Frances Christy)", "input": "Sex: female | Age: 24 | Pclass: 2", "output": "1"}
+{"instruction": "Slabenoff, Mr. Petco", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Harrington, Mr. Charles H", "input": "Sex: male | Age:  | Pclass: 1", "output": "0"}
+{"instruction": "Torber, Mr. Ernst William", "input": "Sex: male | Age: 44 | Pclass: 3", "output": "0"}
+{"instruction": "Homer, Mr. Harry (\"Mr E Haven\")", "input": "Sex: male | Age: 35 | Pclass: 1", "output": "1"}
+{"instruction": "Lindell, Mr. Edvard Bengtsson", "input": "Sex: male | Age: 36 | Pclass: 3", "output": "0"}
+{"instruction": "Karaic, Mr. Milan", "input": "Sex: male | Age: 30 | Pclass: 3", "output": "0"}
+{"instruction": "Daniel, Mr. Robert Williams", "input": "Sex: male | Age: 27 | Pclass: 1", "output": "1"}
+{"instruction": "Laroche, Mrs. Joseph (Juliette Marie Louise Lafargue)", "input": "Sex: female | Age: 22 | Pclass: 2", "output": "1"}
+{"instruction": "Shutes, Miss. Elizabeth W", "input": "Sex: female | Age: 40 | Pclass: 1", "output": "1"}
+{"instruction": "Andersson, Mrs. Anders Johan (Alfrida Konstantia Brogren)", "input": "Sex: female | Age: 39 | Pclass: 3", "output": "0"}
+{"instruction": "Jardin, Mr. Jose Neto", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Murphy, Miss. Margaret Jane", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Horgan, Mr. John", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Brocklebank, Mr. William Alfred", "input": "Sex: male | Age: 35 | Pclass: 3", "output": "0"}
+{"instruction": "Herman, Miss. Alice", "input": "Sex: female | Age: 24 | Pclass: 2", "output": "1"}
+{"instruction": "Danbom, Mr. Ernst Gilbert", "input": "Sex: male | Age: 34 | Pclass: 3", "output": "0"}
+{"instruction": "Lobb, Mrs. William Arthur (Cordelia K Stanlick)", "input": "Sex: female | Age: 26 | Pclass: 3", "output": "0"}
+{"instruction": "Becker, Miss. Marion Louise", "input": "Sex: female | Age: 4 | Pclass: 2", "output": "1"}
+{"instruction": "Gavey, Mr. Lawrence", "input": "Sex: male | Age: 26 | Pclass: 2", "output": "0"}
+{"instruction": "Yasbeck, Mr. Antoni", "input": "Sex: male | Age: 27 | Pclass: 3", "output": "0"}
+{"instruction": "Kimball, Mr. Edwin Nelson Jr", "input": "Sex: male | Age: 42 | Pclass: 1", "output": "1"}
+{"instruction": "Nakid, Mr. Sahid", "input": "Sex: male | Age: 20 | Pclass: 3", "output": "1"}
+{"instruction": "Hansen, Mr. Henry Damsgaard", "input": "Sex: male | Age: 21 | Pclass: 3", "output": "0"}
+{"instruction": "Bowen, Mr. David John \"Dai\"", "input": "Sex: male | Age: 21 | Pclass: 3", "output": "0"}
+{"instruction": "Sutton, Mr. Frederick", "input": "Sex: male | Age: 61 | Pclass: 1", "output": "0"}
+{"instruction": "Kirkland, Rev. Charles Leonard", "input": "Sex: male | Age: 57 | Pclass: 2", "output": "0"}
+{"instruction": "Longley, Miss. Gretchen Fiske", "input": "Sex: female | Age: 21 | Pclass: 1", "output": "1"}
+{"instruction": "Bostandyeff, Mr. Guentcho", "input": "Sex: male | Age: 26 | Pclass: 3", "output": "0"}
+{"instruction": "O'Connell, Mr. Patrick D", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Barkworth, Mr. Algernon Henry Wilson", "input": "Sex: male | Age: 80 | Pclass: 1", "output": "1"}
+{"instruction": "Lundahl, Mr. Johan Svensson", "input": "Sex: male | Age: 51 | Pclass: 3", "output": "0"}
+{"instruction": "Stahelin-Maeglin, Dr. Max", "input": "Sex: male | Age: 32 | Pclass: 1", "output": "1"}
+{"instruction": "Parr, Mr. William Henry Marsh", "input": "Sex: male | Age:  | Pclass: 1", "output": "0"}
+{"instruction": "Skoog, Miss. Mabel", "input": "Sex: female | Age: 9 | Pclass: 3", "output": "0"}
+{"instruction": "Davis, Miss. Mary", "input": "Sex: female | Age: 28 | Pclass: 2", "output": "1"}
+{"instruction": "Leinonen, Mr. Antti Gustaf", "input": "Sex: male | Age: 32 | Pclass: 3", "output": "0"}
+{"instruction": "Collyer, Mr. Harvey", "input": "Sex: male | Age: 31 | Pclass: 2", "output": "0"}
+{"instruction": "Panula, Mrs. Juha (Maria Emilia Ojala)", "input": "Sex: female | Age: 41 | Pclass: 3", "output": "0"}
+{"instruction": "Thorneycroft, Mr. Percival", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Jensen, Mr. Hans Peder", "input": "Sex: male | Age: 20 | Pclass: 3", "output": "0"}
+{"instruction": "Sagesser, Mlle. Emma", "input": "Sex: female | Age: 24 | Pclass: 1", "output": "1"}
+{"instruction": "Skoog, Miss. Margit Elizabeth", "input": "Sex: female | Age: 2 | Pclass: 3", "output": "0"}
+{"instruction": "Foo, Mr. Choong", "input": "Sex: male | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Baclini, Miss. Eugenie", "input": "Sex: female | Age: 0.75 | Pclass: 3", "output": "1"}
+{"instruction": "Harper, Mr. Henry Sleeper", "input": "Sex: male | Age: 48 | Pclass: 1", "output": "1"}
+{"instruction": "Cor, Mr. Liudevit", "input": "Sex: male | Age: 19 | Pclass: 3", "output": "0"}
+{"instruction": "Simonius-Blumer, Col. Oberst Alfons", "input": "Sex: male | Age: 56 | Pclass: 1", "output": "1"}
+{"instruction": "Willey, Mr. Edward", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Stanley, Miss. Amy Zillah Elsie", "input": "Sex: female | Age: 23 | Pclass: 3", "output": "1"}
+{"instruction": "Mitkoff, Mr. Mito", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Doling, Miss. Elsie", "input": "Sex: female | Age: 18 | Pclass: 2", "output": "1"}
+{"instruction": "Kalvik, Mr. Johannes Halvorsen", "input": "Sex: male | Age: 21 | Pclass: 3", "output": "0"}
+{"instruction": "O'Leary, Miss. Hanora \"Norah\"", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Hegarty, Miss. Hanora \"Nora\"", "input": "Sex: female | Age: 18 | Pclass: 3", "output": "0"}
+{"instruction": "Hickman, Mr. Leonard Mark", "input": "Sex: male | Age: 24 | Pclass: 2", "output": "0"}
+{"instruction": "Radeff, Mr. Alexander", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Bourke, Mrs. John (Catherine)", "input": "Sex: female | Age: 32 | Pclass: 3", "output": "0"}
+{"instruction": "Eitemiller, Mr. George Floyd", "input": "Sex: male | Age: 23 | Pclass: 2", "output": "0"}
+{"instruction": "Newell, Mr. Arthur Webster", "input": "Sex: male | Age: 58 | Pclass: 1", "output": "0"}
+{"instruction": "Frauenthal, Dr. Henry William", "input": "Sex: male | Age: 50 | Pclass: 1", "output": "1"}
+{"instruction": "Badt, Mr. Mohamed", "input": "Sex: male | Age: 40 | Pclass: 3", "output": "0"}
+{"instruction": "Colley, Mr. Edward Pomeroy", "input": "Sex: male | Age: 47 | Pclass: 1", "output": "0"}
+{"instruction": "Coleff, Mr. Peju", "input": "Sex: male | Age: 36 | Pclass: 3", "output": "0"}
+{"instruction": "Lindqvist, Mr. Eino William", "input": "Sex: male | Age: 20 | Pclass: 3", "output": "1"}
+{"instruction": "Hickman, Mr. Lewis", "input": "Sex: male | Age: 32 | Pclass: 2", "output": "0"}
+{"instruction": "Butler, Mr. Reginald Fenton", "input": "Sex: male | Age: 25 | Pclass: 2", "output": "0"}
+{"instruction": "Rommetvedt, Mr. Knud Paust", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Cook, Mr. Jacob", "input": "Sex: male | Age: 43 | Pclass: 3", "output": "0"}
+{"instruction": "Taylor, Mrs. Elmer Zebley (Juliet Cummins Wright)", "input": "Sex: female | Age:  | Pclass: 1", "output": "1"}
+{"instruction": "Brown, Mrs. Thomas William Solomon (Elizabeth Catherine Ford)", "input": "Sex: female | Age: 40 | Pclass: 2", "output": "1"}
+{"instruction": "Davidson, Mr. Thornton", "input": "Sex: male | Age: 31 | Pclass: 1", "output": "0"}
+{"instruction": "Mitchell, Mr. Henry Michael", "input": "Sex: male | Age: 70 | Pclass: 2", "output": "0"}
+{"instruction": "Wilhelms, Mr. Charles", "input": "Sex: male | Age: 31 | Pclass: 2", "output": "1"}
+{"instruction": "Watson, Mr. Ennis Hastings", "input": "Sex: male | Age:  | Pclass: 2", "output": "0"}
+{"instruction": "Edvardsson, Mr. Gustaf Hjalmar", "input": "Sex: male | Age: 18 | Pclass: 3", "output": "0"}
+{"instruction": "Sawyer, Mr. Frederick Charles", "input": "Sex: male | Age: 24.5 | Pclass: 3", "output": "0"}
+{"instruction": "Turja, Miss. Anna Sofia", "input": "Sex: female | Age: 18 | Pclass: 3", "output": "1"}
+{"instruction": "Goodwin, Mrs. Frederick (Augusta Tyler)", "input": "Sex: female | Age: 43 | Pclass: 3", "output": "0"}
+{"instruction": "Cardeza, Mr. Thomas Drake Martinez", "input": "Sex: male | Age: 36 | Pclass: 1", "output": "1"}
+{"instruction": "Peters, Miss. Katie", "input": "Sex: female | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Hassab, Mr. Hammad", "input": "Sex: male | Age: 27 | Pclass: 1", "output": "1"}
+{"instruction": "Olsvigen, Mr. Thor Anderson", "input": "Sex: male | Age: 20 | Pclass: 3", "output": "0"}
+{"instruction": "Goodwin, Mr. Charles Edward", "input": "Sex: male | Age: 14 | Pclass: 3", "output": "0"}
+{"instruction": "Brown, Mr. Thomas William Solomon", "input": "Sex: male | Age: 60 | Pclass: 2", "output": "0"}
+{"instruction": "Laroche, Mr. Joseph Philippe Lemercier", "input": "Sex: male | Age: 25 | Pclass: 2", "output": "0"}
+{"instruction": "Panula, Mr. Jaako Arnold", "input": "Sex: male | Age: 14 | Pclass: 3", "output": "0"}
+{"instruction": "Dakic, Mr. Branko", "input": "Sex: male | Age: 19 | Pclass: 3", "output": "0"}
+{"instruction": "Fischer, Mr. Eberhard Thelander", "input": "Sex: male | Age: 18 | Pclass: 3", "output": "0"}
+{"instruction": "Madill, Miss. Georgette Alexandra", "input": "Sex: female | Age: 15 | Pclass: 1", "output": "1"}
+{"instruction": "Dick, Mr. Albert Adrian", "input": "Sex: male | Age: 31 | Pclass: 1", "output": "1"}
+{"instruction": "Karun, Miss. Manca", "input": "Sex: female | Age: 4 | Pclass: 3", "output": "1"}
+{"instruction": "Lam, Mr. Ali", "input": "Sex: male | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Saad, Mr. Khalil", "input": "Sex: male | Age: 25 | Pclass: 3", "output": "0"}
+{"instruction": "Weir, Col. John", "input": "Sex: male | Age: 60 | Pclass: 1", "output": "0"}
+{"instruction": "Chapman, Mr. Charles Henry", "input": "Sex: male | Age: 52 | Pclass: 2", "output": "0"}
+{"instruction": "Kelly, Mr. James", "input": "Sex: male | Age: 44 | Pclass: 3", "output": "0"}
+{"instruction": "Mullens, Miss. Katherine \"Katie\"", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Thayer, Mr. John Borland", "input": "Sex: male | Age: 49 | Pclass: 1", "output": "0"}
+{"instruction": "Humblen, Mr. Adolf Mathias Nicolai Olsen", "input": "Sex: male | Age: 42 | Pclass: 3", "output": "0"}
+{"instruction": "Astor, Mrs. John Jacob (Madeleine Talmadge Force)", "input": "Sex: female | Age: 18 | Pclass: 1", "output": "1"}
+{"instruction": "Silverthorne, Mr. Spencer Victor", "input": "Sex: male | Age: 35 | Pclass: 1", "output": "1"}
+{"instruction": "Barbara, Miss. Saiide", "input": "Sex: female | Age: 18 | Pclass: 3", "output": "0"}
+{"instruction": "Gallagher, Mr. Martin", "input": "Sex: male | Age: 25 | Pclass: 3", "output": "0"}
+{"instruction": "Hansen, Mr. Henrik Juul", "input": "Sex: male | Age: 26 | Pclass: 3", "output": "0"}
+{"instruction": "Morley, Mr. Henry Samuel (\"Mr Henry Marshall\")", "input": "Sex: male | Age: 39 | Pclass: 2", "output": "0"}
+{"instruction": "Kelly, Mrs. Florence \"Fannie\"", "input": "Sex: female | Age: 45 | Pclass: 2", "output": "1"}
+{"instruction": "Calderhead, Mr. Edward Pennington", "input": "Sex: male | Age: 42 | Pclass: 1", "output": "1"}
+{"instruction": "Cleaver, Miss. Alice", "input": "Sex: female | Age: 22 | Pclass: 1", "output": "1"}
+{"instruction": "Moubarek, Master. Halim Gonios (\"William George\")", "input": "Sex: male | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Mayne, Mlle. Berthe Antonine (\"Mrs de Villiers\")", "input": "Sex: female | Age: 24 | Pclass: 1", "output": "1"}
+{"instruction": "Klaber, Mr. Herman", "input": "Sex: male | Age:  | Pclass: 1", "output": "0"}
+{"instruction": "Taylor, Mr. Elmer Zebley", "input": "Sex: male | Age: 48 | Pclass: 1", "output": "1"}
+{"instruction": "Larsson, Mr. August Viktor", "input": "Sex: male | Age: 29 | Pclass: 3", "output": "0"}
+{"instruction": "Greenberg, Mr. Samuel", "input": "Sex: male | Age: 52 | Pclass: 2", "output": "0"}
+{"instruction": "Soholt, Mr. Peter Andreas Lauritz Andersen", "input": "Sex: male | Age: 19 | Pclass: 3", "output": "0"}
+{"instruction": "Endres, Miss. Caroline Louise", "input": "Sex: female | Age: 38 | Pclass: 1", "output": "1"}
+{"instruction": "Troutt, Miss. Edwina Celia \"Winnie\"", "input": "Sex: female | Age: 27 | Pclass: 2", "output": "1"}
+{"instruction": "McEvoy, Mr. Michael", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Johnson, Mr. Malkolm Joackim", "input": "Sex: male | Age: 33 | Pclass: 3", "output": "0"}
+{"instruction": "Harper, Miss. Annie Jessie \"Nina\"", "input": "Sex: female | Age: 6 | Pclass: 2", "output": "1"}
+{"instruction": "Jensen, Mr. Svend Lauritz", "input": "Sex: male | Age: 17 | Pclass: 3", "output": "0"}
+{"instruction": "Gillespie, Mr. William Henry", "input": "Sex: male | Age: 34 | Pclass: 2", "output": "0"}
+{"instruction": "Hodges, Mr. Henry Price", "input": "Sex: male | Age: 50 | Pclass: 2", "output": "0"}
+{"instruction": "Chambers, Mr. Norman Campbell", "input": "Sex: male | Age: 27 | Pclass: 1", "output": "1"}
+{"instruction": "Oreskovic, Mr. Luka", "input": "Sex: male | Age: 20 | Pclass: 3", "output": "0"}
+{"instruction": "Renouf, Mrs. Peter Henry (Lillian Jefferys)", "input": "Sex: female | Age: 30 | Pclass: 2", "output": "1"}
+{"instruction": "Mannion, Miss. Margareth", "input": "Sex: female | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Bryhl, Mr. Kurt Arnold Gottfrid", "input": "Sex: male | Age: 25 | Pclass: 2", "output": "0"}
+{"instruction": "Ilmakangas, Miss. Pieta Sofia", "input": "Sex: female | Age: 25 | Pclass: 3", "output": "0"}
+{"instruction": "Allen, Miss. Elisabeth Walton", "input": "Sex: female | Age: 29 | Pclass: 1", "output": "1"}
+{"instruction": "Hassan, Mr. Houssein G N", "input": "Sex: male | Age: 11 | Pclass: 3", "output": "0"}
+{"instruction": "Knight, Mr. Robert J", "input": "Sex: male | Age:  | Pclass: 2", "output": "0"}
+{"instruction": "Berriman, Mr. William John", "input": "Sex: male | Age: 23 | Pclass: 2", "output": "0"}
+{"instruction": "Troupiansky, Mr. Moses Aaron", "input": "Sex: male | Age: 23 | Pclass: 2", "output": "0"}
+{"instruction": "Williams, Mr. Leslie", "input": "Sex: male | Age: 28.5 | Pclass: 3", "output": "0"}
+{"instruction": "Ford, Mrs. Edward (Margaret Ann Watson)", "input": "Sex: female | Age: 48 | Pclass: 3", "output": "0"}
+{"instruction": "Lesurer, Mr. Gustave J", "input": "Sex: male | Age: 35 | Pclass: 1", "output": "1"}
+{"instruction": "Ivanoff, Mr. Kanio", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Nankoff, Mr. Minko", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Hawksford, Mr. Walter James", "input": "Sex: male | Age:  | Pclass: 1", "output": "1"}
+{"instruction": "Cavendish, Mr. Tyrell William", "input": "Sex: male | Age: 36 | Pclass: 1", "output": "0"}
+{"instruction": "Ryerson, Miss. Susan Parker \"Suzette\"", "input": "Sex: female | Age: 21 | Pclass: 1", "output": "1"}
+{"instruction": "McNamee, Mr. Neal", "input": "Sex: male | Age: 24 | Pclass: 3", "output": "0"}
+{"instruction": "Stranden, Mr. Juho", "input": "Sex: male | Age: 31 | Pclass: 3", "output": "1"}
+{"instruction": "Crosby, Capt. Edward Gifford", "input": "Sex: male | Age: 70 | Pclass: 1", "output": "0"}
+{"instruction": "Abbott, Mr. Rossmore Edward", "input": "Sex: male | Age: 16 | Pclass: 3", "output": "0"}
+{"instruction": "Sinkkonen, Miss. Anna", "input": "Sex: female | Age: 30 | Pclass: 2", "output": "1"}
+{"instruction": "Marvin, Mr. Daniel Warner", "input": "Sex: male | Age: 19 | Pclass: 1", "output": "0"}
+{"instruction": "Connaghton, Mr. Michael", "input": "Sex: male | Age: 31 | Pclass: 3", "output": "0"}
+{"instruction": "Wells, Miss. Joan", "input": "Sex: female | Age: 4 | Pclass: 2", "output": "1"}
+{"instruction": "Moor, Master. Meier", "input": "Sex: male | Age: 6 | Pclass: 3", "output": "1"}
+{"instruction": "Vande Velde, Mr. Johannes Joseph", "input": "Sex: male | Age: 33 | Pclass: 3", "output": "0"}
+{"instruction": "Jonkoff, Mr. Lalio", "input": "Sex: male | Age: 23 | Pclass: 3", "output": "0"}
+{"instruction": "Herman, Mrs. Samuel (Jane Laver)", "input": "Sex: female | Age: 48 | Pclass: 2", "output": "1"}
+{"instruction": "Hamalainen, Master. Viljo", "input": "Sex: male | Age: 0.67 | Pclass: 2", "output": "1"}
+{"instruction": "Carlsson, Mr. August Sigfrid", "input": "Sex: male | Age: 28 | Pclass: 3", "output": "0"}
+{"instruction": "Bailey, Mr. Percy Andrew", "input": "Sex: male | Age: 18 | Pclass: 2", "output": "0"}
+{"instruction": "Theobald, Mr. Thomas Leonard", "input": "Sex: male | Age: 34 | Pclass: 3", "output": "0"}
+{"instruction": "Rothes, the Countess. of (Lucy Noel Martha Dyer-Edwards)", "input": "Sex: female | Age: 33 | Pclass: 1", "output": "1"}
+{"instruction": "Garfirth, Mr. John", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Nirva, Mr. Iisakki Antino Aijo", "input": "Sex: male | Age: 41 | Pclass: 3", "output": "0"}
+{"instruction": "Barah, Mr. Hanna Assi", "input": "Sex: male | Age: 20 | Pclass: 3", "output": "1"}
+{"instruction": "Carter, Mrs. William Ernest (Lucile Polk)", "input": "Sex: female | Age: 36 | Pclass: 1", "output": "1"}
+{"instruction": "Eklund, Mr. Hans Linus", "input": "Sex: male | Age: 16 | Pclass: 3", "output": "0"}
+{"instruction": "Hogeboom, Mrs. John C (Anna Andrews)", "input": "Sex: female | Age: 51 | Pclass: 1", "output": "1"}
+{"instruction": "Brewe, Dr. Arthur Jackson", "input": "Sex: male | Age:  | Pclass: 1", "output": "0"}
+{"instruction": "Mangan, Miss. Mary", "input": "Sex: female | Age: 30.5 | Pclass: 3", "output": "0"}
+{"instruction": "Moran, Mr. Daniel J", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Gronnestad, Mr. Daniel Danielsen", "input": "Sex: male | Age: 32 | Pclass: 3", "output": "0"}
+{"instruction": "Lievens, Mr. Rene Aime", "input": "Sex: male | Age: 24 | Pclass: 3", "output": "0"}
+{"instruction": "Jensen, Mr. Niels Peder", "input": "Sex: male | Age: 48 | Pclass: 3", "output": "0"}
+{"instruction": "Mack, Mrs. (Mary)", "input": "Sex: female | Age: 57 | Pclass: 2", "output": "0"}
+{"instruction": "Elias, Mr. Dibo", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Hocking, Mrs. Elizabeth (Eliza Needs)", "input": "Sex: female | Age: 54 | Pclass: 2", "output": "1"}
+{"instruction": "Myhrman, Mr. Pehr Fabian Oliver Malkolm", "input": "Sex: male | Age: 18 | Pclass: 3", "output": "0"}
+{"instruction": "Tobin, Mr. Roger", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Emanuel, Miss. Virginia Ethel", "input": "Sex: female | Age: 5 | Pclass: 3", "output": "1"}
+{"instruction": "Kilgannon, Mr. Thomas J", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Robert, Mrs. Edward Scott (Elisabeth Walton McMillan)", "input": "Sex: female | Age: 43 | Pclass: 1", "output": "1"}
+{"instruction": "Ayoub, Miss. Banoura", "input": "Sex: female | Age: 13 | Pclass: 3", "output": "1"}
+{"instruction": "Dick, Mrs. Albert Adrian (Vera Gillespie)", "input": "Sex: female | Age: 17 | Pclass: 1", "output": "1"}
+{"instruction": "Long, Mr. Milton Clyde", "input": "Sex: male | Age: 29 | Pclass: 1", "output": "0"}
+{"instruction": "Johnston, Mr. Andrew G", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Ali, Mr. William", "input": "Sex: male | Age: 25 | Pclass: 3", "output": "0"}
+{"instruction": "Harmer, Mr. Abraham (David Lishin)", "input": "Sex: male | Age: 25 | Pclass: 3", "output": "0"}
+{"instruction": "Sjoblom, Miss. Anna Sofia", "input": "Sex: female | Age: 18 | Pclass: 3", "output": "1"}
+{"instruction": "Rice, Master. George Hugh", "input": "Sex: male | Age: 8 | Pclass: 3", "output": "0"}
+{"instruction": "Dean, Master. Bertram Vere", "input": "Sex: male | Age: 1 | Pclass: 3", "output": "1"}
+{"instruction": "Guggenheim, Mr. Benjamin", "input": "Sex: male | Age: 46 | Pclass: 1", "output": "0"}
+{"instruction": "Keane, Mr. Andrew \"Andy\"", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Gaskell, Mr. Alfred", "input": "Sex: male | Age: 16 | Pclass: 2", "output": "0"}
+{"instruction": "Sage, Miss. Stella Anna", "input": "Sex: female | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Hoyt, Mr. William Fisher", "input": "Sex: male | Age:  | Pclass: 1", "output": "0"}
+{"instruction": "Dantcheff, Mr. Ristiu", "input": "Sex: male | Age: 25 | Pclass: 3", "output": "0"}
+{"instruction": "Otter, Mr. Richard", "input": "Sex: male | Age: 39 | Pclass: 2", "output": "0"}
+{"instruction": "Leader, Dr. Alice (Farnham)", "input": "Sex: female | Age: 49 | Pclass: 1", "output": "1"}
+{"instruction": "Osman, Mrs. Mara", "input": "Sex: female | Age: 31 | Pclass: 3", "output": "1"}
+{"instruction": "Ibrahim Shawah, Mr. Yousseff", "input": "Sex: male | Age: 30 | Pclass: 3", "output": "0"}
+{"instruction": "Van Impe, Mrs. Jean Baptiste (Rosalie Paula Govaert)", "input": "Sex: female | Age: 30 | Pclass: 3", "output": "0"}
+{"instruction": "Ponesell, Mr. Martin", "input": "Sex: male | Age: 34 | Pclass: 2", "output": "0"}
+{"instruction": "Collyer, Mrs. Harvey (Charlotte Annie Tate)", "input": "Sex: female | Age: 31 | Pclass: 2", "output": "1"}
+{"instruction": "Carter, Master. William Thornton II", "input": "Sex: male | Age: 11 | Pclass: 1", "output": "1"}
+{"instruction": "Thomas, Master. Assad Alexander", "input": "Sex: male | Age: 0.42 | Pclass: 3", "output": "1"}
+{"instruction": "Hedman, Mr. Oskar Arvid", "input": "Sex: male | Age: 27 | Pclass: 3", "output": "1"}
+{"instruction": "Johansson, Mr. Karl Johan", "input": "Sex: male | Age: 31 | Pclass: 3", "output": "0"}
+{"instruction": "Andrews, Mr. Thomas Jr", "input": "Sex: male | Age: 39 | Pclass: 1", "output": "0"}
+{"instruction": "Pettersson, Miss. Ellen Natalia", "input": "Sex: female | Age: 18 | Pclass: 3", "output": "0"}
+{"instruction": "Meyer, Mr. August", "input": "Sex: male | Age: 39 | Pclass: 2", "output": "0"}
+{"instruction": "Chambers, Mrs. Norman Campbell (Bertha Griggs)", "input": "Sex: female | Age: 33 | Pclass: 1", "output": "1"}
+{"instruction": "Alexander, Mr. William", "input": "Sex: male | Age: 26 | Pclass: 3", "output": "0"}
+{"instruction": "Lester, Mr. James", "input": "Sex: male | Age: 39 | Pclass: 3", "output": "0"}
+{"instruction": "Slemen, Mr. Richard James", "input": "Sex: male | Age: 35 | Pclass: 2", "output": "0"}
+{"instruction": "Andersson, Miss. Ebba Iris Alfrida", "input": "Sex: female | Age: 6 | Pclass: 3", "output": "0"}
+{"instruction": "Tomlin, Mr. Ernest Portage", "input": "Sex: male | Age: 30.5 | Pclass: 3", "output": "0"}
+{"instruction": "Fry, Mr. Richard", "input": "Sex: male | Age:  | Pclass: 1", "output": "0"}
+{"instruction": "Heininen, Miss. Wendla Maria", "input": "Sex: female | Age: 23 | Pclass: 3", "output": "0"}
+{"instruction": "Mallet, Mr. Albert", "input": "Sex: male | Age: 31 | Pclass: 2", "output": "0"}
+{"instruction": "Holm, Mr. John Fredrik Alexander", "input": "Sex: male | Age: 43 | Pclass: 3", "output": "0"}
+{"instruction": "Skoog, Master. Karl Thorsten", "input": "Sex: male | Age: 10 | Pclass: 3", "output": "0"}
+{"instruction": "Hays, Mrs. Charles Melville (Clara Jennings Gregg)", "input": "Sex: female | Age: 52 | Pclass: 1", "output": "1"}
+{"instruction": "Lulic, Mr. Nikola", "input": "Sex: male | Age: 27 | Pclass: 3", "output": "1"}
+{"instruction": "Reuchlin, Jonkheer. John George", "input": "Sex: male | Age: 38 | Pclass: 1", "output": "0"}
+{"instruction": "Moor, Mrs. (Beila)", "input": "Sex: female | Age: 27 | Pclass: 3", "output": "1"}
+{"instruction": "Panula, Master. Urho Abraham", "input": "Sex: male | Age: 2 | Pclass: 3", "output": "0"}
+{"instruction": "Flynn, Mr. John", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Lam, Mr. Len", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Mallet, Master. Andre", "input": "Sex: male | Age: 1 | Pclass: 2", "output": "1"}
+{"instruction": "McCormack, Mr. Thomas Joseph", "input": "Sex: male | Age:  | Pclass: 3", "output": "1"}
+{"instruction": "Stone, Mrs. George Nelson (Martha Evelyn)", "input": "Sex: female | Age: 62 | Pclass: 1", "output": "1"}
+{"instruction": "Yasbeck, Mrs. Antoni (Selini Alexander)", "input": "Sex: female | Age: 15 | Pclass: 3", "output": "1"}
+{"instruction": "Richards, Master. George Sibley", "input": "Sex: male | Age: 0.83 | Pclass: 2", "output": "1"}
+{"instruction": "Saad, Mr. Amin", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Augustsson, Mr. Albert", "input": "Sex: male | Age: 23 | Pclass: 3", "output": "0"}
+{"instruction": "Allum, Mr. Owen George", "input": "Sex: male | Age: 18 | Pclass: 3", "output": "0"}
+{"instruction": "Compton, Miss. Sara Rebecca", "input": "Sex: female | Age: 39 | Pclass: 1", "output": "1"}
+{"instruction": "Pasic, Mr. Jakob", "input": "Sex: male | Age: 21 | Pclass: 3", "output": "0"}
+{"instruction": "Sirota, Mr. Maurice", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Chip, Mr. Chang", "input": "Sex: male | Age: 32 | Pclass: 3", "output": "1"}
+{"instruction": "Marechal, Mr. Pierre", "input": "Sex: male | Age:  | Pclass: 1", "output": "1"}
+{"instruction": "Alhomaki, Mr. Ilmari Rudolf", "input": "Sex: male | Age: 20 | Pclass: 3", "output": "0"}
+{"instruction": "Mudd, Mr. Thomas Charles", "input": "Sex: male | Age: 16 | Pclass: 2", "output": "0"}
+{"instruction": "Serepeca, Miss. Augusta", "input": "Sex: female | Age: 30 | Pclass: 1", "output": "1"}
+{"instruction": "Lemberopolous, Mr. Peter L", "input": "Sex: male | Age: 34.5 | Pclass: 3", "output": "0"}
+{"instruction": "Culumovic, Mr. Jeso", "input": "Sex: male | Age: 17 | Pclass: 3", "output": "0"}
+{"instruction": "Abbing, Mr. Anthony", "input": "Sex: male | Age: 42 | Pclass: 3", "output": "0"}
+{"instruction": "Sage, Mr. Douglas Bullen", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Markoff, Mr. Marin", "input": "Sex: male | Age: 35 | Pclass: 3", "output": "0"}
+{"instruction": "Harper, Rev. John", "input": "Sex: male | Age: 28 | Pclass: 2", "output": "0"}
+{"instruction": "Goldenberg, Mrs. Samuel L (Edwiga Grabowska)", "input": "Sex: female | Age:  | Pclass: 1", "output": "1"}
+{"instruction": "Andersson, Master. Sigvard Harald Elias", "input": "Sex: male | Age: 4 | Pclass: 3", "output": "0"}
+{"instruction": "Svensson, Mr. Johan", "input": "Sex: male | Age: 74 | Pclass: 3", "output": "0"}
+{"instruction": "Boulos, Miss. Nourelain", "input": "Sex: female | Age: 9 | Pclass: 3", "output": "0"}
+{"instruction": "Lines, Miss. Mary Conover", "input": "Sex: female | Age: 16 | Pclass: 1", "output": "1"}
+{"instruction": "Carter, Mrs. Ernest Courtenay (Lilian Hughes)", "input": "Sex: female | Age: 44 | Pclass: 2", "output": "0"}
+{"instruction": "Aks, Mrs. Sam (Leah Rosen)", "input": "Sex: female | Age: 18 | Pclass: 3", "output": "1"}
+{"instruction": "Wick, Mrs. George Dennick (Mary Hitchcock)", "input": "Sex: female | Age: 45 | Pclass: 1", "output": "1"}
+{"instruction": "Daly, Mr. Peter Denis ", "input": "Sex: male | Age: 51 | Pclass: 1", "output": "1"}
+{"instruction": "Baclini, Mrs. Solomon (Latifa Qurban)", "input": "Sex: female | Age: 24 | Pclass: 3", "output": "1"}
+{"instruction": "Razi, Mr. Raihed", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Hansen, Mr. Claus Peter", "input": "Sex: male | Age: 41 | Pclass: 3", "output": "0"}
+{"instruction": "Giles, Mr. Frederick Edward", "input": "Sex: male | Age: 21 | Pclass: 2", "output": "0"}
+{"instruction": "Swift, Mrs. Frederick Joel (Margaret Welles Barron)", "input": "Sex: female | Age: 48 | Pclass: 1", "output": "1"}
+{"instruction": "Sage, Miss. Dorothy Edith \"Dolly\"", "input": "Sex: female | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Gill, Mr. John William", "input": "Sex: male | Age: 24 | Pclass: 2", "output": "0"}
+{"instruction": "Bystrom, Mrs. (Karolina)", "input": "Sex: female | Age: 42 | Pclass: 2", "output": "1"}
+{"instruction": "Duran y More, Miss. Asuncion", "input": "Sex: female | Age: 27 | Pclass: 2", "output": "1"}
+{"instruction": "Roebling, Mr. Washington Augustus II", "input": "Sex: male | Age: 31 | Pclass: 1", "output": "0"}
+{"instruction": "van Melkebeke, Mr. Philemon", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Johnson, Master. Harold Theodor", "input": "Sex: male | Age: 4 | Pclass: 3", "output": "1"}
+{"instruction": "Balkic, Mr. Cerin", "input": "Sex: male | Age: 26 | Pclass: 3", "output": "0"}
+{"instruction": "Beckwith, Mrs. Richard Leonard (Sallie Monypeny)", "input": "Sex: female | Age: 47 | Pclass: 1", "output": "1"}
+{"instruction": "Carlsson, Mr. Frans Olof", "input": "Sex: male | Age: 33 | Pclass: 1", "output": "0"}
+{"instruction": "Vander Cruyssen, Mr. Victor", "input": "Sex: male | Age: 47 | Pclass: 3", "output": "0"}
+{"instruction": "Abelson, Mrs. Samuel (Hannah Wizosky)", "input": "Sex: female | Age: 28 | Pclass: 2", "output": "1"}
+{"instruction": "Najib, Miss. Adele Kiamie \"Jane\"", "input": "Sex: female | Age: 15 | Pclass: 3", "output": "1"}
+{"instruction": "Gustafsson, Mr. Alfred Ossian", "input": "Sex: male | Age: 20 | Pclass: 3", "output": "0"}
+{"instruction": "Petroff, Mr. Nedelio", "input": "Sex: male | Age: 19 | Pclass: 3", "output": "0"}
+{"instruction": "Laleff, Mr. Kristo", "input": "Sex: male | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Potter, Mrs. Thomas Jr (Lily Alexenia Wilson)", "input": "Sex: female | Age: 56 | Pclass: 1", "output": "1"}
+{"instruction": "Shelley, Mrs. William (Imanita Parrish Hall)", "input": "Sex: female | Age: 25 | Pclass: 2", "output": "1"}
+{"instruction": "Markun, Mr. Johann", "input": "Sex: male | Age: 33 | Pclass: 3", "output": "0"}
+{"instruction": "Dahlberg, Miss. Gerda Ulrika", "input": "Sex: female | Age: 22 | Pclass: 3", "output": "0"}
+{"instruction": "Banfield, Mr. Frederick James", "input": "Sex: male | Age: 28 | Pclass: 2", "output": "0"}
+{"instruction": "Sutehall, Mr. Henry Jr", "input": "Sex: male | Age: 25 | Pclass: 3", "output": "0"}
+{"instruction": "Rice, Mrs. William (Margaret Norton)", "input": "Sex: female | Age: 39 | Pclass: 3", "output": "0"}
+{"instruction": "Montvila, Rev. Juozas", "input": "Sex: male | Age: 27 | Pclass: 2", "output": "0"}
+{"instruction": "Graham, Miss. Margaret Edith", "input": "Sex: female | Age: 19 | Pclass: 1", "output": "1"}
+{"instruction": "Johnston, Miss. Catherine Helen \"Carrie\"", "input": "Sex: female | Age:  | Pclass: 3", "output": "0"}
+{"instruction": "Behr, Mr. Karl Howell", "input": "Sex: male | Age: 26 | Pclass: 1", "output": "1"}
+{"instruction": "Dooley, Mr. Patrick", "input": "Sex: male | Age: 32 | Pclass: 3", "output": "0"}

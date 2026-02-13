@@ -1,23 +1,130 @@
-# General Settings
-data_path: "data/train_sft.jsonl"
-model_output: "outputs/qwen-text2sql"
-eval_output: "evaluation_results"
-system_prompt: "You are a Text-to-SQL expert."
+# ==============================================================================
+# SLM TEXT-TO-SQL PIPELINE CONFIGURATION TEMPLATE
+# ==============================================================================
+# This file controls the entire pipeline from data ingestion to model saving.
+# All paths should be relative to the project root.
 
-# Training Settings
-training:
+# ------------------------------------------------------------------------------
+# DATA INGESTION (Loader Configuration)
+# ------------------------------------------------------------------------------
+data:
+  # loader_type: 'hf' (HuggingFace Hub/Local), 'csv', 'jsonl'
+  source_type: "csv"
+  
+  # Path: HF dataset name (e.g., 'xlangai/spider') or local file path
+  path: "/home/mindmap/Desktop/SLM/data/Titanic-Dataset.csv"
+  
+  # split: 'train', 'validation', 'test'
+  split: "train"
+  
+  # streaming: true (memory efficient), false (loads all to RAM)
+  streaming: true
+  
+  # limit: Optional[int] - Max number of rows to process (null for all)
+  limit: null
+  
+  # trust_remote_code: Required for some HF datasets with custom scripts
+  trust_remote_code: True
+  
+  # Column Mapping: Define how source columns map to training features
+  columns:
+    instruction: "Name"
+    input: ["Sex", "Age", "Pclass"] # This will now be joined automatically!
+    output: "Survived"
+
+# ------------------------------------------------------------------------------
+# MODEL ARCHITECTURE (Unsloth/Transformers)
+# ------------------------------------------------------------------------------
+model:
+  # model_name: Any HF model or local directory (optimized for Qwen, Llama, Mistral)
   model_name: "Qwen/Qwen2.5-1.5B-Instruct"
-  epochs: 2
-  batch_size: 2
-  grad_accum: 8
-  learning_rate: 0.0002
+  
+  # max_seq_length: Maximum context window for the model
   max_seq_length: 2048
+  
+  # load_in_4bit: true (Recommended for single GPU), false (Full precision)
+  load_in_4bit: False
+  
+  # dtype: null (Auto-detect), "float16", "bfloat16" (if GPU supports)
+  dtype: null
 
-# Evaluation Settings
-evaluation:
-  tables_path: null
-  db_dir: null
+# ------------------------------------------------------------------------------
+# PEFT / LORA SETTINGS
+# ------------------------------------------------------------------------------
+lora:
+  # rank (r): Bottleneck dimension (8, 16, 32, 64)
+  r: 64
+  
+  # lora_alpha: Scaling factor (usually same as r or 2x r)
+  lora_alpha: 64
+  
+  # target_modules: Which layers to attach adapters to
+  target_modules:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+    - "gate_proj"
+    - "up_proj"
+    - "down_proj"
+  
+  # lora_dropout: Set to 0 for Unsloth optimizations
+  lora_dropout: 0
+  
+  # bias: "none", "all", "lora_only"
+  bias: "none"
 
-# Inference Settings
-inference:
-  max_tokens: 128
+# ------------------------------------------------------------------------------
+# TRAINING HYPERPARAMETERS (SFTTrainer)
+# ------------------------------------------------------------------------------
+training:
+  # output_dir: Where to save checkpoints and final model
+  output_dir: "outputs/qwen-text2sql"
+  
+  epochs: 300
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 8
+  learning_rate: 0.0002
+  
+  # scheduler: "cosine", "linear", "constant"
+  lr_scheduler_type: "cosine"
+  
+  # warmup_steps: Steps to linearly increase LR from 0
+  warmup_steps: 50
+  
+  # weight_decay: L2 regularization
+  weight_decay: 0.01
+  
+  # seed: For reproducibility
+  seed: 42
+  
+  # logging_steps: Frequency of console updates
+  logging_steps: 10
+  
+  # save_steps: Frequency of checkpoints (null to save only at end)
+  save_steps: 500
+
+# ------------------------------------------------------------------------------
+# FORMATTING & PROMPTS
+# ------------------------------------------------------------------------------
+formatting:
+  # system_prompt: Global instruction given to the model
+  system_prompt: "You are an expert Text-to-SQL assistant. Convert the natural language question into a valid SQL query based on the schema."
+  
+  # chat_template: "chatml" (Recommended), "llama-3", or "alpaca"
+  chat_template: "chatml"
+  
+  # mapping: For ChatML conversion
+  mapping:
+    role: "from"
+    content: "value"
+    user: "human"
+    assistant: "gpt"
+
+# ------------------------------------------------------------------------------
+# ORCHESTRATOR PATHS (Legacy Compatibility)
+# ------------------------------------------------------------------------------
+paths:
+  data_path: "/home/mindmap/Desktop/SLM/data/spider_sft/train_sft.jsonl"
+  model_output: "outputs/qwen-text2sql"
+  eval_output: "evaluation_results"

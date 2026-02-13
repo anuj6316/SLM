@@ -2,9 +2,7 @@ from src.preprocessing import create_loader
 def test_hf_loader():
     config = {
         "source_type": "hf",
-        "path": "google/WaxalNLP",
-        "name": "ach_asr",
-	    "ignore_columns": ["id"],
+        "path": "xlangai/spider",
         "split": "train",
         "limit": 10
     }

@@ -9,6 +9,7 @@ from typing import Any, Dict, Generator, List, Optional, Union
 from datasets import (
     load_dataset,
     IterableDatasetDict,
+    IterableDataset,
     Dataset,
     DatasetDict,
 )
@@ -103,12 +104,14 @@ class HfLoader(BaseLoader):
                 dataset = load_dataset(
                     self.dataset_name,
                     name=self.dataset_config,
+                    streaming=self._is_streaming,
                     trust_remote_code=self.trust_remote_code,
                 )
             
+            self._dataset = dataset
+            
             logger.info(
                 f"Successfully loaded dataset: {self.dataset_name}. "
-                f"Available splits: {list(dataset.keys())}"
             )
             
             return dataset
@@ -212,17 +215,21 @@ class HfLoader(BaseLoader):
         else:
             iterator = self._iterate_regular(split_dataset)
         
+        # Handle limit if specified in config
+        limit = self.config.get("limit")
+        
         # Track progress
         total_processed = 0
         progress = self._get_progress_bar(
-            desc=f"Loading HF dataset: {self.dataset_name}"
+            desc=f"Loading HF dataset: {self.dataset_name}",
+            total=limit if limit else self.get_row_count()
         )
-        
-        if progress is not None and hasattr(progress, 'update'):
-            progress.update(1)
         
         try:
             for example in iterator:
+                if limit and total_processed >= limit:
+                    break
+                    
                 yield example
                 total_processed += 1
                 if progress is not None and hasattr(progress, 'update'):
@@ -236,43 +243,49 @@ class HfLoader(BaseLoader):
 
     def _get_split(
         self, 
-        dataset: Union[Dataset, DatasetDict, IterableDatasetDict],
-        split: str
+        dataset: Any,
+        split: Union[str, Dict]
     ) -> Any:
         """
         Extract a specific split from the dataset.
         
         Args:
             dataset: Full dataset object
-            split: Name of split to extract
+            split: Name of split to extract (or dict of splits)
             
         Returns:
             Split dataset
-            
-        Raises:
-            ValueError: If split doesn't exist
         """
-        # Handle DatasetDict (most common case)
-        if isinstance(dataset, DatasetDict):
-            if split not in dataset:
-                available_splits = list(dataset.keys())
-                logger.warning(
-                    f"Split '{split}' not found. "
-                    f"Available splits: {available_splits}. "
-                    f"Using first available split."
-                )
-                split = available_splits[0]
-            return dataset[split]
+        # If split is a dict (e.g., {'train': None}), take the first key
+        if isinstance(split, dict):
+            if not split:
+                split = "train"
+            else:
+                split = list(split.keys())[0]
         
-        # Handle IterableDatasetDict
-        if isinstance(dataset, IterableDatasetDict):
-            if split not in dataset:
-                available = list(dataset.keys())
-                split = available[0] if available else "train"
-                logger.info(f"Using split: {split}")
-            return dataset[split]
+        # 1. Handle Dictionary-like datasets (DatasetDict, IterableDatasetDict)
+        if isinstance(dataset, (DatasetDict, IterableDatasetDict, dict)):
+            if split in dataset:
+                return dataset[split]
+            
+            # If requested split missing, try to find a fallback
+            available_splits = list(dataset.keys())
+            if not available_splits:
+                raise ValueError(f"Dataset '{self.dataset_name}' contains no splits.")
+                
+            fallback_split = available_splits[0]
+            logger.warning(
+                f"Split '{split}' not found in {self.dataset_name}. "
+                f"Available splits: {available_splits}. "
+                f"Falling back to: {fallback_split}"
+            )
+            return dataset[fallback_split]
         
-        # Handle single Dataset (already a split)
+        # 2. Handle Single Dataset objects (already a split)
+        if isinstance(dataset, (Dataset, IterableDataset)):
+            return dataset
+            
+        # 3. Last resort fallback
         return dataset
     
     def _iterate_streaming(self, dataset: Any) -> Generator[Dict, None, None]:
