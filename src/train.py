@@ -7,6 +7,7 @@ from typing import Optional, Dict, Any
 from unsloth import FastLanguageModel
 from datasets import load_dataset
 from trl import SFTTrainer, SFTConfig
+from transformers import EarlyStoppingCallback
 from config_utils import load_config
 
 from rich.console import Console
@@ -66,9 +67,10 @@ def train_model(
     load_in_4bit: bool = True,
     r: int = 32,
     lora_alpha: int = 32,
+    patience: int = 3,
 ):
     """
-    Fine-tunes a model on SFT data using Unsloth and SFTTrainer.
+    Fine-tunes a model on SFT data using Unsloth and SFTTrainer with Early Stopping.
     """
     display_setup_dashboard({
         "model_name": model_name,
@@ -78,7 +80,8 @@ def train_model(
         "batch_size": batch_size,
         "grad_accum": grad_accum,
         "learning_rate": learning_rate,
-        "output_dir": output_dir
+        "output_dir": output_dir,
+        "patience": patience
     })
 
     # 1. Load Model & Tokenizer
@@ -138,6 +141,11 @@ def train_model(
             return {"text": ""}
 
         dataset = dataset.map(format_example)
+        
+        # Split into train and validation sets
+        dataset = dataset.train_test_split(test_size=0.05, seed=42)
+        train_dataset = dataset["train"]
+        eval_dataset = dataset["test"]
 
     # 4. Configure Trainer
     with console.status("[bold blue]Initializing SFTTrainer...") as status:
@@ -150,15 +158,20 @@ def train_model(
             per_device_train_batch_size=batch_size,
             gradient_accumulation_steps=grad_accum,
             learning_rate=learning_rate,
-            warmup_steps=min(50, int(len(dataset) * 0.1)),
+            warmup_steps=min(50, int(len(train_dataset) * 0.1)),
             fp16=not torch.cuda.is_bf16_supported(),
             bf16=torch.cuda.is_bf16_supported(),
             logging_steps=1,
+            eval_strategy="steps",
+            eval_steps=50,
+            save_strategy="steps",
+            save_steps=50,
+            load_best_model_at_end=True,
+            metric_for_best_model="eval_loss",
             optim="adamw_8bit",
             weight_decay=0.01,
             lr_scheduler_type="cosine",
             seed=42,
-            save_steps=500,
             save_total_limit=2,
             report_to="none",
         )
@@ -166,8 +179,10 @@ def train_model(
         trainer = SFTTrainer(
             model=model,
             tokenizer=tokenizer,
-            train_dataset=dataset,
+            train_dataset=train_dataset,
+            eval_dataset=eval_dataset,
             args=sft_config,
+            callbacks=[EarlyStoppingCallback(early_stopping_patience=patience)]
         )
 
     # 5. Run Training
@@ -200,6 +215,7 @@ if __name__ == "__main__":
     parser.add_argument("--grad_accum", type=int)
     parser.add_argument("--learning_rate", type=float)
     parser.add_argument("--max_seq_length", type=int)
+    parser.add_argument("--patience", type=int)
     
     args = parser.parse_args()
     
@@ -224,6 +240,7 @@ if __name__ == "__main__":
     learning_rate = args.learning_rate or train_config.get("learning_rate") or 2e-4
     max_seq_length = args.max_seq_length or model_config.get("max_seq_length") or 2048
     load_in_4bit = model_config.get("load_in_4bit", True)
+    patience = args.patience or train_config.get("patience") or 3
     
     r = lora_config.get("r", 32)
     lora_alpha = lora_config.get("lora_alpha", 32)
@@ -241,7 +258,8 @@ if __name__ == "__main__":
             max_seq_length=max_seq_length,
             load_in_4bit=load_in_4bit,
             r=r,
-            lora_alpha=lora_alpha
+            lora_alpha=lora_alpha,
+            patience=patience
         )
     except Exception as e:
         console.print(f"[bold red]CRITICAL ERROR:[/] {str(e)}")

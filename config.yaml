@@ -81,7 +81,7 @@ training:
   # output_dir: Where to save checkpoints and final model
   output_dir: "outputs/qwen-text2sql"
   
-  epochs: 300
+  epochs: 50
   per_device_train_batch_size: 2
   gradient_accumulation_steps: 8
   learning_rate: 0.0002
