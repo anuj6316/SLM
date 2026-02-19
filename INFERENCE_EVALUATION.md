@@ -1,43 +1,66 @@
-# Model-Centric Inference & Evaluation Guide
+# Inference & Evaluation Guide
 
-This document outlines the approach for documenting and comparing Text-to-SQL model outputs based on specific **Model IDs**. This is a core requirement for MLOps to ensure traceability and prevent performance regressions.
-
----
-
-## 🏗 Concept: The "Evaluation Evidence"
-Instead of overwriting a single `results.json`, we treat every evaluation as a permanent record.
-- **Location:** `eval_results/{safe_model_id}/`
-- **Filename:** `results_{timestamp}.json`
-- **Content:** The model's predictions, the gold standard SQL, and the exact prompt context used.
+This guide explains how to generate SQL predictions from your fine-tuned models and evaluate their accuracy against a test set.
 
 ---
 
-## 🚀 Implementation Strategy
+## 🚀 Running Inference
 
-### 1. The Inference Logic
-The inference script should be modified to:
-1. Accept a `--model_id` (e.g., `anuj6316/text2sql-v1` or `./outputs/v2`).
-2. Create a "Safe Name" for the model (e.g., replace `/` with `_`).
-3. Generate SQL for each question in your test set.
-4. Save a JSON blob that includes both the **Predictions** and the **Model Metadata**.
+To test a model, use the `test-model` task. This script loads your fine-tuned model (or a base model) and runs it against a test dataset.
 
-### 2. Result Structure (Example)
-Every inference run should produce a JSON file structured like this:
+### Basic Usage
+
+```bash
+uv run poe test-model --model_id "your-username/text2sql-model-v1"
+```
+
+### Arguments
+
+-   `--model_id`: The path to the local model directory (e.g., `outputs/checkpoint-500`) or a Hugging Face Model ID (e.g., `google/gemma-2b`).
+-   `--dataset`: (Optional) Path to the test dataset. Defaults to `data/test_sft.jsonl`.
+-   `--quantization`: (Optional) Load in 4-bit or 8-bit for faster inference on smaller GPUs.
+
+### Example: Testing a Local Checkpoint
+
+```bash
+uv run poe test-model --model_id "outputs/qwen-text2sql/checkpoint-1000"
+```
+
+---
+
+## 📂 Output Structure
+
+Every evaluation run generates a permanent record in the `eval_results/` directory.
+
+**Path Format:** `eval_results/{safe_model_id}/results_{timestamp}.json`
+
+### JSON Content Example
+
+The output file contains metadata about the run and a list of detailed results for each query.
+
 ```json
 {
   "metadata": {
-    "model_id": "anuj6316/text2sql-gemma-2b",
-    "base_model": "google/gemma-2b",
+    "model_id": "outputs/qwen-text2sql",
+    "base_model": "Qwen/Qwen2.5-1.5B-Instruct",
     "test_dataset": "data/test_sft.jsonl",
-    "timestamp": "2026-02-19T17:45:00"
+    "timestamp": "2024-05-20T14:30:00",
+    "accuracy": 85.5
   },
   "results": [
     {
-      "db_id": "college_1",
       "question": "How many students are in the CS department?",
       "predicted_sql": "SELECT COUNT(*) FROM student WHERE dept_name = 'CS'",
       "gold_sql": "SELECT count(*) FROM student WHERE dept_name = 'CS'",
-      "is_match": true
+      "is_match": true,
+      "latency_ms": 120
+    },
+    {
+      "question": "List all course names.",
+      "predicted_sql": "SELECT name FROM courses",
+      "gold_sql": "SELECT title FROM courses",
+      "is_match": false,
+      "error": "Column 'name' not found in table 'courses'"
     }
   ]
 }
@@ -45,24 +68,41 @@ Every inference run should produce a JSON file structured like this:
 
 ---
 
-## 🛠 Automation with Poe
-Add this task to your `pyproject.toml` to standardize the evaluation:
+## 📊 Evaluating Performance
 
-```toml
-[tool.poe.tasks]
-# Example: uv run poe test-model --model_id "anuj6316/text2sql-v1"
-test-model = "python src/training/inference.py"
-```
+The script automatically calculates **Execution Accuracy** (if a database connection is available) or **Exact Set Match Accuracy**.
 
----
-
-## 📈 MLOps Benchmarking Workflow
-1. **Inference:** Run the script for `Model_A` and `Model_B`.
-2. **Comparison:** Use a script or the MLflow UI to compare the generated JSON files in `eval_results/`.
-3. **Identification:** Find queries where `Model_A` succeeded but `Model_B` failed.
-4. **Iterate:** Add those failing queries to your training set for the next version.
+### Metrics Explained
+-   **Exact Match**: The predicted SQL matches the Gold SQL string exactly (ignoring case and whitespace).
+-   **Execution Accuracy**: The predicted SQL returns the same result set from the database as the Gold SQL. This is the preferred metric as different queries can produce the same result.
 
 ---
 
-## 🚿 Clean-up Requirement
-Remember to add `eval_results/` to your `.gitignore` to keep your code repository clean, while ensuring these results are logged as **Artifacts** in MLflow or Hugging Face.
+## ⚖️ Benchmarking & Model Comparison
+
+To compare two models (e.g., a baseline vs. a fine-tuned version):
+
+1.  **Run Inference for Model A:**
+    ```bash
+    uv run poe test-model --model_id "google/gemma-2b"
+    ```
+2.  **Run Inference for Model B:**
+    ```bash
+    uv run poe test-model --model_id "outputs/my-fine-tuned-model"
+    ```
+3.  **Compare JSONs:**
+    Check the `accuracy` score in the metadata of the generated JSON files.
+
+### Improvement Workflow
+1.  Identify queries where `is_match` is `false`.
+2.  Analyze the `predicted_sql` to understand *why* it failed (e.g., wrong column name, hallucinated table).
+3.  Add similar examples to your training data.
+4.  Re-train and re-evaluate.
+
+---
+
+## 🧹 Artifact Management
+
+The `eval_results/` directory can grow large.
+-   **Git Ignore**: `eval_results/` is added to `.gitignore` to prevent bloating the repo.
+-   **MLflow**: Use MLflow to log these JSON files as artifacts for long-term storage and easier comparison in the UI.
