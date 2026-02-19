@@ -1,17 +1,30 @@
 [project]
 name = "slm"
 version = "0.1.0"
-description = "Add your description here"
+description = "Text-to-SQL Small Language Model Pipeline"
 readme = "README.md"
-requires-python = ">=3.12, <3.14"
+requires-python = ">=3.10"
 dependencies = [
     "datasets==3.4.1",
+    "dotenv>=0.9.9",
     "huggingface-hub==0.34.0",
+    "openai>=2.21.0",
+    "pydantic>=2.12.5",
+    "pyyaml>=6.0.3",
     "reasoning-gym>=0.1.24",
     "rich>=14.3.2",
+    "sqlglot>=28.10.1",
     "torch>=2.10.0",
     "tqdm>=4.67.3",
     "transformers==4.57.6",
     "trl==0.24.0",
     "unsloth>=2026.1.4",
+    "poethepoet>=0.41.0",
+    "python-dotenv>=1.0.1",
+    "wandb>=0.25.0",
 ]
+
+[tool.poe.tasks]
+preprocess = "python text2sql_dataset_preprocessing/main.py"
+publish = "python text2sql_dataset_preprocessing/src/publisher.py"
+test-cleaner = "pytest text2sql_dataset_preprocessing/tests" # Placeholder for future

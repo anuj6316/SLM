@@ -1,0 +1,9 @@
+2026-02-13 16:07:47,416 - INFO - Total Count of rows: 891
+2026-02-13 16:07:47,423 - INFO - Writing processed data to data/train_sft.jsonl
+2026-02-13 16:07:47,423 - INFO - SFTProcessor: Starting data stream processing...
+2026-02-13 16:07:47,423 - INFO - Starting data load: CsvLoader from /home/mindmap/Desktop/SLM/data/Titanic-Dataset.csv
+2026-02-13 16:07:47,424 - INFO - Verifying column mapping with first row sample...
+2026-02-13 16:07:47,424 - INFO - Column mapping verified successfully.
+2026-02-13 16:07:47,440 - INFO - Data load complete. Processed 891 examples.
+2026-02-13 16:07:47,440 - INFO - SFTProcessor: Processing complete.
+2026-02-13 16:07:47,440 - INFO - Finished writing 891 examples to data/train_sft.jsonl

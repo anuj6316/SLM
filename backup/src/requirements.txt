@@ -1,0 +1,11 @@
+# Core ML Libraries
+datasets
+tqdm
+scipy
+bitsandbytes
+accelerate
+peft
+trl
+
+# Unsloth - Optimized for GPU
+unsloth @ git+https://github.com/unslothai/unsloth.git

@@ -1,0 +1,31 @@
+# 1. Generation Model
+generator:
+  provider: "groq"
+  model: ""
+  api_key: "${GROQ_API_KEY}"
+  base_url: "https://openrouter.ai/api/v1"
+  temperature: 0.8
+  max_tokens: 1024
+  top_p: 0.95
+
+# 2. Judge model
+judge:
+  provider: "openrouter"
+  model: ""
+  api_key: "${OPENROUTER_API_KEY}"
+  base_url: "https://api.groq.com/openai/v1"
+  temperature: 0.0
+  max_tokens: 512
+
+# paths
+paths:
+  input_files: ""
+  output_files: ""
+  log_file: "dataset_generatin.log"
+
+# pipeline parameters
+orchestration:
+  total_samples_to_generate: 500
+  concurrency_limit: 5
+  few_shot_count: 3
+  max_retries: 3

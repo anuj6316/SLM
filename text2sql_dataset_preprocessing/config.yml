@@ -1,0 +1,7 @@
+datasets:
+  - path: "xlangai/spider"
+    split: "train"
+  - path: "xu3kev/BIRD-SQL-data-train"
+    split: "train"
+  - path: "gretelai/synthetic_text_to_sql"
+    split: "train"

@@ -123,8 +123,18 @@ def train_model(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Unsloth Fine-tuning Pipeline")
-    parser.add_argument("--data_path", type=str, required=True, help="Path to train_sft.jsonl")
-    parser.add_argument("--output_dir", type=str, required=True, help="Directory to save the fine-tuned model")
+    
+    # SageMaker-friendly path detection
+    # SM_CHANNEL_TRAINING is the path where SageMaker downloads your S3 data
+    # SM_MODEL_DIR is where SageMaker expects the final model to be saved for S3 upload
+    sm_data_dir = os.environ.get("SM_CHANNEL_TRAINING")
+    sm_model_dir = os.environ.get("SM_MODEL_DIR")
+    
+    default_data = os.path.join(sm_data_dir, "train_sft.jsonl") if sm_data_dir else "data/spider_sft/train_sft.jsonl"
+    default_output = sm_model_dir if sm_model_dir else "outputs/qwen-text2sql"
+
+    parser.add_argument("--data_path", type=str, default=default_data, help="Path to training data")
+    parser.add_argument("--output_dir", type=str, default=default_output, help="Directory to save the fine-tuned model")
     parser.add_argument("--model_name", type=str, default="Qwen/Qwen2.5-1.5B-Instruct")
     parser.add_argument("--system_prompt", type=str, default="You are a Text-to-SQL expert.")
     parser.add_argument("--epochs", type=int, default=2)
