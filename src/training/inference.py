@@ -4,6 +4,7 @@ import torch
 import argparse
 import logging
 import re
+from datetime import datetime
 from typing import List, Dict, Any, Tuple, Optional
 from tqdm import tqdm
 from unsloth import FastLanguageModel
@@ -24,24 +25,38 @@ def run_inference(config: AppConfig):
     logger.info(f"Running inference on {device}")
 
     # 1. Load Model
-    model_path = getattr(inf_cfg, 'model_path', config.paths.model_output)
-    logger.info(f"Loading model from: {model_path}")
+    # CLI args override config if set
+    model_id = getattr(inf_cfg, 'model_id', getattr(config.paths, 'model_output', None))
+    if not model_id:
+        raise ValueError("Model ID or path must be specified via --model_id or config.")
+
+    logger.info(f"Loading model from: {model_id}")
+
+    # Check if model_id is a path or HF ID
+    # FastLanguageModel.from_pretrained handles both
     model, tokenizer = FastLanguageModel.from_pretrained(
-        model_name=model_path,
+        model_name=model_id,
         max_seq_length=config.model.max_seq_length,
         dtype=None,
-        load_in_4bit=False,
+        load_in_4bit=False, # Use False for inference usually, or config setting
     )
     FastLanguageModel.for_inference(model)
     
     # 2. Load Data & Schemas
-    tables_path = getattr(inf_cfg, 'tables_path', None)
-    schemas = load_schema_dict(tables_path) if tables_path else {}
+    tables_path = getattr(inf_cfg, 'tables_path', "data/tables.json")
+    schemas = load_schema_dict(tables_path) if tables_path and os.path.exists(tables_path) else {}
+    if not schemas:
+        logger.warning(f"No schemas loaded from {tables_path}. Inference will rely on 'instruction' field or raw question.")
     
     data_path = getattr(inf_cfg, 'data_path', None)
     if not data_path:
-        raise ValueError("Inference data_path must be specified in config or CLI.")
+         # Fallback to config.paths.data_path if valid, else default
+         data_path = getattr(config.paths, 'data_path', "data/test_sft.jsonl")
+
+    if not data_path or not os.path.exists(data_path):
+        raise ValueError(f"Inference data_path not found: {data_path}")
         
+    logger.info(f"Loading test data from: {data_path}")
     if data_path.endswith(".jsonl"):
         with open(data_path, "r", encoding="utf-8") as f:
             data = [json.loads(line) for line in f]
@@ -85,25 +100,60 @@ def run_inference(config: AppConfig):
 
         new_tokens = outputs[0][input_length:]
         prediction = tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
+        # Clean up markdown code blocks
         prediction = re.sub(r"```(?:sql)?\s*(.*?)\s*```", r"\1", prediction, flags=re.DOTALL | re.IGNORECASE).strip()
         prediction = " ".join(prediction.split())
 
         results.append({
             "db_id": db_id,
             "question": question,
-            "gold_query": gold,
-            "model_output": prediction
+            "predicted_sql": prediction,
+            "gold_sql": gold,
+            "is_match": prediction.lower() == gold.lower() if gold != "N/A" else None
         })
 
-    output_path = getattr(inf_cfg, 'output_path', "inference_results.json")
+    # Prepare Output
+    timestamp = datetime.now().isoformat()
+    safe_model_id = model_id.replace("/", "_")
+    output_dir = f"eval_results/{safe_model_id}"
+    os.makedirs(output_dir, exist_ok=True)
+
+    # If run via poe/CLI, we might want a timestamped file.
+    # If run via pipeline, maybe we want a fixed name?
+    # INFERENCE_EVALUATION.md says: results_{timestamp}.json
+    output_filename = f"results_{timestamp.replace(':', '-').split('.')[0]}.json"
+    output_path = os.path.join(output_dir, output_filename)
+
+    final_output = {
+        "metadata": {
+            "model_id": model_id,
+            "base_model": config.model.model_name,
+            "test_dataset": data_path,
+            "timestamp": timestamp
+        },
+        "results": results
+    }
+
     logger.info(f"Saving results to: {output_path}")
     with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(results, f, indent=4)
+        json.dump(final_output, f, indent=4)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Inference Pipeline")
     parser.add_argument("--config", type=str, default="config.yaml")
+    parser.add_argument("--model_id", type=str, help="Model ID or path (overrides config)")
+    parser.add_argument("--data_path", type=str, help="Path to test dataset (overrides config)")
     args = parser.parse_args()
     
     app_config = load_config(args.config)
+
+    # Update config with CLI args
+    if not hasattr(app_config, 'inference'):
+        app_config.inference = AppConfig({})
+
+    if args.model_id:
+        app_config.inference.model_id = args.model_id
+    if args.data_path:
+        app_config.inference.data_path = args.data_path
+
     run_inference(app_config)
