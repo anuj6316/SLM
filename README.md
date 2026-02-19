@@ -1,120 +1,44 @@
-# 🚀 SLM Preprocessing & SFT Pipeline
+# SLM: Text-to-SQL Pipeline
 
-A high-performance, modular pipeline designed for fine-tuning Small Language Models (SLMs) like Qwen, Llama, and Mistral. This toolkit provides a unified orchestrator to handle everything from raw data ingestion to model evaluation and inference.
+A production-grade pipeline for fine-tuning Small Language Models (SLMs) on Text-to-SQL tasks. This project implements a full MLOps lifecycle, including automated data gathering, SQL cleaning, reverse-engineered schema anchoring, and Hugging Face integration.
 
----
+## 🏗 Architecture
+![Text-to-SQL MLOps Pipeline Flow](https://storage.googleapis.com/second-petal-295822.appspot.com/elements/elements%3Ad6a8a796d7c03b962ceaf006140dbc0218daf65f7ac9c3b5595641b2c787654b.png)
 
-## 🏗️ Architecture Overview
+- **Orchestrator:** Main entry point for pipeline stages.
+- **Preprocessing:** Modular system to gather, clean, and format datasets (Spider, BIRD, Gretel).
+- **Versioning:** Automated data versioning using Hugging Face Hub tags.
+- **Training:** Efficient fine-tuning using Unsloth and SFTTrainer.
 
-The project is structured into four main stages, managed by a central orchestrator (`main.py`):
-1.  **Preprocessing**: Standardizes raw data (CSV, Hugging Face) into clean SFT JSONL format.
-2.  **Training**: Fine-tunes the model using **Unsloth** and **PEFT/LoRA**.
-3.  **Evaluation**: Validates model performance on test datasets (supports Spider metrics).
-4.  **Inference**: Generates predictions using the fine-tuned model.
+## 🚀 Quick Start
 
----
-
-## 🛠️ Installation
-
-This project uses `uv` for lightning-fast dependency management.
-
+### 1. Setup Environment
+Ensure you have `uv` installed, then:
 ```bash
-# Install dependencies
 uv sync
 ```
+Create a `.env` file with your `HF_TOKEN`.
 
----
-
-## 🎮 Usage: The Orchestrator
-
-The `main.py` script is the single entry point for all operations.
-
+### 2. Preprocess Data
+Gathers raw data, standardizes SQL via `sqlglot`, and reverse-engineers database schemas.
 ```bash
-# Run the complete pipeline (Preprocess -> Train -> Evaluate)
-python main.py all
-
-# Run specific stages
-python main.py preprocess
-python main.py train
-python main.py evaluate
-python main.py inference
+uv run poe preprocess
 ```
 
-### CLI Overrides
-You can quickly override configuration parameters via CLI:
+### 3. Publish to Hugging Face
+Uploads the "Gold Standard" SFT dataset to your HF repository with an automated version tag.
 ```bash
-python main.py train --epochs 5 --data_path data/custom_train.jsonl
+uv run poe publish
 ```
 
----
-
-## 📦 Module Details
-
-### 1. Preprocessing (`src/preprocessing`)
-![Preprocessing Architecture](docs/images/preprocessing_architecture.png)
-- **Streaming-first**: Processes datasets larger than RAM by yielding one row at a time.
-- **Loaders**: Supports `csv` and `hf` (Hugging Face) sources.
-- **SFTProcessor**: Maps raw columns to `instruction`, `input`, and `output` fields.
-- **Output**: Generates standardized `.jsonl` files ready for training.
-
-### 2. Training (`src/training`)
-![Training Architecture](docs/images/training_architecture.png)
-- **Unsloth Engine**: Leverages Unsloth for 2x faster training and 70% less VRAM usage.
-- **LoRA/PEFT**: Efficiently fine-tunes using adapters (Rank 64 by default).
-- **Early Stopping**: Prevents overfitting by monitoring evaluation loss.
-
-### 3. Evaluation & Inference
-- **Spider Evaluation**: Integrated script for official Spider dataset metrics (Execution Accuracy, Exact Match).
-- **Clean Inference**: Dedicated script for generating SQL predictions with automated post-processing (SQL cleaning, whitespace normalization).
-
----
-
-## ⚙️ Configuration (`config.yaml`)
-
-The entire pipeline is controlled by `config.yaml`.
-
-```yaml
-data:
-  source_type: "csv"
-  path: "data/Titanic-Dataset.csv"
-  columns:
-    instruction: "Name"
-    input: ["Sex", "Age", "Pclass"] # Combines columns automatically
-    output: "Survived"
-
-model:
-  model_name: "Qwen/Qwen2.5-1.5B-Instruct"
-  max_seq_length: 2048
-
-training:
-  epochs: 50
-  per_device_train_batch_size: 2
-  learning_rate: 2e-4
+### 4. Train Model
+Starts the fine-tuning process using the configuration in `config.yaml`.
+```bash
+uv run python main.py train
 ```
 
----
-
-## 📂 Project Structure
-
-```text
-├── main.py                 # Central Orchestrator
-├── config.yaml             # Global Configuration
-├── src/
-│   ├── core/               # Configuration and Schema utilities
-│   ├── preprocessing/      # Loaders, Processors, and Pipeline
-│   │   ├── loaders/        # CSV and HuggingFace ingestion
-│   │   ├── processors/     # Column mapping and formatting
-│   │   └── formatters/     # JSONL serialization
-│   └── training/           # Train, Evaluate, and Inference scripts
-├── data/                   # Raw and processed datasets
-└── outputs/                # Fine-tuned models and adapters
-```
-
----
-
-## 🚀 Quick Start (Titanic SFT)
-1. Ensure `data/Titanic-Dataset.csv` exists.
-2. Review mapping in `config.yaml` (Data section).
-3. Run `python main.py preprocess`.
-4. Run `python main.py train`.
-5. Check `outputs/` for your fine-tuned adapters!
+## 🛠 MLOps Standards
+- **Registry:** Hugging Face Hub (Data & Models).
+- **Tracking:** Weights & Biases / MLflow integration.
+- **Automation:** Poe the Poet task runner.
+- **Security:** Git history purged of large artifacts and secrets.

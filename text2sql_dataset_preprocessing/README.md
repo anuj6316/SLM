@@ -1,30 +1,25 @@
----
-license: apache-2.0
-task_categories:
-- text-to-sql
-language:
-- en
-tags:
-- text2sql
-- sft
-- fine-tuning
-size_categories:
-- 100K<n<1M
----
+# Text2SQL Preprocessing Module
 
-# Text2SQL SFT Dataset
+![Text-to-SQL MLOps Pipeline Flow](https://storage.googleapis.com/second-petal-295822.appspot.com/elements/elements%3Ad6a8a796d7c03b962ceaf006140dbc0218daf65f7ac9c3b5595641b2c787654b.png)
 
-This dataset is a combined and cleaned version of Spider, BIRD, and Gretel datasets, formatted specifically for Instruction Fine-Tuning of Small Language Models (SLMs).
+This module transforms raw Text-to-SQL datasets into high-quality training artifacts for SLMs.
 
-## Dataset Structure
-Each record contains:
-- **instruction**: The task description.
-- **input**: The Database Schema and the Natural Language Question.
-- **output**: The canonicalized SQL query.
-- **metadata**: A dictionary containing `dataset` source and `db_id`.
+## 🔄 Core Workflow
+1. **Gather (`src/gatherer.py`):** Automatically downloads Spider, BIRD, and Gretel datasets from Hugging Face.
+2. **Generate Schema (`src/schema_generator.py`):** If external metadata is missing, this component reverse-engineers database schemas by parsing all available SQL queries.
+3. **Clean (`src/cleaner.py`):** Uses `sqlglot` to normalize SQL and sanitize question text.
+4. **Format (`src/formatter.py`):** Wraps data into the "Instruction-Input-Output" pattern.
+5. **Publish (`src/publisher.py`):** Pushes the final JSONL and its Dataset Card to Hugging Face Hub with version tagging.
 
-## Usage
-```python
-from datasets import load_dataset
-dataset = load_dataset("anuj6316/text2sql")
+## 🛠 Usage
+Run via Poe the Poet:
+```bash
+uv run poe preprocess
+uv run poe publish
 ```
+
+## 📂 Structure
+- `config.yml`: Configuration for datasets and splits.
+- `src/schema_parser.py`: Handles external `tables.json` files.
+- `src/schema_generator.py`: Fallback reverse-engineering logic.
+- `README.md`: Dataset Card for Hugging Face integration.

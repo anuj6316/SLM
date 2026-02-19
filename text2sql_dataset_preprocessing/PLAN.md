@@ -1,77 +1,26 @@
 # Text2SQL Data Preprocessing Module - Production Roadmap
 
-**Objective:** Build a robust, scalable, and modular pipeline to gather, clean, and format Text-to-SQL datasets (Spider, BIRD, Gretel, etc.) for Supervised Fine-Tuning (SFT).
-
-**Current Status:** Prototype (MVP) with basic functionality but lacking robustness, modularity, and comprehensive error handling.
+**Objective:** Build a robust, scalable, and modular pipeline to gather, clean, and format Text-to-SQL datasets for Supervised Fine-Tuning (SFT).
 
 ---
 
-## 🚀 Phase 1: Immediate Fixes & MVP Stabilization
-*Goal: Get the current pipeline running end-to-end without errors to establish a baseline.*
+## ✅ Phase 1: Immediate Fixes & MVP Stabilization
+- [x] **Fix Syntax Errors**: Multi-line f-string issues in `formatter.py` resolved.
+- [x] **Complete `main.py` Integration**: Seamless flow between gatherer, cleaner, and generator.
+- [x] **Basic Output Verification**: `train_sft.jsonl` verified with actual schemas.
 
-- [ ] **Fix Syntax Errors**: 
-    - [ ] Resolve `SyntaxError` in `src/schema_parser.py` (line 34).
-    - [ ] Verify `src/formatter.py` fixes are persistent.
-- [ ] **Complete `main.py` Integration**: 
-    - [ ] Ensure `process_datasets` calls `load_spider_schemas` correctly.
-    - [ ] Verify argument passing between `gatherer`, `cleaner`, and `formatter`.
-- [ ] **Basic Output Verification**:
-    - [ ] Run the pipeline and inspect `data/train_sft.jsonl`.
-    - [ ] Check `data/raw/spider_tables.json` parsing correctness.
+## ✅ Phase 2: Refactoring for Modularity
+- [x] **Define Logic Separation**: Decoupled Cleaner from Formatter and Publisher.
+- [x] **Implement Schema Fallback**: Added `schema_generator.py` to handle missing metadata files.
+- [x] **Automation**: Added `poethepoet` tasks for standardized runs.
 
-## 🏗️ Phase 2: Refactoring for Modularity (The "Right Way")
-*Goal: Decouple logic so adding new datasets (e.g., WikiSQL) is strictly additive (Open/Closed Principle).*
+## ✅ Phase 3: Robustness & Data Integrity
+- [x] **Strict SQL Validation**: Integrated `sqlglot` for syntax checking.
+- [x] **Versioning**: Implemented HF Tagging for data versioning.
+- [x] **Security**: Secrets and large data removed from Git history.
 
-- [ ] **Define Abstract Base Classes**:
-    - [ ] Create `DatasetHandler` interface in `src/interfaces.py`.
-        - Methods: `download()`, `clean(entry)`, `format(entry)`.
-- [ ] **Implement Concrete Handlers**:
-    - [ ] `SpiderHandler` (encapsulate `spider_tables.json` logic here).
-    - [ ] `BirdHandler` (handle `evidence` fields).
-    - [ ] `GretelHandler` (handle `sql_context`).
-- [ ] **Factory Pattern**:
-    - [ ] Create `DatasetHandlerFactory` to instantiate handlers based on config/dataset name.
-- [ ] **Refactor `main.py`**:
-    - [ ] Remove if/else logic for dataset types.
-    - [ ] Iterate through configured datasets and delegate to their specific handlers.
-
-## 🛡️ Phase 3: Robustness & Data Integrity
-*Goal: Ensure the pipeline handles bad data gracefully and provides visibility.*
-
-- [ ] **Strict Typing & Validation**:
-    - [ ] Define Pydantic models for `RawEntry` and `SFTEntry` in `src/schemas.py`.
-    - [ ] Enforce schema validation during the `clean` step.
-- [ ] **Advanced Error Handling**:
-    - [ ] Create custom exceptions (e.g., `SchemaNotFoundError`, `InvalidSQLError`).
-    - [ ] Implement a "Dead Letter Queue" mechanism (save failed entries to `errors.jsonl` instead of just logging).
-- [ ] **Structured Logging**:
-    - [ ] Configure `logging` to output JSON (better for parsing logs).
-    - [ ] Include context (dataset name, line number, error details) in logs.
-
-## ⚡ Phase 4: Scalability & Performance
-*Goal: Optimize for processing millions of records.*
-
-- [ ] **Parallel Processing**:
-    - [ ] Replace single-threaded loop with `multiprocessing.Pool` or `concurrent.futures`.
-    - [ ] Process files in chunks/batches.
-- [ ] **Configuration Management**:
-    - [ ] Replace raw `yaml` loading with a typed config class (e.g., using `pydantic-settings`).
-    - [ ] Allow overriding config via environment variables.
-
-## 🧪 Phase 5: Quality Assurance
-*Goal: Guarantee reliability through automated testing.*
-
-- [ ] **Unit Tests**:
-    - [ ] Test `cleaner` with edge cases (empty strings, malicious SQL).
-    - [ ] Test `formatter` for exact SFT template matching.
-    - [ ] Test `schema_parser` with mock JSON data.
-- [ ] **Integration Tests**:
-    - [ ] Run a mini-pipeline on a small sample dataset (10 rows) and assert output file exists and is valid JSONL.
-- [ ] **Linting & formatting**:
-    - [ ] Set up `ruff` and `mypy` configuration.
-    - [ ] Enforce type hints across the codebase.
-
----
-
-## 📂 Source of Truth
-This document will serve as the master plan. Updates to the architecture or new requirements should be reflected here first.
+## 🚀 Phase 4: Future Elevations (MLOps Next Steps)
+- [ ] **Parallel Processing**: Utilize `multiprocessing` for cleaning millions of records.
+- [ ] **Execution Accuracy Script**: Build a script to verify SQL results against real SQLite databases.
+- [ ] **Value Anchoring**: Enhance `schema_generator` to include sample row values in prompts.
+- [ ] **Full MLOps Tracking**: Complete MLflow integration for model registry.
