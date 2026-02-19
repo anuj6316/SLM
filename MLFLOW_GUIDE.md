@@ -1,87 +1,111 @@
 # MLflow Integration Guide: Text-to-SQL MLOps
 
-This guide explains how to use **MLflow** as the "Laboratory Notebook" for your Text-to-SQL project. It will track your data preprocessing, log your training experiments, and manage your model versions.
+This guide explains how to use **MLflow** as the "Laboratory Notebook" for your Text-to-SQL project. It allows you to track experiments, compare model performance, and manage model versions from staging to production.
 
 ---
 
 ## 🏗 What is MLflow?
-In a production MLOps circle, MLflow serves three main purposes:
-1. **Tracking:** Records every run (code used, parameters, and results).
-2. **Artifacts:** Stores the actual files produced (cleaned data, LoRA adapters).
-3. **Registry:** Acts as a gatekeeper to tag models as "Staging" or "Production."
+
+In our production pipeline, MLflow serves three main purposes:
+
+1.  **Tracking**: Records every run, including code versions, hyperparameters, and metrics.
+2.  **Artifacts**: Stores output files (cleaned datasets, model checkpoints, logs).
+3.  **Registry**: Acts as a gatekeeper to tag models as "Staging" or "Production."
 
 ---
 
-## 🚀 Step 1: Installation & Setup
+## 📋 Prerequisites
 
-### 1. Add MLflow to your project
+Ensure MLflow is installed in your environment. If you followed the main installation guide, it should already be present.
+
+To verify:
+```bash
+uv run mlflow --version
+```
+
+If not installed:
 ```bash
 uv add mlflow
 ```
 
-### 2. Launch the Dashboard
-Open a separate terminal and run:
+---
+
+## 🚀 Getting Started
+
+To view your experiments, you need to launch the MLflow Tracking Server.
+
+1.  **Start the Server:**
+    ```bash
+    uv run mlflow ui --port 5000
+    ```
+
+2.  **Access the Dashboard:**
+    Open your browser and navigate to [http://localhost:5000](http://localhost:5000).
+
+---
+
+## 🔍 Tracking Experiments
+
+The pipeline is pre-configured to log runs automatically.
+
+### 1. Data Preprocessing
+When you run `uv run poe preprocess`, the pipeline logs:
+-   **Parameters**: Number of raw files processed.
+-   **Metrics**: Final row count, number of dropped records.
+-   **Artifacts**: The generated `train_sft.jsonl` file.
+
+**Experiment Name**: `Text2SQL_Data_Ops`
+
+### 2. Model Training
+When you run `uv run python main.py train`, the pipeline uses Hugging Face's `SFTTrainer` integration to log:
+-   **Hyperparameters**: Learning rate, batch size, LoRA rank (`r`), LoRA alpha, etc.
+-   **Metrics**: Training loss, evaluation loss (logged every `logging_steps`).
+-   **System Metrics**: GPU memory usage, CPU utilization.
+
+**Experiment Name**: `Text2SQL_Training`
+
+---
+
+## 🏆 Model Registry (Champion vs Challenger)
+
+The Model Registry allows you to manage the lifecycle of your models.
+
+1.  **Compare Runs**: In the MLflow UI, select multiple runs to compare their loss curves.
+2.  **Register a Model**:
+    -   Click on the best-performing run.
+    -   Click the "Register Model" button.
+    -   Name it `Text2SQL_SLM` (or your preferred name).
+3.  **Transition Stages**:
+    -   **Staging**: The model is ready for testing.
+    -   **Production**: The model has passed all tests and is ready for deployment.
+    -   **Archived**: Old models that are no longer in use.
+
+---
+
+## 📊 Visualizing Results
+
+In the MLflow UI:
+
+-   **Parallel Coordinates Plot**: Great for seeing which hyperparameters (e.g., `learning_rate`, `lora_r`) lead to the lowest loss.
+-   **Scatter Plot**: Visualize the relationship between two metrics (e.g., Training Steps vs. Loss).
+-   **Artifact View**: Inspect the actual files (config, logs) associated with a run.
+
+---
+
+## ❓ Troubleshooting
+
+**Q: I don't see my runs in the UI.**
+A: Ensure you are running the `mlflow ui` command from the root of the project where the `mlruns` directory is located.
+
+**Q: The experiment name is "Default".**
+A: Set the `MLFLOW_EXPERIMENT_NAME` environment variable before running your script:
 ```bash
-uv run mlflow ui --port 5000
+export MLFLOW_EXPERIMENT_NAME="Text2SQL_Training"
 ```
-Visit `http://localhost:5000` in your browser. This is where you will see your experiments.
+Or ensure it's set in your code via `mlflow.set_experiment()`.
 
----
-
-## 🔄 Step 2: Tracking Data Preprocessing
-We want to track the "Data DNA"—exactly how many rows were cleaned and what the final file looked like.
-
-**In `text2sql_dataset_preprocessing/main.py`:**
-1. **Set Experiment:** `mlflow.set_experiment("Text2SQL_Data_Ops")`
-2. **Start Run:** Wrap the processing loop in `with mlflow.start_run():`.
-3. **Log Stats:** Use `mlflow.log_param("raw_files", len(raw_files))` and `mlflow.log_metric("final_row_count", processed_count)`.
-4. **Save Artifact:** Use `mlflow.log_artifact("data/train_sft.jsonl")`.
-
----
-
-## 🧠 Step 3: Tracking Model Training
-Since you are using `SFTTrainer` (Hugging Face), integration is nearly automatic.
-
-**In `src/training/train.py`:**
-1. **Enable Logging:** In your `SFTConfig`, change `report_to="none"` to `report_to="mlflow"`.
-2. **Set Experiment Name:**
-   ```bash
-   export MLFLOW_EXPERIMENT_NAME="Text2SQL_Training"
-   ```
-3. **Auto-Tracking:** MLflow will now automatically capture:
-   - **Hyperparameters:** `learning_rate`, `lora_r`, `lora_alpha`.
-   - **Metrics:** `train_loss`, `eval_loss` (every 50 steps).
-   - **System:** GPU memory usage and CPU power.
-
----
-
-## 🏆 Step 4: The Model Registry (Champion vs Challenger)
-After training 3 different models (e.g., Gemma-2b, Qwen-1.5b), you compare them in the MLflow UI.
-
-1. **Register:** Click on your best run and select "Register Model." Name it `Text2SQL_SLM`.
-2. **Tagging:** 
-   - **None:** A fresh experiment.
-   - **Staging:** Passed initial loss checks, ready for "Execution Accuracy" testing.
-   - **Production:** Passed all tests and is currently serving the API.
-
----
-
-## 🤖 Step 5: Professional Automation
-Add these tasks to your `pyproject.toml` to make MLOps effortless:
-
-```toml
-[tool.poe.tasks]
-mlflow-ui = "mlflow ui --port 5000"
-# Run the pipeline and automatically log everything to MLflow
-train-tracked = "python main.py train --config config.yaml" 
+**Q: "Connection Refused" error.**
+A: Make sure no other service is using port 5000. You can change the port:
+```bash
+uv run mlflow ui --port 5001
 ```
-
----
-
-## 📈 The Professional MLOps Workflow
-1. **Develop:** Modify your `cleaner.py` to handle new edge cases.
-2. **Preprocess:** Run `poe preprocess`. Check MLflow to see if the row count improved.
-3. **Train:** Run `poe train-tracked`. Watch the loss curves live in the dashboard.
-4. **Evaluate:** Run your `evaluate.py` script. It will update the MLflow run with **Execution Accuracy**.
-5. **Promote:** If Accuracy > 85%, tag that model as **Production** in the registry.
-6. **Serve:** Your vLLM server pulls the `Production` tag and updates the live API.
