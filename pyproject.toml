@@ -27,6 +27,7 @@ dependencies = [
 [tool.poe.tasks]
 preprocess = "python text2sql_dataset_preprocessing/main.py"
 publish = "python text2sql_dataset_preprocessing/src/publisher.py"
+test-cleaner = "pytest text2sql_dataset_preprocessing/tests" # Placeholder for future
 test-cleaner = "pytest text2sql_dataset_preprocessing/tests"
 mlflow-ui = "mlflow ui --port 5000"
 train-tracked = "python main.py train --config config.yaml"
