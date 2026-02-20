@@ -1,64 +1,67 @@
 # ==============================================================================
-# SLM TEXT-TO-SQL PIPELINE CONFIGURATION TEMPLATE
+# SLM TEXT-TO-SQL UNIFIED CONFIGURATION
 # ==============================================================================
-# This file controls the entire pipeline from data ingestion to model saving.
-# All paths should be relative to the project root.
+# This file controls the entire pipeline from data to inference.
+# Settings can be overridden via environment variables with SLM__ prefix.
+# Example: SLM__MODEL__NAME="Qwen/Qwen2.5-7B" python main.py train sft
 
 # ------------------------------------------------------------------------------
-# DATA INGESTION (Loader Configuration)
+# PROJECT METADATA
+# ------------------------------------------------------------------------------
+project:
+  name: "SLM Text-to-SQL"
+  version: "1.0.0"
+  description: "Small Language Model for Text-to-SQL"
+
+# ------------------------------------------------------------------------------
+# MLFLOW / TRACING
+# ------------------------------------------------------------------------------
+mlflow:
+  enabled: true
+  tracking_uri: "databricks"
+  experiment_name: "/Shared/text2sql"
+  registry_uri: "databricks-uc"
+
+# ------------------------------------------------------------------------------
+# DATA PIPELINE
 # ------------------------------------------------------------------------------
 data:
-  # loader_type: 'hf' (HuggingFace Hub/Local), 'csv', 'jsonl'
-  source_type: "csv"
+  datasets:
+    - name: "spider"
+      source: "xlangai/spider"
+      split: "train"
+    - name: "bird"
+      source: "xu3kev/BIRD-SQL-data-train"
+      split: "train"
+    - name: "gretel"
+      source: "gretelai/synthetic_text_to_sql"
+      split: "train"
   
-  # Path: HF dataset name (e.g., 'xlangai/spider') or local file path
-  path: "data/Titanic-Dataset.csv"
-  
-  # split: 'train', 'validation', 'test'
-  split: "train"
-  
-  # streaming: true (memory efficient), false (loads all to RAM)
-  streaming: true
-  
-  # limit: Optional[int] - Max number of rows to process (null for all)
-  limit: null
-  
-  # trust_remote_code: Required for some HF datasets with custom scripts
-  trust_remote_code: True
-  
-  # Column Mapping: Define how source columns map to training features
-  columns:
-    instruction: "Name"
-    input: ["Sex", "Age", "Pclass"] # This will now be joined automatically!
-    output: "Survived"
+  output_dir: "data"
+  raw_dir: "data/raw"
+  train_file: "data/train_split.jsonl"
+  val_file: "data/val_split.jsonl"
+  tables_file: "data/raw/spider_tables.json"
+  train_split: 0.95
+  seed: 42
 
 # ------------------------------------------------------------------------------
-# MODEL ARCHITECTURE (Unsloth/Transformers)
+# MODEL
 # ------------------------------------------------------------------------------
 model:
-  # model_name: Any HF model or local directory (optimized for Qwen, Llama, Mistral)
-  model_name: "Qwen/Qwen2.5-1.5B-Instruct"
-  
-  # max_seq_length: Maximum context window for the model
+  name: "/home/mindmap/Desktop/SLM/Qwen/Qwen2.5-Coder-3B-Instruct"
   max_seq_length: 2048
-  
-  # load_in_4bit: true (Recommended for single GPU), false (Full precision)
-  load_in_4bit: False
-  
-  # dtype: null (Auto-detect), "float16", "bfloat16" (if GPU supports)
+  load_in_4bit: false
   dtype: null
 
 # ------------------------------------------------------------------------------
-# PEFT / LORA SETTINGS
+# LORA / PEFT
 # ------------------------------------------------------------------------------
 lora:
-  # rank (r): Bottleneck dimension (8, 16, 32, 64)
   r: 64
-  
-  # lora_alpha: Scaling factor (usually same as r or 2x r)
   lora_alpha: 64
-  
-  # target_modules: Which layers to attach adapters to
+  lora_dropout: 0.0
+  bias: "none"
   target_modules:
     - "q_proj"
     - "k_proj"
@@ -67,64 +70,50 @@ lora:
     - "gate_proj"
     - "up_proj"
     - "down_proj"
-  
-  # lora_dropout: Set to 0 for Unsloth optimizations
-  lora_dropout: 0
-  
-  # bias: "none", "all", "lora_only"
-  bias: "none"
 
 # ------------------------------------------------------------------------------
-# TRAINING HYPERPARAMETERS (SFTTrainer)
+# TRAINING
 # ------------------------------------------------------------------------------
 training:
-  # output_dir: Where to save checkpoints and final model
-  output_dir: "outputs/qwen-text2sql"
-  
-  epochs: 50
+  output_dir: "outputs/qwen-coder-3b-text2sql"
+  epochs: 3
   per_device_train_batch_size: 2
   gradient_accumulation_steps: 8
   learning_rate: 0.0002
-  
-  # scheduler: "cosine", "linear", "constant"
   lr_scheduler_type: "cosine"
-  
-  # warmup_steps: Steps to linearly increase LR from 0
   warmup_steps: 50
-  
-  # weight_decay: L2 regularization
   weight_decay: 0.01
-  
-  # seed: For reproducibility
   seed: 42
-  
-  # logging_steps: Frequency of console updates
   logging_steps: 10
-  
-  # save_steps: Frequency of checkpoints (null to save only at end)
   save_steps: 500
+  eval_strategy: "steps"
+  eval_steps: 500
+  save_total_limit: 2
+  optim: "adamw_8bit"
+  report_to: "mlflow"
 
 # ------------------------------------------------------------------------------
-# FORMATTING & PROMPTS
+# EVALUATION
+# ------------------------------------------------------------------------------
+evaluation:
+  benchmark: "spider"
+  output_dir: "eval_results"
+  batch_size: 1
+
+# ------------------------------------------------------------------------------
+# INFERENCE
+# ------------------------------------------------------------------------------
+inference:
+  data_path: "data/val_split.jsonl"
+  max_new_tokens: 128
+  output_path: null
+  num_samples: null
+  do_sample: false
+  temperature: 0.0
+
+# ------------------------------------------------------------------------------
+# FORMATTING
 # ------------------------------------------------------------------------------
 formatting:
-  # system_prompt: Global instruction given to the model
   system_prompt: "You are an expert Text-to-SQL assistant. Convert the natural language question into a valid SQL query based on the schema."
-  
-  # chat_template: "chatml" (Recommended), "llama-3", or "alpaca"
   chat_template: "chatml"
-  
-  # mapping: For ChatML conversion
-  mapping:
-    role: "from"
-    content: "value"
-    user: "human"
-    assistant: "gpt"
-
-# ------------------------------------------------------------------------------
-# ORCHESTRATOR PATHS (Legacy Compatibility)
-# ------------------------------------------------------------------------------
-paths:
-  data_path: "data/spider_sft/train_sft.jsonl"
-  model_output: "outputs/qwen-text2sql"
-  eval_output: "evaluation_results"

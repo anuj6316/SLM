@@ -19,3 +19,6 @@ data/
 *.jsonl
 *.zip
 .env
+
+Qwen/
+Qwen/*

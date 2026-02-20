@@ -10,6 +10,7 @@ dependencies = [
     "huggingface-hub==0.34.0",
     "openai>=2.21.0",
     "pydantic>=2.12.5",
+    "pydantic-settings>=2.0.0",
     "pyyaml>=6.0.3",
     "reasoning-gym>=0.1.24",
     "rich>=14.3.2",
@@ -22,13 +23,14 @@ dependencies = [
     "poethepoet>=0.41.0",
     "python-dotenv>=1.0.1",
     "wandb>=0.25.0",
+    "mlflow[databricks]>=3.9.0",
 ]
 
 [tool.poe.tasks]
-preprocess = "python text2sql_dataset_preprocessing/main.py"
-publish = "python text2sql_dataset_preprocessing/src/publisher.py"
-test-cleaner = "pytest text2sql_dataset_preprocessing/tests" # Placeholder for future
-test-cleaner = "pytest text2sql_dataset_preprocessing/tests"
+data = "python main.py data all"
+train = "python main.py train sft"
+eval = "python main.py eval"
+infer = "python main.py infer"
+infer-trace = "python main.py infer --trace"
+pipeline = "python main.py pipeline full"
 mlflow-ui = "mlflow ui --port 5000"
-train-tracked = "python main.py train --config config.yaml"
-test-model = "python src/training/inference.py"

@@ -1,0 +1,666 @@
+Metadata-Version: 2.4
+Name: slm
+Version: 0.1.0
+Summary: Text-to-SQL Small Language Model Pipeline
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: datasets==3.4.1
+Requires-Dist: dotenv>=0.9.9
+Requires-Dist: huggingface-hub==0.34.0
+Requires-Dist: openai>=2.21.0
+Requires-Dist: pydantic>=2.12.5
+Requires-Dist: pydantic-settings>=2.0.0
+Requires-Dist: pyyaml>=6.0.3
+Requires-Dist: reasoning-gym>=0.1.24
+Requires-Dist: rich>=14.3.2
+Requires-Dist: sqlglot>=28.10.1
+Requires-Dist: torch>=2.10.0
+Requires-Dist: tqdm>=4.67.3
+Requires-Dist: transformers==4.57.6
+Requires-Dist: trl==0.24.0
+Requires-Dist: unsloth>=2026.1.4
+Requires-Dist: poethepoet>=0.41.0
+Requires-Dist: python-dotenv>=1.0.1
+Requires-Dist: wandb>=0.25.0
+Requires-Dist: mlflow[databricks]>=3.9.0
+
+# SLM: Production Text-to-SQL Fine-Tuning Pipeline
+
+> **Goal:** Fine-tune Small Language Models (SLMs) to generate accurate, production-ready SQL from natural language — with a focus on *real-world deployment accuracy*, not just benchmark scores.
+
+---
+
+## Table of Contents
+
+1. [Why This Pipeline Exists](#why-this-pipeline-exists)
+2. [How Accuracy Is Achieved](#how-accuracy-is-achieved)
+3. [Architecture Overview](#architecture-overview)
+4. [Project Structure](#project-structure)
+5. [Prerequisites](#prerequisites)
+6. [Installation](#installation)
+7. [Quick Start (End-to-End in 4 Commands)](#quick-start)
+8. [Stage 1 — Data Preprocessing](#stage-1--data-preprocessing)
+9. [Stage 2 — Training](#stage-2--training)
+10. [Stage 3 — Evaluation](#stage-3--evaluation)
+11. [Stage 4 — Inference](#stage-4--inference)
+12. [Configuration Reference](#configuration-reference)
+13. [Known Bugs & Workarounds](#known-bugs--workarounds)
+14. [Accuracy Checklist for Deployment](#accuracy-checklist-for-deployment)
+15. [Troubleshooting](#troubleshooting)
+
+---
+
+## Why This Pipeline Exists
+
+Most Text-to-SQL demos work on clean benchmarks but fail in production because:
+
+- The model has never seen **your database schema**.
+- SQL style differences (`SELECT *` vs `select *`) create noisy training signal.
+- Models hallucinate column names that don't exist in the target schema.
+- Fine-tuning datasets often contain **syntactically broken SQL**.
+
+This pipeline solves all of the above through schema anchoring, SQL canonicalization, and a structured SFT (Supervised Fine-Tuning) format that forces the model to reason about schema before generating SQL.
+
+---
+
+## How Accuracy Is Achieved
+
+Understanding these three principles will help you get the most out of this pipeline:
+
+### 1. Schema Anchoring (Most Important)
+Every training example and every inference prompt includes the **relevant database schema** directly. Instead of asking the model:
+```
+Question: How many users signed up last month?
+SQL:
+```
+The model receives:
+```
+Database: analytics
+Tables:
+users(id, email, created_at, plan_type)
+events(id, user_id, event_name, timestamp)
+Foreign Keys:
+events.user_id -> users.id
+
+Question: How many users signed up last month?
+SQL:
+```
+This reduces hallucinated column/table names to near-zero because the model cannot "guess" — the schema is always present.
+
+### 2. SQL Canonicalization
+The `cleaner.py` module uses `sqlglot` to parse and re-emit all SQL in a single, consistent style before training. This means the model learns the *logic* of SQL rather than memorizing formatting patterns. Malformed SQL entries are dropped entirely rather than poisoning the training set.
+
+### 3. Intelligent Table Selection
+`src/core/schemas.py` implements a keyword-matching + foreign-key expansion algorithm. At inference time, instead of dumping the entire database schema (which wastes context window), it identifies only the tables likely needed for a given question and expands to include their join partners. This keeps prompts focused and within context limits even on large databases.
+
+---
+
+## Architecture Overview
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│                     FULL PIPELINE FLOW                               │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  RAW DATA             PREPROCESSING              TRAINING            │
+│  ┌─────────┐         ┌─────────────────┐        ┌──────────────┐    │
+│  │ Spider  │──Load──▶│  SQL Cleaning   │──SFT──▶│  Unsloth +   │    │
+│  │ BIRD    │         │  Schema Inject  │  JSONL  │  LoRA/PEFT   │    │
+│  │ Gretel  │         │  ChatML Format  │        │  (Qwen/Llama) │    │
+│  │ CSV/HF  │         └─────────────────┘        └──────┬───────┘    │
+│  └─────────┘                                           │             │
+│                                                        ▼             │
+│                                               ┌──────────────┐      │
+│  DEPLOYMENT          INFERENCE/EVAL           │  LoRA        │      │
+│  ┌─────────┐◀────────┌─────────────────┐◀─── │  Adapters    │      │
+│  │ Your    │  SQL     │ Schema Anchor   │     │  Saved to    │      │
+│  │ App /   │         │ Prompt Builder  │     │  outputs/    │      │
+│  │ API     │         │ SQL Extractor   │     └──────────────┘      │
+│  └─────────┘         └─────────────────┘                           │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+### Component Responsibilities
+
+| Component                  | Location                                                 | Responsibility                                           |
+| -------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
+| **Orchestrator**           | `main.py`                                                | Single entry point for all pipeline stages               |
+| **Config**                 | `src/core/config.py`                                     | YAML → dot-notation AppConfig object                     |
+| **Schema Utils**           | `src/core/schemas.py`                                    | Table selection + FK expansion + prompt building         |
+| **CSV Loader**             | `src/preprocessing/loaders/csv_loaders.py`               | Load CSV files as streaming generators                   |
+| **HF Loader**              | `src/preprocessing/loaders/hf_loaders.py`                | Load HuggingFace datasets (local or hub)                 |
+| **SFT Processor**          | `src/preprocessing/processors/base.py`                   | Map raw columns → instruction/input/output               |
+| **JSONL Formatter**        | `src/preprocessing/formatters/base.py`                   | Write processed stream to .jsonl                         |
+| **Preprocessing Pipeline** | `src/preprocessing/pipeline.py`                          | Orchestrate Load→Process→Format with progress            |
+| **Trainer**                | `src/training/train.py`                                  | Unsloth + LoRA fine-tuning with early stopping           |
+| **Evaluator**              | `src/training/evaluate.py`                               | Batch inference + Spider metric evaluation               |
+| **Inference**              | `src/training/inference.py`                              | Single/batch SQL generation with result saving           |
+| **Data Gatherer**          | `text2sql_dataset_preprocessing/src/gatherer.py`         | Download Spider/BIRD/Gretel from HF Hub                  |
+| **SQL Cleaner**            | `text2sql_dataset_preprocessing/src/cleaner.py`          | `sqlglot`-based SQL validation + canonicalization        |
+| **Schema Generator**       | `text2sql_dataset_preprocessing/src/schema_generator.py` | Reverse-engineer schemas from SQL if tables.json missing |
+
+---
+
+## Project Structure
+
+```
+slm-text2sql/
+│
+├── main.py                              # ← START HERE: orchestrates all stages
+├── config.yaml                          # ← Central configuration for everything
+├── pyproject.toml                       # Dependencies + poe tasks
+├── .env                                 # HF_TOKEN (create this yourself)
+│
+├── src/
+│   ├── core/
+│   │   ├── config.py                    # YAML loader, AppConfig dot-notation wrapper
+│   │   ├── schemas.py                   # Schema loading, table selection, prompt building
+│   │   └── utils.py                     # Shared Rich logger
+│   │
+│   ├── preprocessing/
+│   │   ├── pipeline.py                  # Streaming pipeline with Rich progress bars
+│   │   ├── base.py                      # Abstract base classes + LoaderRegistry
+│   │   ├── loaders/
+│   │   │   ├── csv_loaders.py           # CSV → streaming dict generator
+│   │   │   └── hf_loaders.py           # HuggingFace → streaming dict generator
+│   │   ├── processors/
+│   │   │   └── base.py                  # Column mapping + row validation
+│   │   └── formatters/
+│   │       └── base.py                  # Write .jsonl to disk
+│   │
+│   └── training/
+│       ├── train.py                     # Unsloth fine-tuning + LoRA injection
+│       ├── evaluate.py                  # Batch evaluation + Spider metrics
+│       └── inference.py                 # SQL generation + result export
+│
+├── text2sql_dataset_preprocessing/      # Standalone data prep module
+│   ├── config.yml                       # Dataset sources (Spider, BIRD, Gretel)
+│   ├── main.py                          # Gather → Clean → Format → Publish
+│   └── src/
+│       ├── gatherer.py                  # Download raw datasets from HF
+│       ├── cleaner.py                   # SQL validation + normalization
+│       ├── formatter.py                 # Convert to instruction-input-output format
+│       ├── schema_parser.py             # Parse Spider tables.json
+│       ├── schema_generator.py          # Reverse-engineer schemas from SQL
+│       └── publisher.py                 # Push final dataset to HF Hub
+│
+├── scripts/
+│   └── text2sql_synthetic_dataset_generation.py   # LLM-based data augmentation
+│
+├── data/
+│   ├── raw/                             # Downloaded raw datasets (gitignored)
+│   └── spider_sft/
+│       └── train_sft.jsonl              # Final SFT training file
+│
+└── outputs/
+    └── qwen-text2sql/                   # Fine-tuned LoRA adapters saved here
+```
+
+---
+
+## Prerequisites
+
+| Requirement         | Version   | Notes                                                                   |
+| ------------------- | --------- | ----------------------------------------------------------------------- |
+| Python              | 3.10+     | Required for match-case and newer typing features                       |
+| CUDA GPU            | 8GB+ VRAM | 14GB+ recommended for `r=64`; use `load_in_4bit: True` for smaller GPUs |
+| `uv`                | Latest    | Fast package manager — [install here](https://github.com/astral-sh/uv)  |
+| HuggingFace account | —         | Required for downloading gated models and publishing datasets           |
+
+---
+
+## Installation
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/your-username/slm-text2sql.git
+cd slm-text2sql
+
+# 2. Install all dependencies
+uv sync
+
+# 3. Create your .env file with your HuggingFace token
+echo "HF_TOKEN=hf_your_token_here" > .env
+
+# 4. Verify GPU is available
+uv run python -c "import torch; print(torch.cuda.is_available(), torch.cuda.get_device_name(0))"
+```
+
+---
+
+## Quick Start
+
+Run the full pipeline end-to-end in 4 commands:
+
+```bash
+# Step 1: Download and preprocess raw Text-to-SQL datasets
+uv run poe preprocess
+
+# Step 2: Push the gold-standard SFT dataset to HuggingFace (optional)
+uv run poe publish
+
+# Step 3: Fine-tune the model
+uv run python main.py train
+
+# Step 4: Run inference on test data
+uv run python main.py inference
+```
+
+To run everything in one shot (preprocess → train → evaluate):
+```bash
+uv run python main.py all
+```
+
+---
+
+## Stage 1 — Data Preprocessing
+
+The preprocessing stage transforms raw datasets from multiple sources into a unified SFT JSONL format with schema context injected into every example.
+
+### Output Format
+
+Every line in the output `.jsonl` looks like this:
+
+```json
+{
+  "instruction": "Convert the following natural language question into a valid SQL query based on the provided database schema.",
+  "input": "### Database Schema:\nconcerts(concert_id, concert_name, theme, stadium_id, year)\nstadiums(stadium_id, location, name, capacity)\n\n### Question:\nWhich stadiums hosted more than 2 concerts?",
+  "output": "SELECT stadium_id, COUNT(*) FROM concerts GROUP BY stadium_id HAVING COUNT(*) > 2"
+}
+```
+
+### Running the Full Data Pipeline
+
+```bash
+# Downloads Spider + BIRD + Gretel, cleans SQL, injects schemas, writes train_sft.jsonl
+uv run poe preprocess
+```
+
+This runs `text2sql_dataset_preprocessing/main.py` which executes:
+1. **Gather** — Downloads raw datasets to `data/raw/`
+2. **Schema Parse** — Loads `tables.json` from Spider for ground-truth schemas
+3. **Schema Generate** (fallback) — If `tables.json` is missing, reverse-engineers schemas by parsing SQL queries using `sqlglot`
+4. **Clean** — Validates SQL syntax and normalizes to canonical form
+5. **Format** — Produces instruction/input/output triples
+6. **Write** — Outputs to `data/train_sft.jsonl`
+
+### Using Your Own CSV Data
+
+If you have a custom dataset in CSV format, configure `config.yaml`:
+
+```yaml
+data:
+  source_type: "csv"
+  path: "data/my_dataset.csv"
+  columns:
+    instruction: "question_column"        # Natural language question column
+    input: ["schema_col", "context_col"]  # Multiple columns are joined with " | "
+    output: "sql_column"                  # Target SQL column
+
+paths:
+  data_path: "data/spider_sft/train_sft.jsonl"  # Where to write processed output
+```
+
+Then run:
+
+```bash
+uv run python main.py preprocess
+```
+
+### Using a HuggingFace Dataset
+
+```yaml
+data:
+  source_type: "hf"
+  path: "xlangai/spider"
+  split: "train"
+  streaming: true      # Recommended for large datasets
+  limit: 5000          # Optional: cap the number of examples
+  columns:
+    instruction: "question"
+    output: "query"
+```
+
+### Column Mapping
+
+The `columns` block in `config.yaml` controls how your source data maps to the standard SFT format:
+
+| SFT Field     | Description                       | Config Key                       |
+| ------------- | --------------------------------- | -------------------------------- |
+| `instruction` | The natural language question     | Single column name (string)      |
+| `input`       | Supporting context (schema, etc.) | Single column OR list of columns |
+| `output`      | The target SQL                    | Single column name (string)      |
+
+When `input` is a list, columns are joined as `"Col1: val1 | Col2: val2"`. This is useful when schema and question are in separate columns.
+
+---
+
+## Stage 2 — Training
+
+The training stage fine-tunes a base model using Unsloth's optimized LoRA implementation. The default model is `Qwen/Qwen2.5-1.5B-Instruct` with rank-64 LoRA adapters.
+
+### Running Training
+
+```bash
+uv run python main.py train
+```
+
+Or directly:
+```bash
+uv run python src/training/train.py --config config.yaml
+```
+
+Override specific settings without editing the config:
+```bash
+uv run python main.py train --epochs 3 --data_path data/my_custom_train.jsonl
+```
+
+### What Happens During Training
+
+1. **Model Load** — Downloads and loads the base model with Unsloth optimizations (2x faster, 70% less VRAM)
+2. **LoRA Injection** — Attaches trainable adapters to attention and MLP layers only (frozen base weights)
+3. **Dataset Preparation** — Loads your `.jsonl`, applies ChatML template, splits 95% train / 5% eval
+4. **Training** — Runs `SFTTrainer` with gradient checkpointing, 8-bit Adam, and cosine LR schedule
+5. **Early Stopping** — Monitors `eval_loss`; stops if no improvement for 3 eval cycles
+6. **Save** — Writes LoRA adapter weights to `outputs/qwen-text2sql/`
+
+### Choosing the Right LoRA Rank
+
+| GPU VRAM | Recommended `r` | `load_in_4bit` |
+| -------- | --------------- | -------------- |
+| 8 GB     | 8–16            | `true`         |
+| 16 GB    | 32              | `false`        |
+| 24 GB+   | 64              | `false`        |
+
+### Switching Base Models
+
+The pipeline supports any Unsloth-compatible model. Update `config.yaml`:
+
+```yaml
+model:
+  model_name: "meta-llama/Llama-3.2-3B-Instruct"   # or any HF model ID
+  max_seq_length: 4096   # Increase for longer schemas
+  load_in_4bit: false
+```
+
+Tested and recommended models:
+
+| Model                                | Size | Notes                                              |
+| ------------------------------------ | ---- | -------------------------------------------------- |
+| `Qwen/Qwen2.5-1.5B-Instruct`         | 1.5B | Default; best accuracy/size tradeoff for SQL       |
+| `Qwen/Qwen2.5-3B-Instruct`           | 3B   | Noticeably better on complex multi-join queries    |
+| `meta-llama/Llama-3.2-3B-Instruct`   | 3B   | Good alternative; requires different chat template |
+| `mistralai/Mistral-7B-Instruct-v0.3` | 7B   | Best quality; requires 16GB+ VRAM with 4bit        |
+
+---
+
+## Stage 3 — Evaluation
+
+The evaluator runs batch inference on a test set and measures accuracy. It supports the official Spider evaluation script for Execution Accuracy (EA) and Exact Set Match (EM).
+
+### Running Evaluation
+
+```bash
+uv run python main.py evaluate
+```
+
+For Spider evaluation with database execution:
+
+```yaml
+# Add to config.yaml:
+evaluation:
+  model_path: "outputs/qwen-text2sql"
+  data_path: "data/spider_sft/dev.jsonl"
+  tables_path: "data/raw/spider_tables.json"
+  db_dir: "data/spider/database"
+  spider_eval_path: "data/spider/spider-master/evaluation.py"
+  output_dir: "evaluation_results"
+```
+
+### Understanding the Metrics
+
+**Exact Set Match (EM):** The predicted SQL matches the gold SQL exactly (after normalization). This is a strict metric — a correct query that uses a different but equivalent JOIN order will fail.
+
+**Execution Accuracy (EA):** The predicted SQL returns the same result set as the gold SQL when run against the actual database. This is the metric that matters for deployment — two different SQL strings can be equally correct if they return the same data.
+
+> For production readiness, target **EA > 70%** on the Spider validation set. State-of-the-art large models achieve ~90%. A fine-tuned 1.5B model trained on this pipeline typically reaches 65–75%.
+
+### Evaluation Output
+
+Results are saved to `evaluation_results/` as JSON:
+
+```json
+{
+  "metadata": {
+    "model_id": "outputs/qwen-text2sql",
+    "accuracy": 71.4,
+    "timestamp": "2025-01-15T14:32:00"
+  },
+  "results": [
+    {
+      "question": "How many students are enrolled in CS?",
+      "predicted_sql": "SELECT COUNT(*) FROM students WHERE dept = 'CS'",
+      "gold_sql": "SELECT count(*) FROM students WHERE dept_name = 'CS'",
+      "is_match": false
+    }
+  ]
+}
+```
+
+Use failed predictions to identify systematic errors (e.g., wrong column names) and add similar examples to your training data.
+
+---
+
+## Stage 4 — Inference
+
+The inference module loads your fine-tuned model and generates SQL for new questions.
+
+### Running Inference
+
+```bash
+uv run python main.py inference
+```
+
+With CLI overrides:
+```bash
+uv run python src/training/inference.py \
+  --config config.yaml \
+  --model_id outputs/qwen-text2sql \
+  --data_path data/my_test_questions.jsonl
+```
+
+### Input Format
+
+Your test file should be a `.jsonl` where each line contains:
+
+```json
+{"db_id": "my_database", "question": "How many orders were placed last week?"}
+```
+
+If you have a `tables.json` file for your database, the pipeline automatically builds the schema-anchored prompt. If not, include an `instruction` field with your pre-built prompt.
+
+### Output
+
+Results are written to `eval_results/{model_name}/results_{timestamp}.json`. Use `is_match` to identify failures and feed them back into your training data.
+
+---
+
+## Configuration Reference
+
+All pipeline behavior is controlled by a single `config.yaml`. Here is a fully annotated reference:
+
+```yaml
+# ── DATA INGESTION ─────────────────────────────────────────────────────
+data:
+  source_type: "csv"          # "csv" | "hf"
+  path: "data/train.csv"      # CSV file path OR HuggingFace dataset name
+  split: "train"              # HF split: "train" | "validation" | "test"
+  streaming: true             # true = memory-efficient generator (recommended)
+  limit: null                 # Max rows to process (null = all rows)
+  trust_remote_code: false    # Required for some HF datasets with custom scripts
+  columns:
+    instruction: "question"   # Column to use as the user's question
+    input: ["schema", "ctx"]  # One or more columns to use as context (joined with " | ")
+    output: "sql"             # Column containing the target SQL
+
+# ── MODEL ──────────────────────────────────────────────────────────────
+model:
+  model_name: "Qwen/Qwen2.5-1.5B-Instruct"
+  max_seq_length: 2048        # Increase to 4096+ for databases with many tables
+  load_in_4bit: false         # true = 4-bit quantization (less VRAM, slightly lower quality)
+  dtype: null                 # null = auto-detect | "float16" | "bfloat16"
+
+# ── LORA / PEFT ────────────────────────────────────────────────────────
+lora:
+  r: 64                       # LoRA rank: higher = more parameters = more capacity
+  lora_alpha: 64              # Scaling factor; set equal to r for stable training
+  lora_dropout: 0             # 0 is optimized by Unsloth; non-zero may help generalization
+  bias: "none"                # "none" is optimized; alternatives: "all", "lora_only"
+  target_modules:             # Which linear layers to attach adapters to
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+    - "gate_proj"
+    - "up_proj"
+    - "down_proj"
+
+# ── TRAINING ───────────────────────────────────────────────────────────
+training:
+  output_dir: "outputs/qwen-text2sql"
+  epochs: 3                   # 2-3 is usually enough; more risks overfitting
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 8    # Effective batch = 2 × 8 = 16
+  learning_rate: 0.0002       # 2e-4 is the standard starting point for LoRA
+  lr_scheduler_type: "cosine" # "cosine" | "linear" | "constant"
+  warmup_steps: 50
+  weight_decay: 0.01
+  seed: 42
+  logging_steps: 10
+  save_steps: 500
+  patience: 3                 # Early stopping: stop after N evals with no improvement
+
+# ── FORMATTING ─────────────────────────────────────────────────────────
+formatting:
+  system_prompt: "You are an expert Text-to-SQL assistant. Convert the natural language question into a valid SQL query based on the schema."
+  chat_template: "chatml"     # "chatml" for Qwen/Mistral | "llama-3" for Llama models
+  mapping:
+    role: "from"
+    content: "value"
+    user: "human"
+    assistant: "gpt"
+
+# ── PATHS ──────────────────────────────────────────────────────────────
+paths:
+  data_path: "data/spider_sft/train_sft.jsonl"   # Input for training
+  model_output: "outputs/qwen-text2sql"           # Where model is saved
+  eval_output: "evaluation_results"               # Where eval results are saved
+```
+
+---
+
+## Known Bugs & Workarounds
+
+These are confirmed issues in the current codebase. Workarounds are provided until fixes are merged:
+
+### Bug 1: `delimiter` Typo in CSV Loader (Critical)
+**File:** `src/preprocessing/loaders/csv_loaders.py`
+The parameter is spelled `delimeter` (missing `i`) throughout. If your CSV uses a non-comma delimiter, the loader silently ignores your setting and falls back to `,`.
+
+**Workaround:** Ensure your CSV uses comma delimiters, or apply this patch:
+```python
+# Change all occurrences of "delimeter" to "delimiter"
+self.delimiter = config.get("delimiter", ",")
+reader = csv.DictReader(f, delimiter=self.delimiter)
+```
+
+### Bug 2: `import warnings` Missing in `base.py` (Critical)
+**File:** `src/preprocessing/base.py`
+`NameError: name 'warnings' is not defined` will be raised if the `validate_columns()` or `_handle_row_error()` methods are called.
+
+**Workaround:** Add `import warnings` at the top of `src/preprocessing/base.py`.
+
+### Bug 3: `patience` Not in `config.yaml`
+**File:** `src/training/train.py` / `config.yaml`
+The `EarlyStoppingCallback` references `config.get('training').get('patience', 3)` but `patience` is not defined in the default `config.yaml`. It silently defaults to `3`.
+
+**Workaround:** Explicitly add `patience: 3` under the `training:` section in your `config.yaml` to make the behavior intentional and visible.
+
+### Bug 4: Inconsistent Data Paths
+`data.path` (used by preprocessing) points to `Titanic-Dataset.csv` while `paths.data_path` (used by training) points to `spider_sft/train_sft.jsonl`. The preprocessing output and training input are effectively disconnected in the default config.
+
+**Workaround:** After running `preprocess`, verify that `paths.data_path` in `config.yaml` points to the file that was actually generated before running `train`.
+
+---
+
+## Accuracy Checklist for Deployment
+
+Use this checklist before deploying your fine-tuned model to production:
+
+**Data Quality**
+- [ ] Your training data covers the SQL patterns your users will actually ask (GROUP BY, JOINs, subqueries, etc.)
+- [ ] All SQL in training data has been validated with `sqlglot` — no broken queries
+- [ ] Schema text in training prompts exactly matches your production database schema
+- [ ] Training set has at least 500 examples per major query pattern
+
+**Training**
+- [ ] `eval_loss` plateaued and early stopping triggered (not still decreasing at end of training)
+- [ ] No significant gap between `train_loss` and `eval_loss` (overfitting check)
+- [ ] Model has been evaluated on a held-out test set it has never seen
+
+**Schema Anchoring**
+- [ ] Your production `tables.json` (or equivalent schema source) is ready and accurate
+- [ ] Column names in your schema file exactly match your database (`UserID` vs `user_id` matters)
+- [ ] Foreign key relationships are correctly defined for JOIN path expansion
+
+**Inference**
+- [ ] System prompt at inference exactly matches system prompt used during training
+- [ ] Chat template at inference exactly matches training (`chatml` vs `llama-3`)
+- [ ] Generated SQL is post-processed: markdown code blocks stripped, whitespace normalized
+
+**Evaluation Results**
+- [ ] Execution Accuracy (EA) ≥ 65% on your domain's test set
+- [ ] Failed predictions have been reviewed — errors should be "wrong column" not "malformed SQL"
+- [ ] Model has been tested on edge cases: empty results, aggregations, multi-table joins
+
+---
+
+## Troubleshooting
+
+**`CUDA out of memory` during training**
+Set `load_in_4bit: true` in `config.yaml` and reduce `per_device_train_batch_size` to `1`. Also try reducing `r` to `16` or `32`.
+
+**`FileNotFoundError` for the training dataset**
+The preprocessing pipeline writes to `paths.data_path`. Verify this path in `config.yaml` matches where the preprocessing stage actually wrote its output.
+
+**Model generates English instead of SQL**
+The system prompt is likely wrong or missing. Ensure `formatting.system_prompt` is set and that the chat template used during inference matches the one used during training.
+
+**Very low accuracy on your custom database (< 40%)**
+Your production schema is likely not covered in the training data. Add 200–500 examples using your actual database schema and column names, then retrain. Schema-specific examples are worth 5× more than generic ones.
+
+**`NameError: name 'warnings' is not defined`**
+Add `import warnings` to the top of `src/preprocessing/base.py`. See [Known Bugs](#known-bugs--workarounds).
+
+**Training loss is not decreasing after epoch 1**
+Learning rate may be too high. Try `learning_rate: 0.0001` (1e-4) or reduce `lora_alpha` to half of `r`.
+
+**HuggingFace dataset download is slow or fails**
+Set `streaming: true` in your data config and add `trust_remote_code: true` if the dataset requires it.
+
+---
+
+## Contributing
+
+1. Fork the repository and create a feature branch
+2. Fix one of the [Known Bugs](#known-bugs--workarounds) or add a new loader/formatter following the base class interface
+3. Ensure your loader is registered with `@LoaderRegistry.register("your_type")`
+4. Add your source type to the `LoaderType` enum in `base.py`
+5. Submit a pull request with a description of what accuracy improvement the change enables
+
+---
+
+## License
+
+MIT License. See `LICENSE` for details.
