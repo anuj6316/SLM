@@ -69,7 +69,16 @@ class InferenceEngine:
     def load_schemas(self, tables_path: Optional[Path] = None) -> None:
         """Load database schemas."""
         tables_path = tables_path or self._settings.data.tables_file
-        self._schema_map = load_schema_dict(tables_path)
+        if not tables_path.exists():
+            logger.warning(f"Schema file not found at {tables_path}. Using empty schema map.")
+            self._schema_map = {}
+            return
+
+        try:
+            self._schema_map = load_schema_dict(tables_path)
+        except Exception as e:
+            logger.warning(f"Failed to load schema file at {tables_path}: {e}. Using empty schema map.")
+            self._schema_map = {}
 
     def setup_mlflow(self) -> None:
         """Configure MLflow for Databricks tracing."""
@@ -81,31 +90,33 @@ class InferenceEngine:
             experiment_name=self._settings.mlflow.experiment_name,
         )
 
-    def _build_prompt(self, question: str, db_id: str) -> str:
+    def _build_prompt(self, question: str, db_id: str, prompt: Optional[str] = None) -> str:
         """Build the full prompt for inference."""
-        if self._schema_map and db_id in self._schema_map:
+        if prompt:
+            user_content = prompt
+        elif self._schema_map and db_id in self._schema_map:
             schema = self._schema_map[db_id]
+            user_content = f"### Database Schema:\n{schema}\n\n### Question:\n{question}"
         else:
-            schema = f"Schema for {db_id} not available"
+            user_content = f"### Question:\n{question}"
 
         return f"""<|im_start|>system
 {self._settings.formatting.system_prompt}<|im_end|>
 <|im_start|>user
-### Database Schema:
-{schema}
-
-### Question:
-{question}<|im_end|>
+{user_content}<|im_end|>
 <|im_start|>assistant
 """
 
-    def generate(self, question: str, db_id: str = "default") -> Dict[str, Any]:
+    def generate(
+        self, question: str, db_id: str = "default", prompt: Optional[str] = None
+    ) -> Dict[str, Any]:
         """
-        Generate SQL from a natural language question.
+        Generate SQL from a natural language question or formatted prompt.
 
         Args:
             question: Natural language question
             db_id: Database identifier
+            prompt: Pre-formatted prompt content (e.g. from dataset 'input' field)
 
         Returns:
             Dict with question, db_id, sql, tokens_used
@@ -116,9 +127,9 @@ class InferenceEngine:
         if self._schema_map is None:
             self.load_schemas()
 
-        prompt = self._build_prompt(question, db_id)
+        full_prompt = self._build_prompt(question, db_id, prompt)
 
-        inputs = self._tokenizer([prompt], return_tensors="pt").to(self._model.device)
+        inputs = self._tokenizer([full_prompt], return_tensors="pt").to(self._model.device)
         input_length = inputs.input_ids.shape[1]
 
         with torch.no_grad():
@@ -150,13 +161,16 @@ class InferenceEngine:
             "tokens_used": input_length + len(new_tokens),
         }
 
-    def generate_traced(self, question: str, db_id: str = "default") -> Dict[str, Any]:
+    def generate_traced(
+        self, question: str, db_id: str = "default", prompt: Optional[str] = None
+    ) -> Dict[str, Any]:
         """
         Generate SQL with MLflow tracing.
 
         Args:
             question: Natural language question
             db_id: Database identifier
+            prompt: Pre-formatted prompt content
 
         Returns:
             Dict with question, db_id, sql, tokens_used
@@ -166,6 +180,7 @@ class InferenceEngine:
             question=question,
             db_id=db_id,
             mlflow_enabled=self._mlflow_enabled,
+            prompt=prompt,
         )
 
     def run_batch(
@@ -210,24 +225,46 @@ class InferenceEngine:
                 question = extract_question_from_input(entry.get("input", ""))
                 db_id = entry.get("metadata", {}).get("db_id", "unknown")
                 gold_sql = entry.get("output", "")
+                raw_input = entry.get("input", "")
                 data.append(
                     {
                         "question": question,
                         "db_id": db_id,
                         "gold_sql": gold_sql,
+                        "prompt": raw_input,
                     }
                 )
 
         results = []
         generate_fn = self.generate_traced if use_tracing else self.generate
 
-        for item in tqdm(data, desc="Generating SQL"):
-            result = generate_fn(item["question"], item["db_id"])
-            result["gold_sql"] = item["gold_sql"]
-            result["exact_match"] = (
-                result["sql"].lower().strip() == item["gold_sql"].lower().strip()
-            )
-            results.append(result)
+        import contextlib
+        import mlflow
+
+        # Wrap in a run if tracing is enabled
+        run_context = (
+            mlflow.start_run(run_name=f"infer_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+            if use_tracing
+            else contextlib.nullcontext()
+        )
+
+        with run_context:
+            if use_tracing:
+                mlflow.log_params({
+                    "model_path": str(self._model_path),
+                    "dataset": str(data_path),
+                    "num_samples": num_samples or "all"
+                })
+
+            for item in tqdm(data, desc="Generating SQL"):
+                result = generate_fn(
+                    question=item["question"], db_id=item["db_id"], prompt=item["prompt"]
+                )
+                result["gold_sql"] = item["gold_sql"]
+                result["exact_match"] = (
+                    result["sql"].lower().strip() == item["gold_sql"].lower().strip()
+                )
+                results.append(result)
 
         exact_matches = sum(1 for r in results if r["exact_match"])
         accuracy = exact_matches / len(results) if results else 0

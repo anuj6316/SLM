@@ -105,7 +105,7 @@ evaluation:
 # ------------------------------------------------------------------------------
 inference:
   data_path: "data/val_split.jsonl"
-  max_new_tokens: 128
+  max_new_tokens: 512
   output_path: null
   num_samples: null
   do_sample: false
@@ -115,5 +115,5 @@ inference:
 # FORMATTING
 # ------------------------------------------------------------------------------
 formatting:
-  system_prompt: "You are an expert Text-to-SQL assistant. Convert the natural language question into a valid SQL query based on the schema."
+  system_prompt: "You are an expert Text-to-SQL assistant. Convert the natural language question into a valid SQL query based on the schema. Respond with ONLY the SQL query, no explanation or preamble."
   chat_template: "chatml"

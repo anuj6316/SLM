@@ -16,7 +16,10 @@ For more options:
     python main.py train --help
 """
 
+from dotenv import load_dotenv
+
 from slm.cli import main
 
 if __name__ == "__main__":
+    load_dotenv()
     main()

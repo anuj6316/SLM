@@ -38,6 +38,7 @@ def traced_generate(
     question: str,
     db_id: str,
     mlflow_enabled: bool,
+    prompt: Optional[str] = None,
 ) -> Any:
     """
     Generate SQL with optional MLflow tracing.
@@ -47,18 +48,19 @@ def traced_generate(
         question: Natural language question
         db_id: Database identifier
         mlflow_enabled: Whether MLflow tracing is enabled
+        prompt: Optional pre-formatted prompt
 
     Returns:
         Result from generate_fn
     """
     if not mlflow_enabled:
-        return generate_fn(question, db_id)
+        return generate_fn(question, db_id, prompt=prompt)
 
     import mlflow
 
     @mlflow.trace(name="generate_sql", span_type="LLM")
     def _trace_generate():
-        result = generate_fn(question, db_id)
+        result = generate_fn(question, db_id, prompt=prompt)
         mlflow.log_metrics(
             {
                 "input_tokens": result["input_tokens"],
