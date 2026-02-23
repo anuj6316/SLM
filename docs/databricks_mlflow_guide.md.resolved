@@ -1,0 +1,125 @@
+# Databricks MLflow Integration Guide (2026 Edition)
+
+This guide provides a comprehensive "future-proof" roadmap for integrating Databricks MLflow into your project. It focuses on **Unity Catalog (UC)**, **MLflow 3.x features**, and **Generative AI Observability**.
+
+---
+
+## 🏗️ 1. Architecture & Governance (Unity Catalog)
+
+The most significant shift in Databricks MLflow is the move from the legacy "Workspace Model Registry" to **Unity Catalog**.
+
+### Key Concept: The Three-Level Namespace
+Instead of just a model name, you must now address models using:
+`catalog_name.schema_name.model_name`
+
+### Why Unity Catalog?
+- **Centralized Governance**: Access control is managed at the UC level, not just the workspace.
+- **Lineage**: Automatically tracks which dataset (UC Table) produced which model.
+- **Durable Storage**: Models are stored in **UC Volumes**, which are more robust than DBFS.
+
+> [!IMPORTANT]
+> To use this, set your registry URI in your environment or config:
+> `mlflow.set_registry_uri("databricks-uc")`
+
+---
+
+## 🔐 2. Environment Configuration
+
+To ensure your experiment works "years from now," you need a stable environment setup.
+
+### Required Environment Variables ([.env](file:///home/mindmap/Desktop/SLM/.env))
+```bash
+DATABRICKS_HOST="https://your-instance.cloud.databricks.com"
+DATABRICKS_TOKEN="dapi..." # Use a Service Principal token for production
+MLFLOW_TRACKING_URI="databricks"
+MLFLOW_REGISTRY_URI="databricks-uc"
+# Target for model registration
+UC_CATALOG="main"
+UC_SCHEMA="text2sql_experiments"
+```
+
+---
+
+## 📈 3. Tracking & Autologging (The Latest Standards)
+
+MLflow 3.x introduces enhanced autologging specifically for `transformers` and `unsloth`.
+
+### Latest Best Practices:
+1.  **Enable Autologging Early**: Call `mlflow.transformers.autolog()` before your training loop.
+2.  **Model Signatures**: UC **requires** model signatures (input/output schemas).
+    - *How to fix*: Provide an `input_example` when logging.
+3.  **Automatic Versioning**: UC uses **Aliases** (e.g., `@champion`, `@challenger`) instead of traditional "Stages" (Staging/Production).
+
+### Implementation Pattern (Conceptual):
+```python
+import mlflow
+
+# 1. Setup Tracking
+mlflow.set_experiment(f"/Users/{user_email}/text2sql_gemma3")
+
+# 2. Automated Tracing (New in 2025/2026)
+# This captures internal steps like tokenization and forward pass details
+mlflow.transformers.autolog(
+    log_input_examples=True,
+    log_model_signatures=True,
+    silent=False
+)
+
+with mlflow.start_run(run_name="gemma3-sft-v1"):
+    # Log your custom hyperparams from config.yaml
+    mlflow.log_params(settings.lora.to_dict())
+    
+    # ... Training loop ...
+    
+    # Register to Unity Catalog
+    model_name = f"{catalog}.{schema}.gemma3_text2sql"
+    mlflow.transformers.log_model(
+        transformers_model={"model": model, "tokenizer": tokenizer},
+        artifact_path="model",
+        registered_model_name=model_name
+    )
+```
+
+---
+
+## 🕵️ 4. MLflow Tracing (Generative AI Observability)
+
+For Text-to-SQL, "Tracing" is the most powerful new tool. It allows you to see exactly how your prompt was constructed and what the model output.
+
+### How to use Tracing:
+- **Decorators**: Use `@mlflow.trace` on your inference functions.
+- **Payloads**: Traces capture the full JSON request/response, which is vital for debugging "why did the model fail here?" 6 months later.
+
+### Advanced: Production Tracing
+Log your traces to a **Delta Table** for long-term auditability:
+- This allows you to run SQL queries *over your model's history* to find performance regressions.
+
+---
+
+## 📅 5. Durable Experiment Management
+
+To understand this experiment "after years":
+
+1.  **Log the Code Version**: Use `mlflow.set_tag("git_commit", current_sha)`.
+2.  **Log the Environment**: MLflow logs `conda.yaml` and [requirements.txt](file:///home/mindmap/Desktop/SLM/requirements.txt) by default. **Always verify these are captured.**
+3.  **Use Markdown Descriptions**: Use `mlflow.set_tag("mlflow.note.content", "# Experiment Design...")` to embed your plan directly in the run.
+4.  **Dataset Tracking**: Don't just log the file path; log the **UC Table version**:
+    ```python
+    dataset = mlflow.data.from_huggingface(ds, name="spider", digest=...)
+    mlflow.log_input(dataset, context="training")
+    ```
+
+---
+
+## 🛠️ Summary Checklist for You
+
+| Step | Action | Benefit |
+| :--- | :--- | :--- |
+| **1** | Initialize `mlflow.set_registry_uri("databricks-uc")` | Centralized Governance |
+| **2** | Use `mlflow.transformers.autolog()` | Zero-effort metadata tracking |
+| **3** | Add `input_example` to `log_model()` | Required for Unity Catalog registration |
+| **4** | Use `@mlflow.trace` on `InferenceEngine.generate` | Visual debugging of LLM logic |
+| **5** | Set `git_commit` and `mlflow.note.content` tags | Long-term reproducibility |
+
+> [!TIP]
+> Periodically check the **Databricks MLflow UI** to see the "Model Lineage" graph—it's the best way to visualize how your data turned into a model.

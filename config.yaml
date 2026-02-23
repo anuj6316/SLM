@@ -49,16 +49,16 @@ data:
 # MODEL
 # ------------------------------------------------------------------------------
 model:
-  name: "/home/mindmap/Desktop/SLM/Qwen/Qwen2.5-Coder-3B-Instruct"
+  name: "/home/mindmap/Desktop/SLM/Qwen/Qwen2.5-Coder-1.5B-Instruct"
   max_seq_length: 2048
-  load_in_4bit: false
+  load_in_4bit: true
   dtype: null
 
 # ------------------------------------------------------------------------------
 # LORA / PEFT
 # ------------------------------------------------------------------------------
 lora:
-  r: 64
+  r: 32
   lora_alpha: 64
   lora_dropout: 0.0
   bias: "none"
@@ -75,14 +75,14 @@ lora:
 # TRAINING
 # ------------------------------------------------------------------------------
 training:
-  output_dir: "outputs/qwen-coder-3b-text2sql"
-  epochs: 3
-  per_device_train_batch_size: 2
-  gradient_accumulation_steps: 8
-  learning_rate: 0.0002
+  output_dir: "outputs/Qwen2.5-Coder-1.5B-Instruct"
+  epochs: 10
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 16
+  learning_rate: 8e-5
   lr_scheduler_type: "cosine"
   warmup_steps: 50
-  weight_decay: 0.01
+  weight_decay: 0.1
   seed: 42
   logging_steps: 10
   save_steps: 500
@@ -117,3 +117,14 @@ inference:
 formatting:
   system_prompt: "You are an expert Text-to-SQL assistant. Convert the natural language question into a valid SQL query based on the schema. Respond with ONLY the SQL query, no explanation or preamble."
   chat_template: "chatml"
+
+# ------------------------------------------------------------------------------
+# MLFlow
+# ------------------------------------------------------------------------------
+mlflow:
+  enabled: true
+  tracking_uri: "databricks"
+  experiment_name: "/Shared/text2sql"
+  registry_uri: "databricks-uc"
+  catalog: "main"
+  schema_name: "text2sql"

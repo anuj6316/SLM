@@ -113,6 +113,27 @@ class Evaluator:
                 json.dump(results, f, indent=2)
             logger.info(f"Results saved to {output_path}")
 
+        if self._settings.mlflow.enabled:
+            try:
+                import mlflow
+                mlflow.set_tracking_uri(self._settings.mlflow.tracking_uri)
+                mlflow.set_experiment(self._settings.mlflow.experiment_name)
+                
+                with mlflow.start_run(run_name=f"eval_{datetime.now().strftime('%Y%m%d_%H%M%S')}"):
+                    mlflow.log_params({
+                        "dataset": str(data_path),
+                        "model": str(self._model_path),
+                        "num_samples": len(predictions),
+                    })
+                    mlflow.log_metrics({
+                        "exact_match_accuracy": accuracy,
+                        "exact_matches": float(exact_matches),
+                        "total_samples": float(len(predictions)),
+                    })
+                    logger.info("Evaluation metrics logged to MLflow")
+            except Exception as e:
+                logger.warning(f"Failed to log metrics to MLflow: {e}")
+
         logger.info(
             f"Exact Match Accuracy: {accuracy:.2%} ({exact_matches}/{len(predictions)})"
         )

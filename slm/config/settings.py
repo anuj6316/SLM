@@ -25,11 +25,14 @@ class ProjectSettings(BaseSettings):
 
 class MLflowSettings(BaseSettings):
     """MLflow tracking configuration."""
+    model_config = SettingsConfigDict(extra="ignore", populate_by_name=True)
 
     enabled: bool = True
     tracking_uri: str = "databricks"
     experiment_name: str = "/Shared/text2sql"
     registry_uri: str = "databricks-uc"
+    catalog: str = "main"
+    schema_name: str = "default"
 
 
 class DatasetConfig(BaseSettings):

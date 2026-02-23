@@ -42,6 +42,16 @@ class SFTTrainer:
         except ImportError:
             raise ImportError("Unsloth not installed. Run: pip install unsloth")
 
+        # Implementing MLflow
+        try:
+            import mlflow
+            if self._settings.mlflow.enabled:
+                mlflow.transformers.autolog(
+                    log_input_examples=True,
+                    log_model_signatures=True,
+                )
+        except Exception as e:
+            raise RuntimeError(f"Unable to initialize the MLflow due to {e}")
         logger.info(f"Loading model: {self._settings.model.name}")
 
         self._model, self._tokenizer = FastLanguageModel.from_pretrained(
@@ -96,18 +106,28 @@ class SFTTrainer:
         if val_path.exists():
             dataset["validation"] = load_dataset(
                 "json", data_files={"val": str(val_path)}
-            )["train"]
+            )["val"]
+
+        # Capture system_prompt as a local variable to avoid pickling 'self'
+        system_prompt = self._settings.formatting.system_prompt
 
         def formatting_func(examples):
+            instructions = examples["instruction"]
+            inputs = examples["input"]
+            outputs = examples["output"]
             texts = []
-            for i in range(len(examples["instruction"])):
-                text = self._format_example(
-                    {
-                        "instruction": examples["instruction"][i],
-                        "input": examples["input"][i],
-                        "output": examples["output"][i],
-                    }
-                )
+            
+            # Ensure we handle both single examples and batches
+            if isinstance(instructions, list):
+                for i in range(len(instructions)):
+                    text = f"<|im_start|>system\n{system_prompt}<|im_end|>\n" \
+                           f"<|im_start|>user\n{instructions[i]}\n\n{inputs[i]}<|im_end|>\n" \
+                           f"<|im_start|>assistant\n{outputs[i]}<|im_end|>"
+                    texts.append(text)
+            else:
+                text = f"<|im_start|>system\n{system_prompt}<|im_end|>\n" \
+                       f"<|im_start|>user\n{instructions}\n\n{inputs}<|im_end|>\n" \
+                       f"<|im_start|>assistant\n{outputs}<|im_end|>"
                 texts.append(text)
             return texts
 
@@ -168,7 +188,16 @@ class SFTTrainer:
             eval_dataset=dataset.get("validation"),
             formatting_func=formatting_func,
             args=training_args,
+            max_seq_length=self._settings.model.max_seq_length,
+            dataset_num_proc=None, # Let Unsloth/Datasets decide
+            packing=False,
         )
+
+        import mlflow
+        if self._settings.mlflow.enabled:
+            mlflow.set_tracking_uri(self._settings.mlflow.tracking_uri)
+            mlflow.set_registry_uri(self._settings.mlflow.registry_uri)
+            mlflow.set_experiment(self._settings.mlflow.experiment_name)
 
         logger.info("Starting training...")
         self._trainer.train()
@@ -176,6 +205,15 @@ class SFTTrainer:
         logger.info(f"Saving model to {output_dir}")
         self._model.save_pretrained(output_dir)
         self._tokenizer.save_pretrained(output_dir)
+
+        # New: Register to Unity Catalog if successful
+        if self._settings.mlflow.enabled:
+            model_name = f"{self._settings.mlflow.catalog}.{self._settings.mlflow.schema_name}.{self._settings.project.name.lower().replace(' ', '_')}"
+            mlflow.transformers.log_model(
+                transformers_model={"model": self._model, "tokenizer": self._tokenizer},
+                artifact_path="model",
+                registered_model_name=model_name
+            )
 
         logger.info("Training complete!")
         return output_dir

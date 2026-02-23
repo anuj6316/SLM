@@ -23,8 +23,10 @@ def setup_mlflow(tracking_uri: str, experiment_name: str) -> bool:
     """
     try:
         import mlflow
+        from slm.config import settings
 
         mlflow.set_tracking_uri(tracking_uri)
+        mlflow.set_registry_uri(settings.mlflow.registry_uri)
         mlflow.set_experiment(experiment_name)
         logger.info(f"MLflow tracing enabled: {experiment_name}")
         return True

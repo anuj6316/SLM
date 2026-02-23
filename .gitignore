@@ -22,3 +22,23 @@ data/
 
 Qwen/
 Qwen/*
+
+models/
+models/*
+
+# Model outputs
+outputs/
+*.pt
+*.bin
+*.safetensors
+
+# Databases
+*.db
+
+# Backup files
+*.bak
+*.deb
+
+# Python
+__pycache__/
+*.pyc
