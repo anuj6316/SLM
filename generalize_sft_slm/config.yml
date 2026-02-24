@@ -1,0 +1,65 @@
+# ==============================================================================
+# Tabular SFT Pipeline Configuration
+# ==============================================================================
+# Pass this file to TabularSFTPipeline.from_yaml("generalize_sft_slm/config.yml")
+# or run:  python -m generalize_sft_slm.main --config generalize_sft_slm/config.yml
+
+# ------------------------------------------------------------------------------
+# Data Source
+# ------------------------------------------------------------------------------
+source:
+  type: csv                                   # csv | excel | database
+  path: data/Titanic-Dataset.csv          # relative to the project root
+  # table_name: author                        # required when type: database
+  # sheet_name: Sheet1                        # optional for Excel
+
+# ------------------------------------------------------------------------------
+# Column Configuration
+# ------------------------------------------------------------------------------
+columns:
+  target: Survived                            # label / target column
+  ignore:
+    - PassengerId
+    - Name
+  # feature_override:                         # explicit feature list (optional)
+  #   - Pclass
+  #   - Sex
+  #   - Age
+
+# ------------------------------------------------------------------------------
+# Data Cleaning
+# ------------------------------------------------------------------------------
+cleaning:
+  drop_nulls: false                           # drop rows with any null value
+  fill_nulls:                                 # fill specific columns before dropping
+    Age: 0
+    Cabin: "Unknown"
+    Embarked: "S"
+  drop_duplicates: true
+  strip_whitespace: true
+
+# ------------------------------------------------------------------------------
+# SFT Formatting
+# ------------------------------------------------------------------------------
+formatting:
+  format: unsloth                             # unsloth | chatml | alpaca
+  system_prompt: null                         # null = use built-in default
+  instruction_template: null                  # null = use built-in default
+
+# ------------------------------------------------------------------------------
+# Train / Validation Split
+# ------------------------------------------------------------------------------
+split:
+  train_ratio: 0.9
+  seed: 42
+  stratify_by: Survived                       # null = random split
+
+# ------------------------------------------------------------------------------
+# Export
+# ------------------------------------------------------------------------------
+export:
+  output_dir: output
+  formats:
+    - jsonl
+    - huggingface
+    # - parquet

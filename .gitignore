@@ -28,6 +28,8 @@ models/*
 
 # Model outputs
 outputs/
+generalize_sft_slm/output/
+*.arrow
 *.pt
 *.bin
 *.safetensors

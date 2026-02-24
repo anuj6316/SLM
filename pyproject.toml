@@ -30,6 +30,7 @@ dependencies = [
     "pandas>=2.3.3",
     "pymysql>=1.1.2",
     "sqlalchemy>=1.4.54",
+    "polars>=1.38.1",
 ]
 
 [tool.poe.tasks]

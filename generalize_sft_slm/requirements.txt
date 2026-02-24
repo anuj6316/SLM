@@ -3,3 +3,7 @@ numpy
 datasets
 pymysql
 sqlalchemy
+polars
+pyyaml
+openpyxl
+gradio

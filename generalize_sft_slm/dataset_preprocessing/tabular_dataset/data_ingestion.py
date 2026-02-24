@@ -2,63 +2,76 @@
 Goal: Connect to various data sources and normalize them into a standard intermediate format.
 """
 import logging
-import sqlalchemy as db
-import pandas as pd
+import os
+import re
 
-# Basic logging setup
-logging.basicConfig(level=logging.INFO)
+import pandas as pd
+import polars as pl
+import sqlalchemy as db
+
+from ..config import TabularDataset
+from .utils import _format_for_unsloth
+
+logger = logging.getLogger(__name__)
+
+# Allowlist: table names must be simple identifiers (letters, digits, underscores, dots)
+_TABLE_NAME_RE = re.compile(r'^[A-Za-z_][A-Za-z0-9_.]*$')
+
 
 class ProcessDatabase:
-    def __init__(self, connectivity_uri, table_name, target_col=None, ignore_col=None):
+    def __init__(self, connectivity_uri: str, table_name: str, target_col: str = None, ignore_col=None):
+        if not _TABLE_NAME_RE.match(table_name):
+            raise ValueError(
+                f"Invalid table name {table_name!r}. "
+                "Only letters, digits, underscores, and dots are allowed."
+            )
         self.connectivity_uri = connectivity_uri
         self.table_name = table_name
         self.target_col = target_col
         self.ignore_col = ignore_col
-        self.engine, self.columns = self.ingest_database()
+        self.engine, self.columns = self._ingest_database()
 
-    def ingest_database(self):
-        # Disable echo for cleaner output
+    def _ingest_database(self):
         engine = db.create_engine(self.connectivity_uri, echo=False)
         try:
             with engine.connect() as conn:
                 # Use text() for SQLAlchemy 2.0 compatibility
                 result = conn.execute(db.text(f"SELECT * FROM {self.table_name} LIMIT 1"))
                 columns = list(result.keys())
-            logging.info(f"Connected to {self.connectivity_uri}, table: {self.table_name}")
+            logger.info(f"Connected to database, table: {self.table_name}")
             return engine, columns
         except Exception as e:
             raise RuntimeError(f"Unable to connect with the database: {e}")
 
-    def fetch_filtered_data(self):
+    def fetch_filtered_data(self) -> pd.DataFrame:
         try:
-            # Recommended for SQLAlchemy 2.0 + Pandas: Use a connection context
             with self.engine.connect() as conn:
-                # Use read_sql_query with sqlalchemy.text for string queries
                 query = db.text(f"SELECT * FROM {self.table_name}")
                 table = pd.read_sql_query(query, con=conn)
 
             if self.ignore_col:
-                ignore_list = [self.ignore_col] if isinstance(self.ignore_col, str) else self.ignore_col
+                ignore_list = [self.ignore_col] if isinstance(self.ignore_col, str) else list(self.ignore_col)
                 table = table.drop(columns=ignore_list, errors="ignore")
 
             return table
         except Exception as e:
             raise RuntimeError(f"Unable to load the table: {e}")
 
-if __name__ == "__main__":
-    # Test with a local database if it exists, otherwise use a memory one for demonstration
-    import os
-    db_uri = "sqlite:///chinook.db"
-    
-    # Create a dummy database if chinook.db doesn't exist for the test
-    if not os.path.exists("chinook.db"):
-        print("Creating dummy chinook.db for testing...")
-        engine = db.create_engine(db_uri)
-        df = pd.DataFrame({'AlbumId': [1], 'Title': ['Test Album'], 'ArtistId': [1]})
-        df.to_sql('albums', engine, index=False)
 
-    processor = ProcessDatabase(db_uri, "albums")
-    print("Columns:", processor.columns)
-    df = processor.fetch_filtered_data()
-    print("\nData Head:")
-    print(df.head())
+class ProcessLocalFile:
+    def __init__(self, clf: TabularDataset):
+        self.path = clf.path
+        self.target_col = clf.target_col
+        self.ignore_cols = clf.ignore_cols
+        self.df, self.columns = self._load_df()
+
+    def _load_df(self) -> tuple[pl.DataFrame, list[str]]:
+        ext = os.path.splitext(self.path)[-1].lower()
+
+        if ext == ".csv":
+            df = pl.read_csv(self.path)
+            return df, df.columns
+        elif ext in [".xls", ".xlsx"]:
+            df = pd.read_excel(self.path)
+            return pl.from_pandas(df), list(df.columns)
+        raise ValueError(f"Unsupported file format '{ext}'. Supported: .csv, .xls, .xlsx")
