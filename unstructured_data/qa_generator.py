@@ -1,8 +1,8 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
-from prompts.question_generation import q_prompt
-from prompts.system_prompt import q_system_prompt
+from prompts.question_generation import q_prompt, a_prompt
+from prompts.system_prompt import q_system_prompt, a_system_prompt
 from pprint import pprint
 from langchain_core.output_parsers import PydanticOutputParser
 from pydantic import BaseModel, RootModel
@@ -166,22 +166,40 @@ class ProcessMarkdownQAPairs:
         ## 6. return list of questions
         pass
 
-    def generate_answers(self, chunk: str, question: QuestionOutput):
+    def generate_answers(self, chunk: str, questions: QuestionOutput):
         ## 1. Initialize Pydantic output parser
         answer_parser = PydanticOutputParser(pydantic_object=AnswerOutput)
 
         ## 2. Prompt template
-        
-        ## 3. PT -> Rendered Prompt
+        prompt_template = PromptTemplate(
+            input_variables = ["schema", "chunk", "question"],
+            template = a_prompt,
+        )
 
+        ## 3. PT -> Rendered Prompt
         ## 4. Message setup for multiple questions
+        messages = []
+        for question in questions.root:
+            rendered_output = prompt_template.format(
+                schema=answer_parser.get_format_instructions(),
+                chunk=chunk,
+                question=question
+            )
+            messages.append(
+                {'role': 'system', 'content': a_system_prompt},
+                {'role': 'user', 'content': rendered_output}
+            )
 
         ## 5. generating answer form questions using batch
+        ai_response = self.llm.batch(messages)
 
         ## 6. Parse each response
+        ai_msgs = [question_parser.parse(resp.content) for resp in ai_responses]
 
         ## 7. return
-        pass
+        return ai_msgs
+
+
 
     def judge_qa_pair(self):
         pass

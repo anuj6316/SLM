@@ -11,6 +11,9 @@ Chunk:
 
 a_prompt = """
 Answer the following question using only the text below. If the answer is not in the text, return "NOT_ANSWERABLE_FROM_TEXT".
+Return the output strictly as JSON matching the schema:
+
+{schema}
 
 Text:
 {chunk}
