@@ -1,0 +1,7 @@
+web_scrapping:
+  url: "https://www.mindmapdigital.ai/"
+  api_key: ${JINA_API_KEY}
+
+ProcessMarkdownQAPairs:
+  api_key: ${GROQ_API_KEY}
+  model_id: "qwen/qwen3-32b"
