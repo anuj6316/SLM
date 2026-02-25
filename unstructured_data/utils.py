@@ -18,15 +18,10 @@ from exceptions import (
     RateLimitError
 )
 import tempfile
+from urllib.parse import urlparse
 # Load environment variables
 load_dotenv()
 
-# Configure logging
-logging.basicConfig(
-    level=logging.DEBUG, # Set log level to DEBUG
-    format="%(asctime)s - %(levelname)s - %(message)s", # Define log format
-    datefmt="%Y-%m-%d %H:%M:%S" # Customize timestamp format
-)
 logger = logging.getLogger("__main__")
 
 def chunk_hash(chunk: str, algorithm: str = "sha256"):
@@ -40,95 +35,134 @@ def chunk_hash(chunk: str, algorithm: str = "sha256"):
     
     return hash_obj.hexdigest()
 
-def get_raw_content(cfg: ScrapeConfig):
-    url = f"https://r.jina.ai/{cfg.url}"
-    headers = {
-        "Authorization": f"Bearer {cfg.api_key}",
-    }
-    try:
-        response = None
-        response = requests.get(url, headers=headers, timeout=10)
-    except Exception as e:
-        raise RuntimeError(f"Unable to fetch the raw data from from {url}, with error {e}")
-    response.raise_for_status()
+class ScrapeUrl:
+    def __init__(self, cfg: ScrapeConfig):
+        self.cfg =cfg
+        self.url = cfg.url
+        self.isFlash = cfg.scrape_type == "flash"
+        self.raw_file_path = None
+        self.cleaned_file_path = None
+        self.base_url = urlparse(self.url).netloc
 
-    with tempfile.NamedTemporaryFile("flash_scrape.md", 'w', delete=False) as f:
-        f.write(response.text)
-        
+    def flash_scrape(self):
+        logger.info(f"Scraping the {self.url}...")
 
-    hsh = chunk_hash(response.text)[:3]
-    return f"./flash_scrape_{hsh}.md"
-
-def extract_links_from_text(markdown_text):
-    html = markdown.markdown(markdown_text)
-    soup = BeautifulSoup(html, "html.parser")
-
-    links = {
-        a["href"]
-        for a in soup.find_all("a", href=True)
-        if a["href"].startswith("https://www.mindmapdigital.ai")
-        and "#" not in a["href"]
-    }
-
-    return links
-
-def bfs_crawl(cfg: ScrapeConfig):
-    if cfg.scrape_type == "flash":
-        raw_text, content_path = get_raw_content(cfg)
-        return raw_text, content_path
-
-    visited = set()
-    queue = deque([cfg.url]) 
-
-    while queue:
-        current_url = queue.popleft()
-        if current_url in visited:
-            logging.info(f"Skipping the {current_url}...")
-            continue
-        visited.add(current_url)
-        ## Config
-        url = f"https://r.jina.ai/{current_url}"
+        url = f"https://r.jina.ai/{self.cfg.url}"
         headers = {
-            "Authorization": f"Bearer {cfg.api_key}",
+            "Authorization": f"Bearer {self.cfg.api_key}",
         }
         try:
-            try:
-                response = None
-                response = requests.get(url, headers=headers, timeout=10)
-            except Exception as e:
-                raise RuntimeError(f"Unable to fetch the raw data from from {url}, with error {e}")
-
-            response.raise_for_status() # This triggers an error for 404s or 500s
+            response = None
+            response = requests.get(url, headers=headers, timeout=10)
         except Exception as e:
-            raise ScrapeError(e, current_url, response.status_code)
+            raise RuntimeError(f"Unable to fetch the raw data from from {url}, with error {e}")
+        response.raise_for_status()
 
-        with open("bfs_output.md", 'a') as f:
-            f.write(f"Url: {current_url}\n")
-            f.write(response.text + "\n\n")
+        with tempfile.NamedTemporaryFile(prefix="scrape_", suffix=".md", mode = 'w', delete=False) as f:
+            f.write(response.text)
+            self.raw_file_path = f.name
 
-        links = extract_links_from_text(response.text)
-        for link in links:
-            if link not in visited:
-                queue.append(link)
+        logger.info(f"Scraped the {self.url} successfully!\nTemp File path: {self.raw_file_path}")
+        return self.raw_file_path
 
-    return response.text, "bfs_output.md"
+    def deep_scrape(self):
+        if self.cfg.scrape_type == "flash":
+            self.raw_file_path = self.flash_scrape()
+            return self.raw_file_path
 
-def cleaning_raw_markdown_content(raw_text: str):
-    ## Cleaning Markdown Images and svg
-    cleaned = re.sub(r'!\[.*?\]\(.*?\)', '', raw_text)
+        visited = set()
+        queue = deque([self.cfg.url]) 
 
-    # ## Removing standard markdown lines
-    # cleaned = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', cleaned)
+        with tempfile.NamedTemporaryFile(prefix="scrape_", suffix=".md", mode = 'a', delete=False) as f:
+            while queue:
+                current_url = queue.popleft()
+                if current_url in visited:
+                    logging.info(f"Skipping the {current_url}...")
+                    continue
+                visited.add(current_url)
+                ## Config
+                url = f"https://r.jina.ai/{current_url}"
+                headers = {
+                    "Authorization": f"Bearer {self.cfg.api_key}",
+                }
+                try:
+                    try:
+                        response = None
+                        response = requests.get(url, headers=headers, timeout=10)
+                    except Exception as e:
+                        raise RuntimeError(f"Unable to fetch the raw data from from {url}, with error {e}")
 
-    # ## Remove metadata headers (like "Url:", "Title:", "Published Time:")
-    # cleaned = re.sub(r'^(Url|Title|Published Time):.*$', '', cleaned, flags=re.MULTILINE)
+                    response.raise_for_status() # This triggers an error for 404s or 500s
+                except Exception as e:
+                    raise ScrapeError(e, current_url, response.status_code)
 
-    with open("cleaned_output.md", 'w') as f:
-        f.write(cleaned)
+                f.write(f"Url: {current_url}\n")
+                f.write(response.text + "\n\n")
 
-    return cleaned
+                links = self.extract_links_from_text(response.text)
+                for link in links:
+                    if link not in visited:
+                        queue.append(link)
+
+            self.raw_file_path = f.name
+        logging.info(f"Scraped the {self.url} successfully!\nTemp File path: {self.raw_file_path}")
+        return self.raw_file_path
+
+    def clean_markdown(self):
+        logging.info(f"Initializing the cleaning process on {self.raw_file_path}")
+        with open(self.raw_file_path, 'r') as f:
+            raw_text = f.read()
+
+        ## Cleaning Markdown Images and svg
+        cleaned = re.sub(r'!\[.*?\]\(.*?\)', '', raw_text)
+
+        # ## Removing standard markdown lines
+        # cleaned = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', cleaned)
+
+        # ## Remove metadata headers (like "Url:", "Title:", "Published Time:")
+        # cleaned = re.sub(r'^(Url|Title|Published Time):.*$', '', cleaned, flags=re.MULTILINE)
+
+        with tempfile.NamedTemporaryFile(prefix="cleaned_", suffix=".md", mode = 'w', delete=False) as f:
+            f.write(cleaned)
+            self.cleaned_file_path = f.name
+
+        logging.info(f"Cleaned the {self.raw_file_path} successfully! Cleaned File path: {self.cleaned_file_path}")
+        return cleaned
+
+    def extract_links_from_text(self, markdown_text):
+        logging.info("Initializing the Links extraction process...")
+
+        html = markdown.markdown(markdown_text)
+        soup = BeautifulSoup(html, "html.parser")
+
+        links = set()
+        for a in soup.find_all("a", href=True):
+            link = a["href"]
+            # Check if the link belongs to the same domain and isn't just an anchor (#)
+            if urlparse(link).netloc == self.base_url and "#" not in link:
+                links.add(link)
+
+        logger.info(f"Extracted {len(links)} internal links.")
+        return links
+
+    def cleanup(self):
+        """Deletes temporary files created during the process."""
+        for path in [self.raw_file_path, self.cleaned_file_path]:
+            if path and os.path.exists(path):
+                try:
+                    os.remove(path)
+                    logger.info(f"Deleted temporary file: {path}")
+                except Exception as e:
+                    logger.error(f"Failed to delete {path}: {e}")
 
 if __name__ == "__main__":
-    with open("bfs_output.md", 'r') as f:
-        raw_text = f.read()
-    cleaning_raw_markdown_content(raw_text)
+    from main import load_config
+    my_config = load_config()
+    scrapper = ScrapeUrl(my_config['web_scrapping'])
+    try: 
+        raw_path = scrapper.deep_scrape()
+        cleaned_path = scrapper.clean_markdown()
+    except Exception as e:
+        logger.error(f"An error occurred: {e}")
+    # finally:
+        # scrapper.cleanup()
