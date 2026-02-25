@@ -44,6 +44,9 @@ dependencies = [
     "distilabel>=1.5.3",
     "langchain-groq>=1.1.2",
     "langchain-core>=1.2.14",
+    "groq>=0.37.1",
+    "langchain-openai>=1.1.10",
+    "langchain-azure-ai>=1.0.0",
 ]
 
 [tool.poe.tasks]

@@ -1,7 +1,9 @@
 web_scrapping:
   url: "https://www.mindmapdigital.ai/"
   api_key: ${JINA_API_KEY}
+  scrape_type: "flash" ## flash or deep
 
 ProcessMarkdownQAPairs:
   api_key: ${GROQ_API_KEY}
   model_id: "qwen/qwen3-32b"
+  file_path: "/home/mindmap/Desktop/SLM/unstructured_data/cleaned_output.md"

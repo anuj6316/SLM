@@ -1,10 +1,12 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Dict, Any, Literal
+
 
 @dataclass
-class scrapeConfig:
+class ScrapeConfig:
     url: str
     api_key: str
+    scrape_type: Literal["flash", "deep"]
     active_url: str = None
     content_path: str = None
     status_code: int = None
@@ -14,15 +16,19 @@ class scrapeConfig:
 class ProcessMarkdownQAPairsConfig:
     api_key: str
     model_id: str
+    file_path: str
     
 
 @dataclass 
-class qaPairs:
+class QAPairs:
     question: str
     answer: str
     judge_review: str
+    judge_score: float
 
 @dataclass 
-class jsonlFormat:
+class JsonlFormat:
+    chunk_id: str
     chunk_content: str
-    qa_pairs: List[qaPairs]
+    qa_pairs: List[QAPairs]
+    metadata: Dict[str, Any]

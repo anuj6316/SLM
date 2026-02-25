@@ -21,3 +21,20 @@ Text:
 Question:
 {question}
 """
+
+judge_prompt = """
+Evaluate the following Question-Answer pair based on the provided text.
+
+Return the output strictly as JSON matching the schema:
+
+{schema}
+
+Text:
+{chunk}
+
+Question:
+{question}
+
+Answer:
+{answer}
+"""

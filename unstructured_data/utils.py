@@ -3,12 +3,21 @@ import os
 import markdown
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
-from config import scrapeConfig
+from config import ScrapeConfig
 from pprint import pprint
 from collections import deque 
 import requests
 import re
-
+import hashlib
+from exceptions import (
+    PipelineError,
+    ConfigurationError,
+    ScrapeError,
+    LLMResponseError,
+    ProcessingError,
+    RateLimitError
+)
+import tempfile
 # Load environment variables
 load_dotenv()
 
@@ -20,50 +29,35 @@ logging.basicConfig(
 )
 logger = logging.getLogger("__main__")
 
-def get_raw_content(cfg: scrapeConfig, visited=None):
-    """
-
-    """
+def chunk_hash(chunk: str, algorithm: str = "sha256"):
     try:
-        import requests
-        
-        # tracking visited url
-        if visited is None:
-            visited = set()
-        
-        # working url
-        current_url = cfg.url if cfg.active_url is None else cfg.active_url
+        hash_obj = hashlib.new(algorithm)
+    except Exception as e:
+        raise ProcessingError(f"Unable to find the hash algorithm {algorithm}, with error {e}")
+    
+    chunk_bytes = chunk.encode('utf-8')
+    hash_obj.update(chunk_bytes)
+    
+    return hash_obj.hexdigest()
 
-        # is current url already been scrapped
-        if current_url in visited:
-            logging.info(f"Skipping the {current_url}...")
-            return
-        visited.add(current_url)
-        ## Config
-        url = f"https://r.jina.ai/{current_url}"
-        headers = {
-            "Authorization": f"Bearer {cfg.api_key}",
-        }
-
-        response = requests.get(url, headers=headers)
-
-        # Optionally, you can check the response status or print the response content
-        # print(response.status_code)
-        logger.info(f"{'='*50}\nResponse Code: {response.status_code} | Url: {current_url}\n{'='*50}\n")
-
-        with open("output.md", 'a') as f:
-            f.write(f"Url: {current_url}\n")
-            f.write(response.text + "\n\n")
-
-        # 🔥 Extract links from THIS PAGE ONLY
-        links = extract_links_from_text(response.text)
-
-        for link in links:
-            if link not in visited:
-                cfg.active_url = link
-                get_raw_content(cfg, visited)
+def get_raw_content(cfg: ScrapeConfig):
+    url = f"https://r.jina.ai/{cfg.url}"
+    headers = {
+        "Authorization": f"Bearer {cfg.api_key}",
+    }
+    try:
+        response = None
+        response = requests.get(url, headers=headers, timeout=10)
     except Exception as e:
         raise RuntimeError(f"Unable to fetch the raw data from from {url}, with error {e}")
+    response.raise_for_status()
+
+    with tempfile.NamedTemporaryFile("flash_scrape.md", 'w', delete=False) as f:
+        f.write(response.text)
+        
+
+    hsh = chunk_hash(response.text)[:3]
+    return f"./flash_scrape_{hsh}.md"
 
 def extract_links_from_text(markdown_text):
     html = markdown.markdown(markdown_text)
@@ -78,7 +72,11 @@ def extract_links_from_text(markdown_text):
 
     return links
 
-def bfs_crawl(cfg: scrapeConfig):
+def bfs_crawl(cfg: ScrapeConfig):
+    if cfg.scrape_type == "flash":
+        raw_text, content_path = get_raw_content(cfg)
+        return raw_text, content_path
+
     visited = set()
     queue = deque([cfg.url]) 
 
@@ -93,7 +91,16 @@ def bfs_crawl(cfg: scrapeConfig):
         headers = {
             "Authorization": f"Bearer {cfg.api_key}",
         }
-        response = requests.get(url, headers=headers)
+        try:
+            try:
+                response = None
+                response = requests.get(url, headers=headers, timeout=10)
+            except Exception as e:
+                raise RuntimeError(f"Unable to fetch the raw data from from {url}, with error {e}")
+
+            response.raise_for_status() # This triggers an error for 404s or 500s
+        except Exception as e:
+            raise ScrapeError(e, current_url, response.status_code)
 
         with open("bfs_output.md", 'a') as f:
             f.write(f"Url: {current_url}\n")
@@ -103,6 +110,8 @@ def bfs_crawl(cfg: scrapeConfig):
         for link in links:
             if link not in visited:
                 queue.append(link)
+
+    return response.text, "bfs_output.md"
 
 def cleaning_raw_markdown_content(raw_text: str):
     ## Cleaning Markdown Images and svg

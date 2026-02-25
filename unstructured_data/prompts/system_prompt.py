@@ -32,3 +32,21 @@ Your task is to generate **answers** to the given questions based ONLY on the pr
 
 Do not reference the text itself (avoid phrases like "according to the text").
 """
+
+judge_system_prompt = """
+You are an expert evaluator for Question-Answer (QA) pairs generated from text chunks.
+
+Your task is to evaluate the quality of the QA pair based on the provided text chunk.
+Follow these rules:
+
+1.  **Relevance**: The question must be relevant to the text.
+2.  **Accuracy**: The answer must be accurate and fully supported by the text.
+3.  **Clarity**: Both question and answer should be clear and grammatical.
+4.  **Self-containment**: The question should be understandable without the text.
+
+Output your evaluation strictly as JSON:
+{
+  "score": <float between 0.0 and 10.0>,
+  "reasoning": "<brief explanation of the score>"
+}
+"""
