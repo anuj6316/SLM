@@ -1,7 +1,8 @@
 web_scrapping:
   url: "https://www.mindmapdigital.ai/"
   api_key: ${JINA_API_KEY}
-  scrape_type: "flash" ## flash or deep
+  scrape_type: "deep" ## flash or deep
+  remove_temp_files: True
 
 ProcessMarkdownQAPairs:
   api_key: ${GROQ_API_KEY}

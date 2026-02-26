@@ -11,6 +11,7 @@ class ScrapeConfig:
     content_path: str = None
     status_code: int = None
     links: list = None
+    remove_temp_files: bool = True
 
 @dataclass
 class ProcessMarkdownQAPairsConfig:

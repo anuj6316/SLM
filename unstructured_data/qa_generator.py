@@ -74,7 +74,7 @@ def question_generation(chunk: str):
 
     # rendered prompt: text format
     rendered_prompt = prompt.format(chunk=chunk, schema=question_parser.get_format_instructions())
-    print(rendered_prompt)
+    # print(rendered_prompt)
 
     # Intializing the LLM 
     llm = ChatGroq(
@@ -103,8 +103,8 @@ def question_generation(chunk: str):
         print(f"RAW OUTPUT: {response.content}")
         raise e
     # pprint(type(ai_msg))
-    for i in ai_msg.root:
-        print(i.question)
+    # for i in ai_msg.root:
+    #     print(i.question)
     return ai_msg
 
 def answer_generation(chunk: str, question: QuestionOutput):
@@ -337,4 +337,4 @@ class ProcessMarkdownQAPairs:
 
 if __name__ == "__main__":
     obj = ProcessMarkdownQAPairs()
-    obj.generate_questions()
+    obj.run()
