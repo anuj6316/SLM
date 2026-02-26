@@ -1,0 +1,15 @@
+gradio
+rich
+langchain-text-splitters
+langchain-groq
+langchain-core
+langchain-community
+pydantic
+groq
+PyYAML
+python-dotenv
+markdown
+beautifulsoup4
+requests
+distilabel
+unstructured

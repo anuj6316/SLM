@@ -15,7 +15,11 @@ import re
 
 ## Config
 from config import QAPairs, JsonlFormat, ProcessMarkdownQAPairsConfig
-from utils import chunk_hash
+from utils import (
+    chunk_hash,
+    text_splitter,
+    load_config
+)
 
 ## Errors
 from exceptions import (
@@ -45,95 +49,12 @@ class AnswerOutput(BaseModel):
 class JudgeOutput(BaseModel):
     score: float
     reasoning: str
-# class AnswerOutput(BaseModel):
-#     __root__: List[Answer]
-
-def text_splitter(document):
-    """Creating multiple chunks form the raw text"""
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-    texts = text_splitter.split_text(document)
-    return texts
-
-def question_generation(chunk: str):
-    """
-    Goal:
-        Generating High questions out of our chunks.
-    args:
-        chunk: str
-    return:
-        list of questions
-    """
-    # fixed pydantic output from our llm
-    question_parser = PydanticOutputParser(pydantic_object=QuestionOutput)
-
-    # prompt template
-    prompt = PromptTemplate(
-        input_variables=["chunk", "schema"],
-        template=q_prompt,
-    )
-
-    # rendered prompt: text format
-    rendered_prompt = prompt.format(chunk=chunk, schema=question_parser.get_format_instructions())
-    # print(rendered_prompt)
-
-    # Intializing the LLM 
-    llm = ChatGroq(
-        model="qwen/qwen3-32b",
-        temperature=0,
-        max_tokens=None,
-        reasoning_format="parsed",
-        timeout=None,
-        max_retries=2,
-        api_key=os.getenv("GROQ_API_KEY"),
-        # other params...
-    )
-    # Message setup
-    messages = [
-        {"role": "system", "content": q_system_prompt},
-        {"role": "user", "content": rendered_prompt}
-    ]
-    # generating reponse
-    response = llm.invoke(messages)
-    # pprint(response.content)
-    # for i in response.content:
-    #     print(i)
-    try:
-        ai_msg = question_parser.parse(response.content)
-    except Exception as e:
-        print(f"RAW OUTPUT: {response.content}")
-        raise e
-    # pprint(type(ai_msg))
-    # for i in ai_msg.root:
-    #     print(i.question)
-    return ai_msg
-
-def answer_generation(chunk: str, question: QuestionOutput):
-    pass
-
-
 
 class ProcessMarkdownQAPairs:
-
-    def __init__(self, config_path: str="/home/mindmap/Desktop/SLM/unstructured_data/config.yml"):
+    def __init__(self, config_path: str):
         self.config_path = config_path
-        self.cfg = self.load_config()
+        self.cfg = load_config(self.config_path)['ProcessMarkdownQAPairs']
         self.llm = self.initialize_model(self.cfg.model_id, self.cfg.api_key)
-
-    def load_config(self) -> dict:
-        """Load the config.yml into a dataclass
-
-        Returns:
-            ProcessMarkdownQAPairsConfig: dataclass
-        """
-        with open(self.config_path, "r") as f:
-            try:
-                content = os.path.expandvars(f.read())  # <-- expands ${VAR}
-                cfg = yaml.safe_load(content)
-            except yaml.YAMLError as e:
-                raise ConfigurationError
-        
-        cfg = ProcessMarkdownQAPairsConfig(**cfg['ProcessMarkdownQAPairs'])
-        return cfg
 
     def initialize_model(self, model_id: str, api_key: str) -> ChatGroq:
         """Initializes the model for future use
@@ -156,9 +77,6 @@ class ProcessMarkdownQAPairs:
                 # other params...
             )        
         return llm
-
-    def call_llm(self) -> None:
-        pass
 
     def safe_invoke(self, messages:  List[dict], max_retries: int = 5):
         for attempt in range(max_retries):

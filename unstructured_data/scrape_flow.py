@@ -1,17 +1,12 @@
 # Module Imports
 from config import ScrapeConfig
-## Rich Imports
-from rich import print
-from rich.console import Console
-from rich.table import Table
-from rich.panel import Panel
+
 ## Pkgs Imports
 import markdown
 from bs4 import BeautifulSoup
 from queue import deque
 import tempfile
 from urllib.parse import urlparse
-from dataclasses import asdict
 import logging
 import requests
 import re
@@ -35,30 +30,6 @@ class ScrapeUrl:
         self.raw_file_path = None
         self.cleaned_file_path = None
         self.base_url = urlparse(self.url).netloc
-
-    def display_config(self):
-        console = Console()
-
-        ## Creating table for the key-value pair
-        table = Table(show_header=False, box=None, padding=(0,2))
-        table.add_column("Key", style="bold cyan")
-        table.add_column("Value", style="magenta")
-
-        for k, v in asdict(self.cfg).items():
-            if v is not None:
-                table.add_row(k.replace("_", " ").title(), str(v))
-
-        # Wrap the table in a pretty Panel
-        print(
-            Panel(
-                table,
-                title="[bold green]Application Configuration[/bold green]",
-                border_style="bright_blue",
-                width=60,
-                expand=False,
-                padding=(1, 2)
-            )
-        )
 
     def scrape_url(self):
         logging.info(f"Deciding Which scrape to run: Flash or Deep")

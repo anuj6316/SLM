@@ -18,7 +18,6 @@ class ProcessMarkdownQAPairsConfig:
     api_key: str
     model_id: str
     file_path: str
-    
 
 @dataclass 
 class QAPairs:

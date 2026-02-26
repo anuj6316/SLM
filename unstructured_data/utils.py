@@ -15,6 +15,12 @@ from exceptions import (
     ProcessingError,
     RateLimitError
 )
+## Rich Imports
+from rich import print
+from rich.console import Console
+from rich.table import Table
+from rich.panel import Panel
+from dataclasses import asdict
 
 import yaml
 # Load environment variables
@@ -41,6 +47,35 @@ def load_config(cfg_path: str):
     content = os.path.expandvars(content)
     return yaml.safe_load(content)
 
+def text_splitter(document):
+    """Creating multiple chunks form the raw text"""
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+    texts = text_splitter.split_text(document)
+    return texts
+
+def display_config(cfg):
+    console = Console()
+
+    ## Creating table for the key-value pair
+    table = Table(show_header=False, box=None, padding=(0,2))
+    table.add_column("Key", style="bold cyan")
+    table.add_column("Value", style="magenta")
+
+    for k, v in asdict(cfg).items():
+        if v is not None:
+            table.add_row(k.replace("_", " ").title(), str(v))
+
+    # Wrap the table in a pretty Panel
+    print(
+        Panel(
+            table,
+            title="[bold green]Application Configuration[/bold green]",
+            border_style="bright_blue",
+            width=60,
+            expand=False,
+            padding=(1, 2)
+        )
+    )  
 if __name__ == "__main__":
     from main import load_config
     my_config = load_config()
