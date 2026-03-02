@@ -1,0 +1,80 @@
+// Technical Architecture: Web-to-QA-Dataset Pipeline
+
+// 1. INPUT LAYER (Entry Point)
+group Input_Layer [color: #f5f5f5] {
+  User_Input [icon: "user", label: "Target URL / API Key"]
+  Config_Loader [icon: "settings", label: "YAML Configuration"]
+}
+
+// 2. SCRAPING STAGE (Phase 1)
+group Scraping_Engine [color: #e3f2fd] {
+  Scraper [icon: "terminal", label: "ScrapeUrl Engine"]
+  
+  group Strategy_Selection [color: #bbdefb] {
+    Decider [shape: "diamond", label: "Strategy?"]
+    Flash [icon: "zap", label: "Flash (Single Page)"]
+    Deep [icon: "refresh-cw", label: "Deep (Recursive)"]
+  }
+  
+  Jina_API [icon: "external-link", label: "Jina.ai Markdown Reader"]
+  
+  group Link_Harvesting [color: #90caf9] {
+    Link_Parser [icon: "search", label: "BS4 Link Extractor"]
+    Queue_Mgr [icon: "list", label: "URL Deque (Recursive)"]
+  }
+}
+
+// 3. REFINEMENT STAGE (Data Cleaning)
+group Data_Refinement [color: #e8f5e9] {
+  Raw_MD [icon: "document", label: "Raw Markdown"]
+  Regex_Cleaner [icon: "filter", label: "Regex Noise Stripping"]
+  Cleaned_MD [icon: "file-text", label: "Refined Markdown"]
+}
+
+// 4. AI GENERATION STAGE (Phase 2)
+group AI_Dataset_Generator [color: #fff3e0] {
+  Text_Splitter [icon: "scissors", label: "LangChain Chunking"]
+  
+  group Generation_Loop [color: #ffe0b2] {
+    Batch_Process [icon: "layers", label: "Chunk Iterator (tqdm)"]
+    
+    group LLM_Logic {
+      Question_AI [icon: "help-circle", label: "Question Generation"]
+      Answer_AI [icon: "message-square", label: "Answer Generation"]
+      Judge_AI [icon: "award", label: "Quality Scoring (0-10)"]
+    }
+    
+    Safe_Invoke [icon: "shield", label: "Rate Limit Handler"]
+    Groq_Cloud [icon: "cpu", label: "Groq (LLama-3/DeepSeek)"]
+  }
+}
+
+// 5. OUTPUT LAYER (Storage)
+group Output_Layer [color: #fce4ec] {
+  Metadata_Mgr [icon: "tag", label: "Hashing & Timestamps"]
+  JSONL_DB [icon: "database", label: "final_output.jsonl"]
+}
+
+// --- LOGICAL PIPELINE FLOW ---
+User_Input -> Config_Loader
+Config_Loader -> Scraper
+Scraper -> Decider
+Decider -> Flash
+Decider -> Deep
+Flash -> Jina_API
+Deep -> Jina_API
+Jina_API -> Link_Parser
+Link_Parser -> Queue_Mgr
+Queue_Mgr -> Deep
+Jina_API -> Raw_MD
+Raw_MD -> Regex_Cleaner
+Regex_Cleaner -> Cleaned_MD
+Cleaned_MD -> Text_Splitter
+Text_Splitter -> Batch_Process
+Batch_Process -> Question_AI
+Question_AI -> Safe_Invoke
+Safe_Invoke -> Groq_Cloud
+Groq_Cloud -> Answer_AI
+Answer_AI -> Judge_AI
+Judge_AI -> Metadata_Mgr
+Metadata_Mgr -> JSONL_DB

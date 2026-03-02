@@ -1,0 +1,5 @@
+{
+  "name": "QA Data Pipeline",
+  "description": "A dashboard for managing unstructured data to QA pipelines with scraping, refinement, and AI generation monitoring.",
+  "requestFramePermissions": []
+}

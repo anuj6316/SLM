@@ -44,3 +44,6 @@ generalize_sft_slm/output/
 # Python
 __pycache__/
 *.pyc
+
+node_modules/
+node_modules/*

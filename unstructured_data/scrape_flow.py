@@ -1,7 +1,9 @@
 # Module Imports
 from config import ScrapeConfig
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 ## Pkgs Imports
+import threading
 import markdown
 from bs4 import BeautifulSoup
 from queue import deque
@@ -26,6 +28,9 @@ class ScrapeUrl:
         self.cfg = cfg
         self.url = cfg.url
         self.isFlash = cfg.scrape_type == "flash"
+        self.api_key = cfg.api_key
+        self.max_depth = cfg.max_depth
+        self.max_workers = cfg.max_workers
         self.remove_temp_files = cfg.remove_temp_files 
         self.raw_file_path = None
         self.cleaned_file_path = None
@@ -38,7 +43,7 @@ class ScrapeUrl:
             self.raw_file_path = self.flash_scrape()
             return {"Flash": True, "Deep": False}
         logging.info("Running Deep Scrape...")
-        self.raw_file_path = self.deep_scrape()
+        self.raw_file_path = self.deep_scrape(self.max_depth, self.max_workers)
         return {"Flash": False, "Deep": True}
 
     def flash_scrape(self):
@@ -62,45 +67,117 @@ class ScrapeUrl:
         logger.info(f"Scraped the {self.url} successfully!\nTemp File path: {self.raw_file_path}")
         return self.raw_file_path
 
-    def deep_scrape(self):
-        visited = set()
-        queue = deque([self.url]) 
+    # def deep_scrape(self, max_depth: int = 2, max_workers: int = 5):
+    #     visited = set()
+    #     visited_lock = threading.Lock()
 
-        with tempfile.NamedTemporaryFile(prefix="scraped_", suffix=".md", mode = 'a', delete=False) as f:
-            while queue:
-                current_url = queue.popleft()
-                if current_url in visited:
-                    logging.info(f"Skipping the {current_url}...")
-                    continue
-                visited.add(current_url)
-                ## Config
+    #     ## (url, depth)
+    #     queue = deque([self.url, 0]) 
+
+    #     file_lock = threading.Lock()
+
+    #     with tempfile.NamedTemporaryFile(prefix="scraped_", suffix=".md", mode = 'a', delete=False) as f:
+    #         while queue:
+    #             current_url = queue.popleft()
+    #             if current_url in visited:
+    #                 logging.info(f"Skipping the {current_url}...")
+    #                 continue
+    #             visited.add(current_url)
+    #             ## Config
+    #             url = f"https://r.jina.ai/{current_url}"
+    #             headers = {
+    #                 "Authorization": f"Bearer {self.cfg.api_key}",
+    #             }
+    #             try:
+    #                 response = None
+    #                 try:
+    #                     response = requests.get(url, headers=headers, timeout=10)
+    #                 except Exception as e:
+    #                     raise RuntimeError(f"Unable to fetch the raw data from from {url}, with error {e}")
+
+    #                 response.raise_for_status() # This triggers an error for 404s or 500s
+    #             except Exception as e:
+    #                 raise ScrapeError(e, current_url, response.status_code)
+
+    #             f.write(f"Url: {current_url}\n")
+    #             f.write(response.text + "\n\n")
+
+    #             links = self.extract_links_from_text(response.text)
+    #             for link in links:
+    #                 if link not in visited:
+    #                     queue.append(link)
+
+    #         self.raw_file_path = f.name
+    #     logging.info(f"Scraped the {self.url} successfully!\nTemp File path: {self.raw_file_path}")
+    #     return self.raw_file_path
+
+    def deep_scrape(self, max_depth=2, max_workers=5):
+        visited = set()
+        visited_lock = threading.Lock()
+
+        # (url, depth)
+        queue = deque([(self.url, 0)])
+
+        file_lock = threading.Lock()
+
+        with tempfile.NamedTemporaryFile(prefix="scraped_", suffix=".md", mode="a", delete=False) as f:
+
+            def fetch_and_process(current_url, depth):
+                nonlocal visited
+
+                with visited_lock:
+                    if current_url in visited:
+                        logging.info(f"Skipping {current_url}")
+                        return []
+                    visited.add(current_url)
+
+                if depth > max_depth:
+                    return []
+
                 url = f"https://r.jina.ai/{current_url}"
                 headers = {
                     "Authorization": f"Bearer {self.cfg.api_key}",
                 }
+
                 try:
-                    response = None
-                    try:
-                        response = requests.get(url, headers=headers, timeout=10)
-                    except Exception as e:
-                        raise RuntimeError(f"Unable to fetch the raw data from from {url}, with error {e}")
-
-                    response.raise_for_status() # This triggers an error for 404s or 500s
+                    response = requests.get(url, headers=headers, timeout=10)
+                    response.raise_for_status()
                 except Exception as e:
-                    raise ScrapeError(e, current_url, response.status_code)
+                    logging.error(f"Error scraping {current_url}: {e}")
+                    return []
 
-                f.write(f"Url: {current_url}\n")
-                f.write(response.text + "\n\n")
+                # Write safely
+                with file_lock:
+                    f.write(f"Url: {current_url}\n")
+                    f.write(response.text + "\n\n")
 
-                links = self.extract_links_from_text(response.text)
-                for link in links:
-                    if link not in visited:
-                        queue.append(link)
+                # Extract links for next level
+                if depth < max_depth:
+                    links = self.extract_links_from_text(response.text)
+                    return [(link, depth + 1) for link in links]
 
-            self.raw_file_path = f.name
-        logging.info(f"Scraped the {self.url} successfully!\nTemp File path: {self.raw_file_path}")
+                return []
+
+            with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                futures = []
+
+                # initial task
+                futures.append(executor.submit(fetch_and_process, self.url, 0))
+
+                while futures:
+                    for future in as_completed(futures):
+                        futures.remove(future)
+                        new_links = future.result()
+
+                        for link, depth in new_links:
+                            futures.append(
+                                executor.submit(fetch_and_process, link, depth)
+                            )
+
+        self.raw_file_path = f.name
+        logging.info(f"Scraped {self.url} successfully!\nTemp File path: {self.raw_file_path}")
         return self.raw_file_path
-
+        
     def clean_markdown(self):
         logging.info(f"Initializing the cleaning process on {self.raw_file_path}")
         with open(self.raw_file_path, 'r') as f:

@@ -12,6 +12,9 @@ from dataclasses import asdict
 from groq import RateLimitError
 import json
 import re
+from tqdm.auto import tqdm
+import logging
+
 
 ## Config
 from config import QAPairs, JsonlFormat, ProcessMarkdownQAPairsConfig
@@ -51,10 +54,14 @@ class JudgeOutput(BaseModel):
     reasoning: str
 
 class ProcessMarkdownQAPairs:
-    def __init__(self, config_path: str):
-        self.config_path = config_path
-        self.cfg = load_config(self.config_path)['ProcessMarkdownQAPairs']
+    def __init__(self, config: ProcessMarkdownQAPairsConfig):
+        self.cfg = config
         self.llm = self.initialize_model(self.cfg.model_id, self.cfg.api_key)
+
+    def read_file(self, file_path: str) -> str:
+        with open(file_path, "r") as f:
+            data = f.read()
+        return data
 
     def initialize_model(self, model_id: str, api_key: str) -> ChatGroq:
         """Initializes the model for future use
@@ -86,14 +93,14 @@ class ProcessMarkdownQAPairs:
                 # return self.llm.invoke(messages) 
             except RateLimitError:
                 wait_time = 2 ** attempt
-                print(f"Rate limit exceeded. Retrying in {wait_time} seconds...")
+                tqdm.write(f"Rate limit exceeded. Retrying in {wait_time} seconds...")
         raise Exception("Max retries exceeded.")
 
     def cleaned_response(self, messages: List[dict]) -> str:
         response = self.llm.invoke(messages)
         content = response.content
         content = re.sub(r'<think>.*?</think>', '', content, flags=re.DOTALL).strip()
-        print(f"\n\n{content}\n\n")
+        tqdm.write(f"\n\n{content}\n\n")
         return content.strip('\n')
 
     def generate_questions(self, chunk: str) -> QuestionOutput:
@@ -125,7 +132,7 @@ class ProcessMarkdownQAPairs:
             ai_msg = question_parser.parse(cleaned_output)
             return ai_msg
         except Exception as e:
-            print(f"PARSING FAILED. Cleaned Output: {cleaned_output}")
+            tqdm.write(f"PARSING FAILED. Cleaned Output: {cleaned_output}")
             raise e
 
         return
@@ -164,7 +171,7 @@ class ProcessMarkdownQAPairs:
             ## 7. return
             return ai_msgs
         except Exception as e:
-            print(f"RAW OUTPUT: {ai_response.content}")
+            tqdm.write(f"RAW OUTPUT: {ai_response}")
             raise e
 
         raise LLMResponseError
@@ -227,8 +234,9 @@ class ProcessMarkdownQAPairs:
         with open(self.cfg.file_path, "r") as f:
             data = f.read()
         chunks = text_splitter(data)
-        for idx, chunk in enumerate(chunks):
+        for idx, chunk in enumerate(tqdm(range(len(chunks)), desc="Processing Chunks for generating QA Pairs: ")):
             try:
+                chunk = chunks[idx]
                 questions = self.generate_questions(chunk)
                 answers = self.generate_answers(chunk, questions)
                 qa_pairs = self.generate_qa_pairs(chunk, questions, answers)

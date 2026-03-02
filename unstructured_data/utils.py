@@ -7,6 +7,8 @@ from collections import deque
 import requests
 import re
 import hashlib
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_groq import ChatGroq
 from exceptions import (
     PipelineError,
     ConfigurationError,
@@ -76,16 +78,45 @@ def display_config(cfg):
             padding=(1, 2)
         )
     )  
-if __name__ == "__main__":
-    from main import load_config
-    my_config = load_config()
-    pprint(my_config['web_scrapping'])
-    scrapper = ScrapeUrl(my_config['web_scrapping'])
-    # pprint(scrapper)
-    try: 
-        raw_path = scrapper.deep_scrape()
-        cleaned_path = scrapper.clean_markdown()
+
+def jina_health_check(api_key: str):
+    """_summary_
+
+    Args:
+        api_key (str): _description_
+    """
+    try:
+        url = "https://r.jina.ai/https://www.example.com"
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+        }
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        if response.status_code == 200:
+            return True
+        else:
+            return False
     except Exception as e:
-        logger.error(f"An error occurred: {e}")
-    # finally:
-        # scrapper.cleanup()
+        logging.error(e)
+        return False
+
+def groq_health_check(api_key: str, model: str="qwen/qwen3-32b"):
+    """_summary_
+
+    Args:
+        api_key (str): _description_
+    """
+    try:
+        llm = ChatGroq(api_key=api_key, model=model)
+        response = llm.invoke("hi")
+        if response.content:
+            return True
+        return False
+    except Exception as e:
+        logging.error(e)
+        return False
+
+
+if __name__ == "__main__":
+    print(os.getenv("GROQ_API_KEY"))
+    print(groq_health_check(api_key=os.getenv("GROQ_API_KEY")))
