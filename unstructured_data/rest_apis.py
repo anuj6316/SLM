@@ -58,7 +58,11 @@ def scrape_website(request: ScrapeRequest):
         scrape_obj = ScrapeUrl(cfg)
         scrape_obj.scrape_url()
         scrape_obj.clean_markdown()
-        pass
+        return ScrapeResponse(
+            job_id = None,
+            status = "completed",
+            
+        )
     except Exception as e:
         return ScrapeResponse(
             job_id = None,

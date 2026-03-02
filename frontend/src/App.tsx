@@ -30,6 +30,7 @@ import QAGen from '@/pages/QAGen';
 import Config from '@/pages/Config';
 import Datasets from '@/pages/Datasets';
 import Settings from '@/pages/Settings';
+import Signup from '@/pages/Signup';
 
 // --- Components ---
 
@@ -69,7 +70,7 @@ const StatusBadge = ({ label, status }: { label: string, status: 'online' | 'off
   </div>
 );
 
-type View = 'dashboard' | 'scraper' | 'qagen' | 'config' | 'datasets' | 'settings';
+type View = 'dashboard' | 'scraper' | 'qagen' | 'config' | 'datasets' | 'settings' | 'signup';
 
 export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -143,6 +144,10 @@ export default function App() {
         <Loader2 className="w-8 h-8 animate-spin text-violet-500" />
       </div>
     );
+  }
+
+  if (currentView === 'signup') {
+    return <Signup onLoginClick={() => setCurrentView('dashboard')} />;
   }
 
   const renderContent = () => {
