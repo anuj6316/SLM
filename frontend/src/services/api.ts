@@ -113,6 +113,40 @@ export const api = {
     return mockDatasets;
   },
 
+  login: async (credentials: any) => {
+    const response = await fetch(`${API_BASE_URL}/account/login/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(credentials),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Login failed');
+    }
+
+    return response.json();
+  },
+
+  signup: async (userData: any) => {
+    const response = await fetch(`${API_BASE_URL}/account/signup/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(JSON.stringify(errorData) || 'Signup failed');
+    }
+
+    return response.json();
+  },
+
   runPipeline: async (request: RunPipelineRequest): Promise<RunPipelineResponse> => {
     await sleep(MOCK_DELAY * 2);
     return {

@@ -31,6 +31,7 @@ import Config from '@/pages/Config';
 import Datasets from '@/pages/Datasets';
 import Settings from '@/pages/Settings';
 import Signup from '@/pages/Signup';
+import Login from '@/pages/Login';
 
 // --- Components ---
 
@@ -70,12 +71,13 @@ const StatusBadge = ({ label, status }: { label: string, status: 'online' | 'off
   </div>
 );
 
-type View = 'dashboard' | 'scraper' | 'qagen' | 'config' | 'datasets' | 'settings' | 'signup';
+type View = 'dashboard' | 'scraper' | 'qagen' | 'config' | 'datasets' | 'settings' | 'signup' | 'login';
 
 export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentView, setCurrentView] = useState<View>('dashboard');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentView, setCurrentView] = useState<View>('login');
   const [hasNotifications, setHasNotifications] = useState(true);
   
   // State for API data
@@ -94,38 +96,57 @@ export default function App() {
     }
   }, [isDarkMode]);
 
+  // Check for existing token
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsAuthenticated(true);
+      setCurrentView('dashboard');
+    }
+  }, []);
+
   // Fetch initial data
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [
-          statusData,
-          metricsData,
-          logsData,
-          qualityRes,
-          datasetsRes
-        ] = await Promise.all([
-          api.getStatus(),
-          api.getMetrics(),
-          api.getLogs(),
-          api.getQualityDistribution(),
-          api.getRecentDatasets()
-        ]);
+    if (isAuthenticated) {
+      const fetchData = async () => {
+        try {
+          const [
+            statusData,
+            metricsData,
+            logsData,
+            qualityRes,
+            datasetsRes
+          ] = await Promise.all([
+            api.getStatus(),
+            api.getMetrics(),
+            api.getLogs(),
+            api.getQualityDistribution(),
+            api.getRecentDatasets()
+          ]);
 
-        setStatus(statusData);
-        setMetrics(metricsData.metrics);
-        setLogs(logsData.logs);
-        setQualityData(qualityRes.data);
-        setDatasets(datasetsRes.datasets);
-      } catch (error) {
-        console.error('Failed to fetch dashboard data:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+          setStatus(statusData);
+          setMetrics(metricsData.metrics);
+          setLogs(logsData.logs);
+          setQualityData(qualityRes.data);
+          setDatasets(datasetsRes.datasets);
+        } catch (error) {
+          console.error('Failed to fetch dashboard data:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
 
-    fetchData();
-  }, []);
+      fetchData();
+    } else {
+      setIsLoading(false);
+    }
+  }, [isAuthenticated]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsAuthenticated(false);
+    setCurrentView('login');
+  };
 
   const handleRunPipeline = async () => {
     try {
@@ -146,8 +167,33 @@ export default function App() {
     );
   }
 
-  if (currentView === 'signup') {
-    return <Signup onLoginClick={() => setCurrentView('dashboard')} />;
+  // Auth Guard
+  if (!isAuthenticated) {
+    if (currentView === 'signup') {
+      return <Signup onLoginClick={() => setCurrentView('login')} />;
+    }
+    return (
+      <Login 
+        onSignupClick={() => setCurrentView('signup')} 
+        onLoginSuccess={() => {
+          setIsAuthenticated(true);
+          setCurrentView('dashboard');
+          setIsLoading(true); // Ensure loading is triggered for dashboard data
+        }}
+      />
+    );
+  }
+
+  // Loading Screen for Dashboard Data
+  if (isLoading || !status) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-zinc-50 dark:bg-[#09090b]">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-10 h-10 animate-spin text-violet-500" />
+          <p className="text-sm font-medium text-zinc-500 animate-pulse">Initializing Dashboard...</p>
+        </div>
+      </div>
+    );
   }
 
   const renderContent = () => {
@@ -248,9 +294,13 @@ export default function App() {
           >
             {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
-          <div className="w-8 h-8 rounded-full bg-violet-500 flex items-center justify-center text-white font-bold text-xs ring-2 ring-white dark:ring-[#18181b]">
+          <button 
+            onClick={handleLogout}
+            className="w-8 h-8 rounded-full bg-violet-500 flex items-center justify-center text-white font-bold text-xs ring-2 ring-white dark:ring-[#18181b] hover:scale-110 transition-transform"
+            title="Log Out"
+          >
             JD
-          </div>
+          </button>
         </div>
       </aside>
 

@@ -1,2 +1,7 @@
 django
 psycopg[binary]
+poethepoet
+
+djangorestframework
+django-cors-headers
+pygments # for code highlighting

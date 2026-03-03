@@ -1,59 +1,45 @@
 import React, { useState } from 'react';
-import { Mail, Lock, User, Eye, EyeOff, Loader2, ArrowRight, Github, Chrome } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight, Github, Chrome } from 'lucide-react';
 import { api } from '@/services/api';
 
-export default function Signup({ onLoginClick }: { onLoginClick: () => void }) {
+export default function Login({ 
+  onSignupClick, 
+  onLoginSuccess 
+}: { 
+  onSignupClick: () => void,
+  onLoginSuccess: () => void 
+}) {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
-    name: '',
     email: '',
-    password: '',
-    confirmPassword: ''
+    password: ''
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
     setIsLoading(true);
     setError(null);
     try {
-      // Split name into first and last
-      const nameParts = formData.name.split(' ');
-      const firstName = nameParts[0];
-      const lastName = nameParts.slice(1).join(' ') || '';
-
-      await api.signup({
-        username: formData.email, // Using email as username
-        email: formData.email,
-        password: formData.password,
-        first_name: firstName,
-        last_name: lastName
+      const data = await api.login({ 
+        username: formData.email, 
+        password: formData.password 
       });
       
-      // Auto-login after signup
-      const loginData = await api.login({
-        username: formData.email,
-        password: formData.password
-      });
-
-      localStorage.setItem('token', loginData.token);
-      window.location.reload(); // Quick way to trigger App.tsx state update
+      localStorage.setItem('token', data.token);
+      onLoginSuccess();
     } catch (err: any) {
-      setError(err.message || 'Signup failed');
+      setError(err.message || 'An unexpected error occurred');
+      console.error('Login error:', err);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-zinc-50 dark:bg-[#09090b] p-4 font-sans">
-      <div className="w-full max-w-[480px] space-y-8">
+    <div className="min-h-screen w-full flex items-center justify-center bg-zinc-50 dark:bg-[#09090b] p-4 font-sans text-zinc-900 dark:text-zinc-100 transition-colors duration-300">
+      <div className="w-full max-w-[480px] space-y-8 animate-in fade-in zoom-in duration-500">
         {/* Logo & Header */}
         <div className="text-center space-y-2">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-gradient-to-br from-violet-600 to-indigo-600 shadow-xl shadow-violet-500/20 mb-4 transform hover:scale-105 transition-transform duration-300">
@@ -63,8 +49,8 @@ export default function Signup({ onLoginClick }: { onLoginClick: () => void }) {
               <line x1="12" y1="22.08" x2="12" y2="12" />
             </svg>
           </div>
-          <h1 className="text-3xl font-bold text-zinc-900 dark:text-white tracking-tight">Create an account</h1>
-          <p className="text-zinc-500 dark:text-zinc-400">Join the QA Data Pipeline revolution</p>
+          <h1 className="text-3xl font-bold text-zinc-900 dark:text-white tracking-tight">Welcome back</h1>
+          <p className="text-zinc-500 dark:text-zinc-400">Log in to manage your QA pipeline</p>
         </div>
 
         {/* Card */}
@@ -75,22 +61,6 @@ export default function Signup({ onLoginClick }: { onLoginClick: () => void }) {
             </div>
           )}
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Full Name */}
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider ml-1">Full Name</label>
-              <div className="relative">
-                <User className="absolute left-4 top-3.5 w-4 h-4 text-zinc-400" />
-                <input 
-                  type="text" 
-                  required
-                  placeholder="John Doe"
-                  className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all placeholder:text-zinc-400"
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
-                />
-              </div>
-            </div>
-
             {/* Email */}
             <div className="space-y-2">
               <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider ml-1">Email Address</label>
@@ -99,7 +69,7 @@ export default function Signup({ onLoginClick }: { onLoginClick: () => void }) {
                 <input 
                   type="email" 
                   required
-                  placeholder="john@example.com"
+                  placeholder="name@company.com"
                   className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all placeholder:text-zinc-400"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
@@ -109,7 +79,10 @@ export default function Signup({ onLoginClick }: { onLoginClick: () => void }) {
 
             {/* Password */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider ml-1">Password</label>
+              <div className="flex justify-between items-center ml-1">
+                <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Password</label>
+                <button type="button" className="text-[10px] text-violet-600 font-bold hover:underline">Forgot password?</button>
+              </div>
               <div className="relative">
                 <Lock className="absolute left-4 top-3.5 w-4 h-4 text-zinc-400" />
                 <input 
@@ -130,22 +103,6 @@ export default function Signup({ onLoginClick }: { onLoginClick: () => void }) {
               </div>
             </div>
 
-            {/* Confirm Password */}
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider ml-1">Confirm Password</label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-3.5 w-4 h-4 text-zinc-400" />
-                <input 
-                  type={showPassword ? "text" : "password"} 
-                  required
-                  placeholder="••••••••"
-                  className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl py-3.5 pl-11 pr-12 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all placeholder:text-zinc-400"
-                  value={formData.confirmPassword}
-                  onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
-                />
-              </div>
-            </div>
-
             {/* Submit Button */}
             <button 
               type="submit"
@@ -156,15 +113,20 @@ export default function Signup({ onLoginClick }: { onLoginClick: () => void }) {
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
                 <>
-                  Create Account
+                  Sign In
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
             </button>
 
+            {/* Social Divider */}
             <div className="relative py-2">
-              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-zinc-100 dark:border-white/5"></div></div>
-              <div className="relative flex justify-center text-xs uppercase"><span className="bg-white dark:bg-[#15171C] px-4 text-zinc-400 font-medium">Or continue with</span></div>
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-zinc-100 dark:border-white/5"></div>
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white dark:bg-[#15171C] px-4 text-zinc-400 font-medium tracking-widest">Or continue with</span>
+              </div>
             </div>
 
             {/* Social Buttons */}
@@ -181,12 +143,12 @@ export default function Signup({ onLoginClick }: { onLoginClick: () => void }) {
 
         {/* Footer Link */}
         <p className="text-center text-sm text-zinc-500 dark:text-zinc-400">
-          Already have an account?{' '}
+          Don't have an account?{' '}
           <button 
-            onClick={onLoginClick}
+            onClick={onSignupClick}
             className="text-violet-600 dark:text-violet-400 font-bold hover:underline underline-offset-4"
           >
-            Sign in
+            Create account
           </button>
         </p>
       </div>
