@@ -30,7 +30,10 @@ SECRET_KEY = 'django-insecure-@=7v09fr)@n^cxr)hnk&-daz$xj!!mlh#5$=d+369f)wdf8$xv
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:5173"
+]
 
 # Application definition
 
@@ -44,9 +47,14 @@ INSTALLED_APPS = [
 
     ## Custom
     "webscrapper",
+    "rest_framework",
+    "accounts",
+    "rest_framework.authtoken",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
