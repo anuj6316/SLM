@@ -1,8 +1,8 @@
-import { 
-  SystemStatus, 
-  MetricsOverview, 
-  LogsResponse, 
-  QualityDistribution, 
+import {
+  SystemStatus,
+  MetricsOverview,
+  LogsResponse,
+  QualityDistribution,
   RecentDatasets,
   RunPipelineRequest,
   RunPipelineResponse,
@@ -88,6 +88,32 @@ export const api = {
     return response.json();
   },
 
+  checkGroqHealth: async (api_key?: string): Promise<{ isActive: boolean, error?: string }> => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/account/groq-health/`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Token ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ groq_api_key: api_key }),
+    });
+    return response.json();
+  },
+
+  checkJinaHealth: async (api_key?: string): Promise<{ isActive: boolean, error?: string }> => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/account/jina-health/`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Token ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ jina_api_key: api_key }),
+    });
+    return response.json();
+  },
+
   getStatus: async (): Promise<SystemStatus> => {
     await sleep(MOCK_DELAY);
     return mockSystemStatus;
@@ -130,6 +156,45 @@ export const api = {
     return response.json();
   },
 
+  getMe: async () => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('No token found');
+
+    const response = await fetch(`${API_BASE_URL}/account/me/`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Token ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch user data');
+    }
+
+    return response.json();
+  },
+
+  updateKeys: async (keys: { jina_api_key?: string, groq_api_key?: string }) => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('No token found');
+
+    const response = await fetch(`${API_BASE_URL}/account/update-keys/`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Token ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(keys),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update keys');
+    }
+
+    return response.json();
+  },
+
   signup: async (userData: any) => {
     const response = await fetch(`${API_BASE_URL}/account/signup/`, {
       method: 'POST',
@@ -154,5 +219,45 @@ export const api = {
       pipelineId: `run_${Date.now()}`,
       message: 'Pipeline started successfully'
     };
+  },
+
+  runScrape: async (data: { url: string; maxDepth: number; concurrency: number; scrapeType: 'flash' | 'deep' }) => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('No token found');
+
+    const response = await fetch(`${API_BASE_URL}/api/scrape/`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Token ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || 'Failed to start scrape job');
+    }
+
+    return response.json();
+  },
+
+  getScrapeJobs: async (): Promise<{ jobs: import('@/types').ScrapeJob[] }> => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('No token found');
+
+    const response = await fetch(`${API_BASE_URL}/api/scrape/jobs/`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Token ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch scrape jobs');
+    }
+
+    return response.json();
   }
 };

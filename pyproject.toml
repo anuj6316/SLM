@@ -6,9 +6,11 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "beautifulsoup4>=4.14.3",
+    "cryptography>=46.0.5",
     "distilabel>=1.5.3",
     "django>=6.0.2",
     "django-cors-headers>=4.9.0",
+    "django-encrypted-model-fields>=0.6.5",
     "djangorestframework>=3.16.1",
     "gradio>=6.6.0",
     "groq>=0.37.1",
@@ -27,3 +29,8 @@ dependencies = [
     "rich>=14.3.3",
     "unstructured>=0.21.5",
 ]
+
+[tool.poe.tasks]
+frontend = {cmd = "npm run dev", cwd = "frontend"}
+backend = {cmd = "uv run manage.py runserver", cwd = "slm_finetune"}
+dev = {parallel = ["frontend", "backend"]}

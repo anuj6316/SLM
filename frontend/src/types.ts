@@ -88,12 +88,12 @@ export interface RunPipelineResponse {
   message: string;
 }
 
-export interface HealthRequest {
-  groq_api_key: string;
-  jina_api_key: string;
-}
-
-export interface HealthResponse {
-  groq_isActive: boolean;
-  jina_isActive: boolean;
+export interface ScrapeJob {
+  job_id: string;
+  url: string;
+  scrape_type: 'flash' | 'deep';
+  status: 'pending' | 'active' | 'completed' | 'failed';
+  pages_scraped: number;
+  error_message: string | null;
+  created_at: string;
 }

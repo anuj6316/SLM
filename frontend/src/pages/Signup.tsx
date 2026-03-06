@@ -100,7 +100,10 @@ export default function Signup({ onLoginClick }: { onLoginClick: () => void }) {
                   type="email" 
                   required
                   placeholder="john@example.com"
-                  className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all placeholder:text-zinc-400"
+                  className={cn(
+                    "w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all placeholder:text-zinc-400",
+                    formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) && "border-red-500/50 focus:ring-red-500/20"
+                  )}
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
                 />
@@ -116,18 +119,37 @@ export default function Signup({ onLoginClick }: { onLoginClick: () => void }) {
                   type={showPassword ? "text" : "password"} 
                   required
                   placeholder="••••••••"
-                  className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl py-3.5 pl-11 pr-12 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all placeholder:text-zinc-400"
+                  className={cn(
+                    "w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl py-3.5 pl-11 pr-12 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all placeholder:text-zinc-400",
+                    formData.password && formData.password.length < 8 && "border-amber-500/50"
+                  )}
                   value={formData.password}
                   onChange={(e) => setFormData({...formData, password: e.target.value})}
                 />
                 <button 
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                   className="absolute right-4 top-3.5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
+              {formData.password && (
+                <div className="flex gap-1 mt-2 px-1">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div 
+                      key={i}
+                      className={cn(
+                        "h-1 flex-1 rounded-full transition-colors",
+                        i <= (formData.password.length / 3) 
+                          ? (formData.password.length < 8 ? "bg-amber-500" : "bg-emerald-500") 
+                          : "bg-zinc-100 dark:bg-white/5"
+                      )}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Confirm Password */}
@@ -139,7 +161,10 @@ export default function Signup({ onLoginClick }: { onLoginClick: () => void }) {
                   type={showPassword ? "text" : "password"} 
                   required
                   placeholder="••••••••"
-                  className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl py-3.5 pl-11 pr-12 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all placeholder:text-zinc-400"
+                  className={cn(
+                    "w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl py-3.5 pl-11 pr-12 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all placeholder:text-zinc-400",
+                    formData.confirmPassword && formData.confirmPassword !== formData.password && "border-red-500/50 focus:ring-red-500/20"
+                  )}
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
                 />

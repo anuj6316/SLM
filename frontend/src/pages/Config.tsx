@@ -1,36 +1,66 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Key, Shield, Database, Bell, Save, Eye, EyeOff, Loader2, Check, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useHealth } from '@/hooks/useHealth';
 import { SystemStatus } from '@/types';
+import { api } from '@/services/api';
 
-export default function Config({ onStatusUpdate }: { onStatusUpdate: (status: SystemStatus) => void }) {
-  const { checkStatus, isLoading: isCheckingHealth, error: healthError, data: healthData } = useHealth();
-  
+interface ConfigProps {
+  user: any;
+  onUserUpdate: (user: any) => void;
+  onStatusUpdate: (status: SystemStatus) => void;
+}
+
+export default function Config({ user, onUserUpdate, onStatusUpdate }: ConfigProps) {
   const [showGroqKey, setShowGroqKey] = useState(false);
   const [showJinaKey, setShowJinaKey] = useState(false);
   
-  const [groqKey, setGroqKey] = useState('gsk_89234789234...');
-  const [jinaKey, setJinaKey] = useState('jina_v2_...');
+  const [groqKey, setGroqKey] = useState(user?.groq_api_key || '');
+  const [jinaKey, setJinaKey] = useState(user?.jina_api_key || '');
+
+  const [groqHealth, setGroqHealth] = useState<{ isActive: boolean, error?: string } | null>(null);
+  const [jinaHealth, setJinaHealth] = useState<{ isActive: boolean, error?: string } | null>(null);
 
   const [notifyCompletion, setNotifyCompletion] = useState(false);
   const [notifyError, setNotifyError] = useState(true);
 
   const [isSaving, setIsSaving] = useState(false);
   const [showSaved, setShowSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Sync state if user prop changes
+  useEffect(() => {
+    if (user) {
+      setGroqKey(user.groq_api_key || '');
+      setJinaKey(user.jina_api_key || '');
+    }
+  }, [user]);
 
   const handleSave = async () => {
     setIsSaving(true);
+    setError(null);
     try {
-      const result = await checkStatus({
+      // 1. Update keys in DB
+      const updatedUser = await api.updateKeys({
         groq_api_key: groqKey,
         jina_api_key: jinaKey
       });
       
+      onUserUpdate(updatedUser);
+
+      // 2. Validate with services separately
+      const [groqRes, jinaRes] = await Promise.all([
+        api.checkGroqHealth(groqKey),
+        api.checkJinaHealth(jinaKey)
+      ]);
+      
+      setGroqHealth(groqRes);
+      setJinaHealth(jinaRes);
+
+      // Update global system status
       onStatusUpdate({
         services: {
-          jina: result.jina_isActive ? 'online' : 'offline',
-          groq: result.groq_isActive ? 'online' : 'offline'
+          jina: jinaRes.isActive ? 'online' : 'offline',
+          groq: groqRes.isActive ? 'online' : 'offline'
         },
         pipeline: {
             status: 'idle',
@@ -42,14 +72,15 @@ export default function Config({ onStatusUpdate }: { onStatusUpdate: (status: Sy
       setShowSaved(true);
       setTimeout(() => setShowSaved(false), 2000);
     } catch (err) {
-      console.error("Failed to validate keys", err);
+      setError(err instanceof Error ? err.message : 'Failed to validate or save keys');
+      console.error("Failed to validate or save keys", err);
     } finally {
       setIsSaving(false);
     }
   };
 
-  const jinaConnected = healthData?.jina_isActive ?? false;
-  const groqConnected = healthData?.groq_isActive ?? false;
+  const jinaConnected = jinaHealth?.isActive ?? (user?.jina_api_key ? true : false);
+  const groqConnected = groqHealth?.isActive ?? (user?.groq_api_key ? true : false);
 
   return (
     <div className="space-y-8 max-w-[1000px] mx-auto">
@@ -95,19 +126,24 @@ export default function Config({ onStatusUpdate }: { onStatusUpdate: (status: Sy
                 </div>
 
                 <div className="space-y-6">
-                    {healthError && (
+                    {error && (
                         <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3 text-red-500 text-sm">
                             <AlertCircle className="w-4 h-4" />
-                            {healthError}
+                            {error}
                         </div>
                     )}
+                    
                     <div className="space-y-2">
-                        <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Groq API Key</label>
+                        <div className="flex justify-between items-center">
+                            <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Groq API Key</label>
+                            {groqHealth?.error && <span className="text-[10px] text-red-500 font-medium">{groqHealth.error}</span>}
+                        </div>
                         <div className="relative">
                             <input 
                                 type={showGroqKey ? "text" : "password"}
                                 value={groqKey}
                                 onChange={(e) => setGroqKey(e.target.value)}
+                                placeholder="gsk_..."
                                 className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-xl py-3 pl-4 pr-12 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50 font-mono"
                             />
                             <button 
@@ -120,12 +156,16 @@ export default function Config({ onStatusUpdate }: { onStatusUpdate: (status: Sy
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Jina AI Key</label>
+                        <div className="flex justify-between items-center">
+                            <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Jina AI Key</label>
+                            {jinaHealth?.error && <span className="text-[10px] text-red-500 font-medium">{jinaHealth.error}</span>}
+                        </div>
                         <div className="relative">
                             <input 
                                 type={showJinaKey ? "text" : "password"}
                                 value={jinaKey}
                                 onChange={(e) => setJinaKey(e.target.value)}
+                                placeholder="jina_..."
                                 className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-xl py-3 pl-4 pr-12 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50 font-mono"
                             />
                             <button 

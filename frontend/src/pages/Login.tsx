@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight, Github, Chrome } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { api } from '@/services/api';
 
 export default function Login({ 
@@ -70,7 +71,10 @@ export default function Login({
                   type="email" 
                   required
                   placeholder="name@company.com"
-                  className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all placeholder:text-zinc-400"
+                  className={cn(
+                    "w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/10 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all placeholder:text-zinc-400",
+                    formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) && "border-red-500/50 focus:ring-red-500/20"
+                  )}
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
                 />
@@ -96,6 +100,7 @@ export default function Login({
                 <button 
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                   className="absolute right-4 top-3.5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
